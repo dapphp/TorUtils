@@ -1,0 +1,20 @@
+{
+  "name" : "dapphp/torutils",
+  "description" : "PHP classes for interacting with Tor over the control protocol, querying directory authorities and servers, and DNS exit lists", 
+  "require" : {
+    "php" : ">=5.3"
+  },
+  "authors" : [ {
+    "name" : "Drew Phillips",
+    "email" : "drew@drew-phillips.com",
+    "homepage" : "http://drew-phillips.com"
+  } ],
+  "keywords" : [ "tor", "anonynimity", "onion", "client" ],
+  "autoload" : {
+    "psr-4" : {
+      "Dapphp\\TorUtils\\" : "src/"
+    }
+  },
+  "type" : "library",
+  "homepage" : "https://github.com/dapphp/TorUtils"
+}
