@@ -53,6 +53,8 @@ class ProtocolReply implements \Iterator, \ArrayAccess
     private $_command;
     private $_position = 0;
     private $_lines = [];
+    private $_dirty = true;
+    private $_keys  = [];
 
     /**
      * ProtocolReply constructor.
@@ -120,6 +122,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess
      */
     public function appendReplyLine($line)
     {
+        $this->_dirty = true;
         $status = null;
         $first  = sizeof($this->_lines) == 0;
         $line   = rtrim($line, "\r\n");
@@ -167,6 +170,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess
     public function appendReplyLines(array $lines)
     {
         $this->_lines = array_merge($this->_lines, $lines);
+        $this->_dirty = true;
     }
 
     /**
@@ -208,8 +212,15 @@ class ProtocolReply implements \Iterator, \ArrayAccess
      */
     public function key()
     {
-        // TODO: this *really* sucks on large replies
-        return array_keys($this->_lines)[$this->_position];
+        if ($this->_dirty) {
+            $this->_keys = array_keys($this->_lines);
+            $this->_dirty = false;
+        }
+        if (isset($this->_keys[$this->_position])) {
+            return $this->_keys[$this->_position];
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -227,8 +238,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess
      */
     public function valid()
     {
-        $key = $this->key();
-        return isset($this->_lines[$key]);
+        return ($this->key() !== null);
     }
 
     /**
@@ -257,6 +267,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess
     {
         if (is_null($offset)) {
             $this->_lines[] = $value;
+            $this->_dirty   = true;
         } else {
             $this->_lines[$offset] = $value;
         }
@@ -269,5 +280,6 @@ class ProtocolReply implements \Iterator, \ArrayAccess
     public function offsetUnset($offset)
     {
         unset($this->_lines[$offset]);
+        $this->_dirty = true;
     }
 }
