@@ -39,8 +39,6 @@
 
 namespace Dapphp\TorUtils;
 
-// TODO: modify class to talk directly to DNS over UDP so we can choose the DNS server to query
-
 class TorDNSEL
 {
     private $_requestTimeout = 10;
@@ -244,34 +242,34 @@ class TorDNSEL
         $header['ARCOUNT'] = $counts[4];
 
         $records               = array();
-		$records['questions']  = array();
-		$records['answers']    = array();
-		$records['authority']  = array();
-		$records['additional'] = array();
+        $records['questions']  = array();
+        $records['answers']    = array();
+        $records['authority']  = array();
+        $records['additional'] = array();
 
         for ($i = 0; $i < $header['QDCOUNT']; ++$i) {
-			$records['questions'][] = $this->_readDNSQuestion($data, $p);
+            $records['questions'][] = $this->_readDNSQuestion($data, $p);
         }
 
-		for ($i = 0; $i < $header['ANCOUNT']; ++$i) {
-		    $records['answers'][] = $this->_readDNSRR($data, $p);
-		}
+        for ($i = 0; $i < $header['ANCOUNT']; ++$i) {
+            $records['answers'][] = $this->_readDNSRR($data, $p);
+        }
 
-		for ($i = 0; $i < $header['NSCOUNT']; ++$i) {
-		    $records['authority'][] = $this->_readDNSRR($data, $p);
-		}
+        for ($i = 0; $i < $header['NSCOUNT']; ++$i) {
+            $records['authority'][] = $this->_readDNSRR($data, $p);
+        }
 
-		for ($i = 0; $i < $header['ARCOUNT']; ++$i) {
-		    $records['additional'][] = $this->_readDNSRR($data, $p);
-		}
+        for ($i = 0; $i < $header['ARCOUNT']; ++$i) {
+            $records['additional'][] = $this->_readDNSRR($data, $p);
+        }
 
-		return array(
-		    'header'     => $header,
-		    'questions'  => $records['questions'],
-		    'answers'    => $records['answers'],
-		    'authority'  => $records['authority'],
-		    'additional' => $records['additional'],
-		);
+        return array(
+            'header'     => $header,
+            'questions'  => $records['questions'],
+            'answers'    => $records['answers'],
+            'authority'  => $records['authority'],
+            'additional' => $records['additional'],
+        );
     }
 
     /**
