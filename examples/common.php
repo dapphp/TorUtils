@@ -1,7 +1,7 @@
 <?php
 
-require_once '../DirectoryClient.php';
-require_once '../ControlClient.php';
+require_once '../src/DirectoryClient.php';
+require_once '../src/ControlClient.php';
 
 function uptimeToString($seconds, $array = true)
 {

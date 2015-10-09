@@ -2,7 +2,7 @@
 
 use Dapphp\TorUtils\TorDNSEL;
 
-include '../TorDNSEL.php';
+include '../src/TorDNSEL.php';
 
 // Test lookups
 // First array index is the remote IP (client/potential exit node)
