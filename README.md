@@ -43,6 +43,11 @@ uptime, flags and more.
 - TorDNSEL: A simple interface for querying an address against the Tor
 DNS exit lists to see if an IP address belongs to a Tor exit node.
 
+- TorCurlWrapper: A wrapper for cURL that ensures HTTP requests are proxied
+through Tor using SOCKS5 with DNS resolution over Tor (if supported).  It also
+turns cURL errors into an Exception and parses responses into headers and body
+parts.
+
 ## Examples:
 
 The source package comes with several examples of interacting with the
@@ -75,6 +80,9 @@ iterate over each line and process the data.
 
 - TorDNSEL.php: An example of using the Tor DNS Exit Lists to check if a remote
 IP address connecting to a specific IP:Port combination is a Tor exit router.
+
+- CurlWrapper.php: Shows how to use the cURL wrapper class to make HTTP requests
+through the Tor socks proxy.
 
 ## TODO:
 
