@@ -115,7 +115,8 @@ class TorCurlWrapper
             // PHP >= 5.5.23
             curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
         } else {
-            if (version_compare(curl_version()['version'], '7.18.0') < 0) {
+            $curl_version = curl_version();
+            if (version_compare($curl_version['version'], '7.18.0') < 0) {
                 // curl version too low to even use socks5-hostname
                 trigger_error(
                     'cURL SOCKS5_HOSTNAME not supported. ' .

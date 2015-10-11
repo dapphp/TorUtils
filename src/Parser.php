@@ -97,7 +97,7 @@ class Parser
      */
     public function parseRouterStatus(ProtocolReply $reply)
     {
-        $descriptors = [];
+        $descriptors = array();
         $descriptor  = null;
 
         foreach($reply->getReplyLines() as $line) {
@@ -145,7 +145,7 @@ class Parser
      */
     public function parseDirectoryStatus(ProtocolReply $reply)
     {
-        $descriptors = [];
+        $descriptors = array();
         $descriptor  = null;
 
         foreach($reply as $line) {

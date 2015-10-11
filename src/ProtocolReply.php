@@ -52,9 +52,9 @@ class ProtocolReply implements \Iterator, \ArrayAccess
     private $_statusCode;
     private $_command;
     private $_position = 0;
-    private $_lines = [];
+    private $_lines = array();
     private $_dirty = true;
-    private $_keys  = [];
+    private $_keys  = array();
 
     /**
      * ProtocolReply constructor.
