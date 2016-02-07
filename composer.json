@@ -1,5 +1,6 @@
 {
   "name" : "dapphp/torutils",
+  "version": "1.1.1",
   "description" : "PHP classes for interacting with Tor over the control protocol, querying directory authorities and servers, and DNS exit lists", 
   "require" : {
     "php" : ">=5.3"
