@@ -297,7 +297,10 @@ class ControlClient
     }
 
     /**
-     * Get information about a descriptor from the controller.
+     * The latest server descriptor for a given OR
+     * NOTE: Modern Tor clients do not download server descriptors by default.
+     * If you get an exception "unrecognized key desc/*" then you need to use
+     * microdescriptors instead (see getInfoMicroDescriptor).
      *
      * This sends a GETINFO command to the controller and parses the response
      * returning a single descriptor or array of descriptors depending on
@@ -337,14 +340,14 @@ class ControlClient
     }
 
     /**
-     * Get information about a descriptor from the controller using the
-     * microdescriptor format.  Use only if controller requires it.
+     * The latest microdescriptor for a given OR.  Modern Tor clients use
+     * microdescriptors, so use this, instead of getInfoDescriptor to get
+     * info about an OR.
      *
-     * @see ControlClient::getInfoDescriptor()
-     * @param string $descriptorNameOrID
+     * @param null|string $descriptorNameOrID The descriptor nickname or fingerprint, or null to fetch all descriptors
      * @throws \Exception If $descriptorNameOrID is not a valid finterprint or nickname
      * @throws ProtocolError
-     * @return mixed|unknown
+     * @return array|RouterDescriptor
      */
     public function getInfoMicroDescriptor($descriptorNameOrID = null)
     {
@@ -373,8 +376,8 @@ class ControlClient
     }
 
     /**
-     * Uses the GETINFO command to fetch network status about a node or all
-     * nodes on the network.
+     * The latest router status info which reflects the current beliefs from
+     * this Tor client about the router or routers in question.
      *
      * @param string $descriptorNameOrID Fingerprint, nickname, or null for all descriptors
      * @throws \Exception If $descriptorNameOrID is not a valid finterprint or nickname
