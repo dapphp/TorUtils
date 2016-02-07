@@ -87,6 +87,12 @@ class Parser
                              => '_parseOnionKeyCrosscert',
         'ntor-onion-key-crosscert'
                              => '_parseNtorOnionKeyCrosscert',
+        'tunnelled-dir-server'
+                             => '_parseTunnelledDirServer',
+        'a'                  => '_parseALine',
+        'p'                  => '_parseAccept',
+        'p6'                 => '_parseIPv6Policy',
+        'id'                 => '_parseIdLine',
     );
 
     /**
@@ -138,7 +144,7 @@ class Parser
     }
 
     /**
-     * Parse a router descriptor
+     * Parse a router descriptor or microdescriptor
      *
      * @param ProtocolReply $reply The reply to parse
      * @return array Array of \Dapphp\TorUtils\RouterDescriptor objects
@@ -146,7 +152,7 @@ class Parser
     public function parseDirectoryStatus(ProtocolReply $reply)
     {
         $descriptors = array();
-        $descriptor  = null;
+        $descriptor  = new RouterDescriptor();
 
         foreach($reply as $line) {
             if ($line == 'OK')     continue; // for DirectoryClient HTTP responses
@@ -163,7 +169,7 @@ class Parser
             list ($keyword, $value) = $values;
 
             if ($keyword == 'router') {
-                if ($descriptor)
+                if ($descriptor && $descriptor->fingerprint)
                     $descriptors[$descriptor->fingerprint] = $descriptor;
 
                 $descriptor = new RouterDescriptor();
@@ -457,6 +463,27 @@ class Parser
         );
     }
 
+    public function _parseTunnelledDirServer($line)
+    {
+        return array('tunnelled_dir_server' => true);
+    }
+
+    public function _parseIdLine($line)
+    {
+        $ret = array();
+
+        list($keytype, $value) = explode(' ', $line, 2);
+
+        if ($keytype == 'rsa1024') {
+            /* base64 encoded fingerprint - implementations should ignore
+               bin2hex(base64_decode($value)) == fingerprint */
+        } elseif ($keytype == 'ed25519') {
+            $ret['ed25519_key'] = $value;
+        } else { /* unknown key type - ignore */ }
+
+        return $ret;
+    }
+
     private function _parseRsaKey(ProtocolReply $reply)
     {
         return $this->_parseBlockData($reply, '-----BEGIN RSA PUBLIC KEY-----', '-----END RSA PUBLIC KEY-----');
@@ -479,8 +506,10 @@ class Parser
 
     private function _parseALine($line)
     {
-        $values = explode(' ', $line, 2);
-        $line   = $values[1];
+        if (strpos($line, ' ') !== false) {
+            $values = explode(' ', $line, 2);
+            $line   = $values[1];
+        }
 
         if (preg_match('/\[([^]]+)]+:(\d+)/', $line, $match)) {
             $ip   = $match[1];

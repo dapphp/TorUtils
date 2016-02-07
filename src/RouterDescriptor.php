@@ -152,6 +152,9 @@ class RouterDescriptor
     /** @var array Node status flags (e.g. Exit, Fast, Guard, Running, Stable, Valid) */
     public $flags = array();
 
+    /** @var bool Proposal 237 - This relay accepts tunnelled directory requests */
+    public $tunnelled_directory_server = false;
+
     /** @var array IPv4 exit policy $exit_policy4['reject'] = array() and $exit_policy4['accept'] = array() */
     public $exit_policy4 = array();
 
@@ -206,6 +209,24 @@ class RouterDescriptor
         }
 
         return $return;
+    }
+
+    /**
+     * Combine information from a second descriptor with this one.
+     * Information from the second descriptor not present in $this is added.
+     *
+     * @param RouterDescriptor $descriptor The descriptor information to merge
+     * @return RouterDescriptor $this
+     */
+    public function combine(RouterDescriptor $descriptor)
+    {
+        foreach($this as $prop => $val) {
+            if (empty($val) && !empty($descriptor->$prop)) {
+                $this->$prop = $descriptor->$prop;
+            }
+        }
+
+        return $this;
     }
 
     /**
