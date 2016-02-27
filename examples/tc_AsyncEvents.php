@@ -44,7 +44,7 @@ while (true) {
     // reply back from the controller, if there is one.  Otherwise readReply blocks
     // until data is available
 
-    $reply = $tc->_readReply(); // blocks until reply received
+    $reply = $tc->readReply(); // blocks until reply received
     sleep(1);
 }
 
