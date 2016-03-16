@@ -161,6 +161,9 @@ class RouterDescriptor
     /** @var array IPv6 exit policy $exit_policy6['reject'] = array() and $exit_policy6['accept'] = array() */
     public $exit_policy6 = array();
 
+    /** @var string 2 letter country code of the relay IP address */
+    public $country = null;
+
     /**
      * Set one or more descriptor values from an array
      *
@@ -235,12 +238,74 @@ class RouterDescriptor
      *
      * @return int|NULL null if $published was not set, or # of seconds the node has been up
      */
-    public function getCurrentUptime()
+    public function getCurrentUptime($returnArray = false)
     {
         if (isset($this->published) && isset($this->uptime)) {
-            return $this->uptime + time() - strtotime($this->published . ' GMT');
+            $uptime = $this->uptime + time() - strtotime($this->published . ' GMT');
+
+            if ((bool)$returnArray === false) {
+                return $uptime;
+            } else {
+                $units = array(
+                    'days'    => 86400,
+                    'hours'   => 3600,
+                    'minutes' => 60,
+                    'seconds' => 1
+                );
+
+                $return = array();
+
+                foreach($units as $unit => $secs) {
+                    $num = intval($uptime / $secs);
+
+                    if ($num > 0) {
+                        $units[$unit] = $num;
+                    } else {
+                        $units[$unit] = 0;
+                    }
+                    $uptime %= $secs;
+                }
+
+                return $units;
+            }
         } else {
             return null;
         }
+    }
+
+    public function __toString()
+    {
+        $str = '';
+
+        $str .= sprintf("Nickname: %s  Fingerprint: %s\n", $this->nickname, $this->fingerprint);
+        if (!empty($this->uptime)) {
+            $uptime = $this->getCurrentUptime(true);
+            $u      = '';
+            $u     .= ($uptime['days'] > 0) ? "{$uptime['days']}d " : '';
+            $u     .= ($uptime['hours'] > 0) ? "{$uptime['hours']}h " : '';
+            $u     .= ($uptime['minutes'] > 0) ? "{$uptime['minutes']}m " : '';
+            $u     .= ($uptime['seconds'] > 0) ? "{$uptime['seconds']}s" : '';
+            $str .= sprintf("Uptime:   %s\n", trim($u));
+        }
+        if (!empty($this->flags)) {
+            $str .= sprintf("Flags:    %s\n", implode(' ', $this->flags));
+        }
+        if (!empty($this->bandwidth)) {
+            $str .= sprintf("Weight:   %d\n", $this->bandwidth);
+        }
+        if ($this->bandwidth_observed > 0) {
+            $str .= sprintf("Bandwidth: %s MB/s\n", number_format($this->bandwidth_observed / 1000000.0, 2));
+        }
+        $str .= sprintf("Platform: %s\n", $this->platform);
+        $str .= sprintf("Contact:  %s\n", $this->contact);
+        $str .= sprintf("IP Addr:  %s\n", $this->ip_address);
+        if (!empty($this->country)) {
+            $str .= sprintf("Country:  %s\n", strtoupper($this->country));
+        }
+        $str .= sprintf("OR Port:  %d  Dir Port: %d\n", $this->or_port, $this->dir_port);
+        $str .= sprintf("Exit Policy:\n    %s\n    %s\n", 'accept ' . (str_replace('accept ', '', implode(' ', $this->exit_policy4['accept']))),
+                                                          'reject ' . (str_replace('reject ', '', implode(' ', $this->exit_policy4['reject']))));
+
+        return $str;
     }
 }
