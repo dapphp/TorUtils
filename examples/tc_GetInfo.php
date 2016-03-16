@@ -72,7 +72,7 @@ try {
 } catch (ProtocolError $pe) {
     // doesn't necessarily mean the node doesn't exist
     // the controller may not have updated directory info yet
-    echo $pe->getMessage(); // Unrecognized key "desc/name/drew010relay01
+    echo $pe->getMessage() . "\n\n"; // Unrecognized key "desc/name/drew010relay01
 }
 
 try {
@@ -87,5 +87,19 @@ try {
 }
 
 echo "\n\n";
+
+$descriptor = $tc->getInfoDirectoryStatus('milesprower');
+print_r($descriptor);
+
+$temp = $tc->getInfoMicroDescriptor($descriptor->nickname);
+
+try {
+    $descriptor->country = $tc->getInfoIpToCountry($descriptor->ip_address);
+} catch (ProtocolError $pe) {
+    echo "Failed to get country: " . $pe->getMessage() . "\n";
+}
+
+$descriptor->combine($temp);
+print_r($descriptor);
 
 $tc->quit();
