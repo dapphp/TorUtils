@@ -4,7 +4,7 @@
  * Project:  TorUtils: PHP classes for interacting with Tor
  * File:     ControlClient.php
  *
- * Copyright (c) 2015, Drew Phillips
+ * Copyright (c) 2016, Drew Phillips
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -31,9 +31,9 @@
  * Any modifications to the library should be indicated clearly in the source code
  * to inform users that the changes are not a part of the original software.
  *
- * @copyright 2015 Drew Phillips
+ * @copyright 2016 Drew Phillips
  * @author Drew Phillips <drew@drew-phillips.com>
- * @version 1.1 (October 10, 2015)
+ * @version 1.1.1 (March 15, 2016)
  *
  */
 
@@ -53,7 +53,7 @@ use Dapphp\TorUtils\RouterDescriptor;
  *
  * A class for interacting with a Tor node using Tor's control protocol.
  *
- * @version    1.0
+ * @version    1.1.1
  * @author     Drew Phillips <drew@drew-phillips.com>
  *
  */
@@ -76,6 +76,17 @@ class ControlClient
     const GETINFO_TRAFFICREAD      = 'traffic/read';
     const GETINFO_TRAFFICWRITTEN   = 'traffic/written';
     const GETINFO_ENTRY_GUARDS     = 'entry-guards';
+    const GETINFO_IP2COUNTRY       = 'ip-to-country/%s';
+    const GETINFO_CONFIGNAMES      = 'config/names';
+    const GETINFO_CONFIGTEXT       = 'config-text';
+
+    const GETINFO_STATUS_ORPORT    = 'net/listeners/or';
+    const GETINFO_STATUS_DIRPORT   = 'net/listeners/dir';
+    const GETINFO_STATUS_SOCKSPORT = 'net/listeners/socks';
+    const GETINFO_STATUS_TRANSPORT = 'net/listeners/trans';
+    const GETINFO_STATUS_NATDPORT  = 'net/listeners/natd';
+    const GETINFO_STATUS_DNSPORT   = 'net/listeners/dns';
+    const GETINFO_STATUS_CONTROLPORT = 'net/listeners/control';
 
     const SIGNAL_RELOAD        = 'RELOAD';
     const SIGNAL_SHUTDOWN      = 'SHUTDOWN';
@@ -112,6 +123,7 @@ class ControlClient
         $this->_debugFp       = fopen('php://stderr', 'w');
         $this->_parser        = new Parser();
         $this->_eventCallback = null;
+        $this->_protocolInfoResponse = null;
     }
 
     /**
@@ -127,11 +139,13 @@ class ControlClient
         if (is_null($host)) $host = $this->_host;
         if (is_null($port)) $port = $this->_port;
 
+        $this->_protocolInfoResponse = null;
+
         $this->_sock = fsockopen($host, $port, $errno, $errstr, $this->_timeout);
 
         if (!$this->_sock) {
             throw new \Exception(
-                sprintf("Failed to connect to host %s on port %d.  Error: %d - %s", $this->_host, $this->_port, $errno, $errstr)
+                sprintf("Failed to connect to host %s on port %d.  Error: %d - %s", $host, $port, $errno, $errstr)
             );
         }
 
@@ -175,7 +189,13 @@ class ControlClient
      */
     public function authenticate($password = null)
     {
-        $pinfo = $this->_getProtocolInfo();
+        if ($this->_protocolInfoResponse === null) {
+            // can only be called once per connection
+            $pinfo = $this->_getProtocolInfo();
+            $this->_protocolInfoResponse = $pinfo;
+        } else {
+            $pinfo = $this->_protocolInfoResponse;
+        }
 
         if (in_array('NONE', $pinfo['methods'])) {
             $this->authenticateNone();
@@ -192,15 +212,25 @@ class ControlClient
      * Send data or a command to the controller
      *
      * @param string $data The command and data to send
+     * @throws \Exception  If the socket is not connected to Tor, or the write failed
      * @return int the number of bytes sent to the controller
      */
     public function sendData($data)
     {
         $data = $data . "\r\n";
+        $size = strlen($data);
+
+        if (!is_resource($this->_sock)) {
+            throw new \Exception('Not connected');
+        }
 
         if ($this->_debug) $this->_debugOut($data, '>>> ');
 
         $sent = fwrite($this->_sock, $data);
+
+        if ($sent !== $size) {
+            throw new \Exception('Failed to write data to control port');
+        }
 
         return $sent;
     }
@@ -431,6 +461,25 @@ class ControlClient
     }
 
     /**
+     * Returns the country for a given IP address (uses geoipdb)
+     *
+     * @param string $ip  The IP address
+     * @throws ProcotolError If Tor returns an error
+     * @return string The 2 letter country code for the IP address
+     */
+    public function getInfoIpToCountry($ip)
+    {
+        $cmd   = self::GETINFO_IP2COUNTRY;
+        $reply = $this->getInfo($cmd, $ip);
+
+        if (!$reply->isPositiveReply()) {
+            throw new ProcotolError($reply[0], $reply->getStatusCode());
+        } else {
+            return $reply[0];
+        }
+    }
+
+    /**
      * The contents of the fingerprint file that Tor writes as a relay
      *
      * @throws ProtocolError If we are not currently a relay
@@ -466,6 +515,43 @@ class ControlClient
     }
 
     /**
+     * Get the ports the Tor daemon is listening on as an array.  Each port service
+     * is a key in the array.  Values are null if Tor is not listening for that
+     * service, or the port number used by the service.
+     *
+     * @return array Array with keys "or, dir, socks, trans, natd, dns"
+     */
+    public function getListeners()
+    {
+        $ports = [
+            'or'    => self::GETINFO_STATUS_ORPORT,
+            'dir'   => self::GETINFO_STATUS_DIRPORT,
+            'socks' => self::GETINFO_STATUS_SOCKSPORT,
+            'trans' => self::GETINFO_STATUS_TRANSPORT,
+            'natd'  => self::GETINFO_STATUS_NATDPORT,
+            'dns'   => self::GETINFO_STATUS_DNSPORT,
+        ];
+
+        foreach ($ports as $which => $port) {
+            try {
+                $response = $this->getInfo($port);
+
+                if ($response->isPositiveReply()) {
+                    $line = $response[0];
+                    if (preg_match_all('/"([^"]+)"/', $line, $matches));
+                    $ports[$which] = $matches[1];
+                } else {
+                    $ports[$which] = null;
+                }
+            } catch (\Exception $ex) {
+                $ports[$which] = null;
+            }
+        }
+
+        return $ports;
+    }
+
+    /**
      * Gets the total bytes read (downloaded)
      *
      * @return string The number of bytes read (downloaded)
@@ -489,6 +575,34 @@ class ControlClient
         $reply = $this->getInfo($cmd);
 
         return $reply[0];
+    }
+
+    /**
+     * Get the contents of the config that Tor would write if you send it a
+     * SAVECONF command.
+     *
+     * @throws ProtocolError  If the command failed
+     * @return string  The contents of the config text
+     */
+    public function getInfoConfigText()
+    {
+        $cmd = self::GETINFO_CONFIGTEXT;
+        $reply = $this->getInfo(self::GETINFO_CONFIGTEXT);
+
+        if (!$reply->isPositiveReply()) {
+            throw new ProtocolError($reply[0], $reply->getStatusCode());
+        }
+
+        $config = '';
+
+        foreach($reply as $line) {
+            $parts = explode(' ', $line, 2);
+            $config .= $parts[0];
+            if (isset($parts[1])) $config .= ' ' . $parts[1];
+            $config .= "\n";
+        }
+
+        return $config;
     }
 
     /**
@@ -803,6 +917,7 @@ class ControlClient
         $reply = $this->readReply($cmd);
 
         if (!$reply->isPositiveReply()) {
+            fclose($this->_sock); // failed auth closes connection
             throw new ProtocolError($reply[0], $reply->getStatusCode());
         }
 
@@ -825,6 +940,7 @@ class ControlClient
         $reply = $this->readReply($cmd);
 
         if (!$reply->isPositiveReply()) {
+            fclose($this->_sock); // failed auth closes connection
             throw new ProtocolError($reply[0], $reply->getStatusCode());
         }
 
