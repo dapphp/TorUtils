@@ -33,7 +33,7 @@
  *
  * @copyright 2016 Drew Phillips
  * @author Drew Phillips <drew@drew-phillips.com>
- * @version 1.1.1 (March 15, 2016)
+ * @version 1.1.2 (March 15, 2016)
  *
  */
 

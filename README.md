@@ -5,7 +5,7 @@ directory authorities and servers, and DNS exit lists.
 
 ## Version:
 
-**1.1**
+**1.1.2**
 
 ## Author:
 
@@ -84,6 +84,9 @@ IP address connecting to a specific IP:Port combination is a Tor exit router.
 - CurlWrapper.php: Shows how to use the cURL wrapper class to make HTTP requests
 through the Tor socks proxy.
 
+- CurlCountry.php: Shows how to use Exit Nodes from a specific country with the
+cURL wrapper.
+
 ## TODO:
 
 The following commands are not directly implemented by ControlClient and would
@@ -110,7 +113,7 @@ the controller using the provided functions to issue commands:
 
 ## Copyright:
 
-    Copyright (c) 2015 Drew Phillips
+    Copyright (c) 2016 Drew Phillips
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
