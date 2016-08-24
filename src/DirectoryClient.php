@@ -64,12 +64,12 @@ class DirectoryClient
         '74A910646BCEEFBCD2E874FC1DC997430F968145' => '199.254.238.52:80',  // longclaw
         'BD6A829255CB08E66FBE7D3748363586E46B3810' => '171.25.193.9:443',   // maatuska
         '9695DFC35FFEB861329B9F1AB04C46397020CE31' => '128.31.0.39:9131',   // moria1
-        '4A0CCD2DDC7995083D73F5D667100C8A5831F16D' => '82.94.251.203:80',   // Tonga
+        '1D8F3A91C37C5D1C4C19B1AD1D0CFBE8BF72D8E1' => '37.218.247.217:80'   // Bifroest
         '847B1F850344D7876491A54892F904934E4EB85D' => '86.59.21.38:80',     // tor26
     );
 
     private $_connectTimeout = 5;
-    private $_userAgent = 'dapphp/TorUtils 0.1';
+    private $_userAgent = 'dapphp/TorUtils 1.1';
 
     private $_parser;
     private $_serverList;
