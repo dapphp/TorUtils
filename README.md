@@ -48,6 +48,30 @@ through Tor using SOCKS5 with DNS resolution over Tor (if supported).  It also
 turns cURL errors into an Exception and parses responses into headers and body
 parts.
 
+## Basic Example:
+
+This library provides a lot of different functionality (see examples directory)
+and a wide range of possibility but a common use case is sending a signal to
+the Tor controller to change IP addresses.  This shows how to do just that:
+
+    <?php
+
+    require_once 'vendor/autoload.php'; // using composer
+
+    use Dapphp\TorUtils\ControlClient;
+
+    $tc = new ControlClient();
+
+    try {
+        $tc->connect(); // connect to 127.0.0.1:9051
+        $tc->authenticate('password'); // can also use cookie or empty auth
+        $tc->signal(ControlClient::SIGNAL_NEWNYM);
+        echo "Signal sent - IP changed successfully!\n";
+    } catch (\Exception $ex) {
+        echo "Signal failed: " . $ex->getMessage() . "\n";
+    }
+
+
 ## Examples:
 
 The source package comes with several examples of interacting with the
@@ -71,6 +95,9 @@ fetch and set Tor configuration options.
 
 - tc_GetInfo.php: Uses ControlClient to talk to the Tor controller to get
 various pieces of information about the controller and routers on the network.
+
+- tc_NewNym.php: Uses ControlClient to send the "NEWNYM" signal to the
+controller to change IP addresses (as shown above).
 
 - tc_SendData.php: Shows how to use ControlClient to send arbitrary commands
 and read the response from the controller.  Replies are returned as 
