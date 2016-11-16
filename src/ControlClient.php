@@ -33,7 +33,7 @@
  *
  * @copyright 2016 Drew Phillips
  * @author Drew Phillips <drew@drew-phillips.com>
- * @version 1.1.2 (March 15, 2016)
+ 
  *
  */
 
@@ -53,7 +53,6 @@ use Dapphp\TorUtils\RouterDescriptor;
  *
  * A class for interacting with a Tor node using Tor's control protocol.
  *
- * @version    1.1.1
  * @author     Drew Phillips <drew@drew-phillips.com>
  *
  */
