@@ -88,6 +88,7 @@ class Parser
                              => '_parseNtorOnionKeyCrosscert',
         'tunnelled-dir-server'
                              => '_parseTunnelledDirServer',
+        'proto'              => '_parseProtoVersions',
         'a'                  => '_parseALine',
         'p'                  => '_parseAccept',
         'p6'                 => '_parseIPv6Policy',
@@ -409,6 +410,40 @@ class Parser
     {
         return array(
             'protocols' => $line,
+        );
+    }
+
+    private function _parseProtoVersions($line)
+    {
+        $protos  = [];
+        $entries = explode(' ', $line);
+
+        // this line looks something like:
+        // proto Cons=1-2 Desc=1-2 DirCache=1 HSDir=1 HSIntro=3 HSRend=1-2 Link=1-4 LinkAuth=1 Microdesc=1-2 Relay=1-2
+        // but could include a value like "Something=3,5-6"
+
+        foreach($entries as $entry) {
+            list($keyword, $values) = explode('=', $entry);
+            $protos[$keyword] = [];
+
+            $values = explode(',', $values);
+            foreach($values as $value) {
+                if (strpos($value, '-') !== false) {
+                    $value = explode('-', $value);
+                    $value[0] = (int)$value[0];
+                    $value[1] = (int)$value[1];
+
+                    if ($value[0] < $value[1]) {
+                        $protos[$keyword] = array_merge($protos[$keyword], range($value[0], $value[1]));
+                    }
+                } else {
+                    $protos[$keyword][] = $value;
+                }
+            }
+        }
+
+        return array(
+            'proto' => $protos,
         );
     }
 
