@@ -33,7 +33,6 @@
  *
  * @copyright 2016 Drew Phillips
  * @author Drew Phillips <drew@drew-phillips.com>
- 
  *
  */
 
@@ -463,7 +462,7 @@ class ControlClient
      * Returns the country for a given IP address (uses geoipdb)
      *
      * @param string $ip  The IP address
-     * @throws ProcotolError If Tor returns an error
+     * @throws ProtocolError If Tor returns an error
      * @return string The 2 letter country code for the IP address
      */
     public function getInfoIpToCountry($ip)
@@ -472,7 +471,7 @@ class ControlClient
         $reply = $this->getInfo($cmd, $ip);
 
         if (!$reply->isPositiveReply()) {
-            throw new ProcotolError($reply[0], $reply->getStatusCode());
+            throw new ProtocolError($reply[0], $reply->getStatusCode());
         } else {
             return $reply[0];
         }
