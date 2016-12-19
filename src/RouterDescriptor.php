@@ -123,6 +123,12 @@ class RouterDescriptor
     /** @var string space-separated sequences of numbers, to indicate which protocols the server supports.  As of 30 Mar 2008, specified protocols are "Link 1 2 Circuit 1" */
     public $protocols;
 
+    /** @var array Array of protocols (Cons, Desc, DirCache, HSDir, HSIntro,
+     * HSRend, Link, LinkAuth, Microdesc) and versions supported by a relay.
+     * Each protocol key contains an array with each invididual version of
+     * that protocol supported. */
+    public $proto = array();
+
     /** @var string a hex-encoded digest of the router's extra-info document, as signed in the router's extra-info */
     public $extra_info_digest;
 
