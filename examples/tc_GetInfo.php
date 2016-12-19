@@ -21,7 +21,7 @@ try {
 // ask controller for tor version
 $ver = $tc->getVersion();
 
-echo "*** Connected ***\n*** Controller is running Tor $ver ***\n";
+echo "*** Connected to controller***\n*** Controller is running Tor $ver ***\n";
 
 try {
     // get tor node's external ip, if known.
@@ -49,10 +49,24 @@ echo sprintf("*** Tor traffic (read / written): %s / %s ***\n", humanFilesize($r
 echo "\n";
 
 try {
-    // fetch info for this descriptor from controller
-    $descriptor = $tc->getInfoDescriptor('drew010relay01');
-    // if descriptor found, query directory info to get flags
+    echo "Fetching relay info for MilesPrower...\n\n";
+
+    // Fetch info for this descriptor from controller.
+    // This fetches a number of things about the relay including the fingerprint,
+    // Ed25519 identity keys, RSA public keys, cross cert, signing key, contact info,
+    // whether it serves hidden service descriptors, accept/reject list, the router
+    // signature and other things
+    $descriptor = $tc->getInfoDescriptor('MilesPrower');
+
+    // If descriptor found, query directory info to get flags.
+    // Directory info is a reduced set of data including consensus data like
+    // the consensus weight, relay flags (e.g. Exit, Guard, HSDir etc), the IP
+    // and accept/reject list
     $dirinfo    = $tc->getInfoDirectoryStatus($descriptor->fingerprint);
+
+    // combine the two RouterDescriptor objects from getInfoDescriptor and getInfoDirectoryStatus
+    // into one object
+    $descriptor->combine($dirinfo);
 
     echo "== Descriptor Info ==\n" .
           "Nickname      : {$descriptor->nickname}\n" .
@@ -68,11 +82,11 @@ try {
           "Contact       : {$descriptor->contact}\n" .
           "BW (observed) : " . number_format($descriptor->bandwidth_observed) . " B/s\n" .
           "BW (average)  : " . number_format($descriptor->bandwidth_average) . " B/s\n" .
-          "Flags         : " . implode(' ', $dirinfo->flags) . "\n\n";
+          "Flags         : " . implode(' ', $descriptor->flags) . "\n\n";
 } catch (ProtocolError $pe) {
     // doesn't necessarily mean the node doesn't exist
     // the controller may not have updated directory info yet
-    echo $pe->getMessage() . "\n\n"; // Unrecognized key "desc/name/drew010relay01
+    echo $pe->getMessage() . "\n\n"; // Unrecognized key "desc/name/MilesPrower
 }
 
 try {
@@ -88,18 +102,15 @@ try {
 
 echo "\n\n";
 
-$descriptor = $tc->getInfoDirectoryStatus('milesprower');
-print_r($descriptor);
-
-$temp = $tc->getInfoMicroDescriptor($descriptor->nickname);
-
 try {
     $descriptor->country = $tc->getInfoIpToCountry($descriptor->ip_address);
 } catch (ProtocolError $pe) {
-    echo "Failed to get country: " . $pe->getMessage() . "\n";
+    echo "Failed to get IP country for relay at {$descriptor->ip_address}: " . $pe->getMessage() . "\n\n";
 }
 
-$descriptor->combine($temp);
+echo "Dumping raw RouterDescriptor object:\n";
+
 print_r($descriptor);
 
+echo "Closing connection to controller\n";
 $tc->quit();
