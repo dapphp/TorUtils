@@ -136,8 +136,10 @@ class ProtocolReply implements \Iterator, \ArrayAccess
         } else if (preg_match('/^650(?:\+|-)/', $line)) {
             $status = 650;
             $this->_lines[] = substr($line, 4);
-        } else if (preg_match('/^(\d{3})-(\w+)\s*(.*)$/', $line, $match)) {
+        } else if (preg_match('/^(\d{3})-(\w+)(?:=|\s*)(.*)$/', $line, $match)) {
             // ###-DATA RESPONSE
+            // or
+            // ###-Key=Value response
             $status = $match[1];
 
             if ($match[1][0] != '2') {
