@@ -95,6 +95,37 @@ class ControlClient
     const SIGNAL_CLEARDNSCACHE = 'CLEARDNSCACHE';
     const SIGNAL_HEARTBEAT     = 'HEARTBEAT';
 
+    /** @var addHiddenService flag to create a new private key */
+    const ONION_KEYTYPE_NEW     = 'NEW';
+
+    /** @var addHiddenService flag to create a new 1024 bit RSA private key */
+    const ONION_KEYTYPE_RSA1024 = 'RSA1024';
+
+    /** @var addHiddenService flag to use the best algorithm for NEW private key generation */
+    const ONION_KEYBLOB_BEST    = 'BEST';
+
+    /** @var addHiddenService flag for creating a new RSA 1024 bit key */
+    const ONION_KEYBLOB_RSA1024 = 'RSA1024';
+
+    /** @var Don't return the new private key when creating a hidden service.
+     * Note that if "DiscardPK" flag is specified, there is no way to recreate
+     * the generated keypair and the corresponding Onion Service at a later date) */
+    const ONION_FLAG_DISCARDPK  = 0x01;
+
+    /** @var Keep the hidden service running after the client disconnects from controller */
+    const ONION_FLAG_DETACH     = 0x02;
+
+    /** @var If client authorization is enabled using the "BasicAuth" flag, the
+     * service will not be accessible to clients without valid authorization
+     * data (configured with the "HidServAuth" option) */
+    const ONION_FLAG_BASICAUTH  = 0x04;
+
+    /** @var To guard against unexpected loss of anonymity, Tor checks that
+     * the ADD_ONION "NonAnonymous" flag matches the current hidden service
+     * anonymity mode.  The hidden service anonymity mode is configured using
+     * the Tor options HiddenServiceSingleHopMode and HiddenServiceNonAnonymousMode */
+    const ONION_FLAG_NONANON    = 0x08;
+
     const AUTH_SAFECOOKIE_SERVER_TO_CONTROLLER = 'Tor safe cookie authentication server-to-controller hash';
     const AUTH_SAFECOOKIE_CONTROLLER_TO_SERVER = 'Tor safe cookie authentication controller-to-server hash';
 
@@ -688,6 +719,114 @@ class ControlClient
         }
 
         return $this;
+    }
+
+    /**
+     * Tells the server to create a new Onion ("Hidden") Service, with the
+     * specified private key and algorithm.  See examples/tc_CreateHiddenService.php
+     * for a usage example.
+     *
+     * $options is an array and can contain the following keys:<br>
+     * KeyType : Type of key (NEW, BEST, RSA1024)<br>
+     * KeyBlob : NEW or an 1024 bit RSA private key<br>
+     * Target  : Internal port the hidden service should proxy traffic to<br>
+     * Flags   : Bitwise combination of ONION_FLAG_* values (or comma separate string of flags).
+     *   Flags currently supported are: Detach,DiscardPK, BasicAuth, NonAnonymous (see Tor docs).
+     *
+     * @param int $port  The virtual port the hidden service listens on.  Corresponds to
+     *   HiddenServicePort configuration value
+     * @param array $options Array of additional options for creating the service
+     * @throws \Exception Throws exception invalid Flags are provided
+     * @throws ProtocolError If hidden service creation failed for any reason
+     * @return array Returns an array with the keys ServiceID and PrivateKey.
+     *   ServiceID corresponds to the onion address (without .onion) and the
+     *   PrivateKey is the RSA key for the hidden service (null if ControlClient::ONION_FLAG_DISCARDPK is set)
+     */
+    public function addHiddenService($port, $options = array())
+    {
+        $cmd  = 'ADD_ONION';
+
+        /*
+         The syntax is:
+         "ADD_ONION" SP KeyType ":" KeyBlob
+         [SP "Flags=" Flag *("," Flag)]
+         1*(SP "Port=" VirtPort ["," Target])
+         *(SP "ClientAuth=" ClientName [":" ClientBlob]) CRLF
+         */
+
+        // TODO: add $options support for ClientAuth.
+
+        $keyType = (isset($options['KeyType'])) ? $options['KeyType'] : self::ONION_KEYTYPE_NEW;
+        $keyBlob = (isset($options['KeyBlob'])) ? ltrim($options['KeyBlob'], 'RSA1024:') : self::ONION_KEYBLOB_BEST;
+        $opts    = sprintf("%s:%s", $keyType, $keyBlob);
+        $flags   = '';
+        $target  = ''; // target port
+
+        if (isset($options['Flags'])) {
+            if (is_string($options['Flags'])) {
+                $flags = array(preg_replace('/^flags=/i', '', $flags));
+            }
+
+            if (is_array($options['Flags'])) {
+                $flags = 'Flags=' . implode(',', $flags);
+            } elseif (is_int($options['Flags'])) {
+                if ($options['Flags'] > 0) {
+                    $flags .= 'Flags=';
+                    if (($options['Flags'] & self::ONION_FLAG_DISCARDPK) > 0) $flags .= 'DiscardPK,';
+                    if (($options['Flags'] & self::ONION_FLAG_DETACH)    > 0) $flags .= 'Detach,';
+                    if (($options['Flags'] & self::ONION_FLAG_BASICAUTH) > 0) $flags .= 'BasicAuth,';
+                    if (($options['Flags'] & self::ONION_FLAG_NONANON)   > 0) $flags .= 'NonAnonymous,';
+                }
+            } else {
+                throw new \Exception('Flags must be a combination of ONION_FLAG_* values - see documentation');
+            }
+        }
+
+        if (isset($options['Target'])) {
+            $target = ',' . $options['Target'];
+        }
+
+        $addCmd = sprintf("%s %s %s Port=%s%s", $cmd, $opts, rtrim($flags, ','), $port, $target);
+
+        $this->sendData($addCmd);
+        $reply = $this->readReply();
+
+        if (!$reply->isPositiveReply()) {
+            throw new ProtocolError($reply[0], $reply->getStatusCode());
+        }
+
+        $lines = $reply->getReplyLines();
+
+        $serviceId  = $lines['ServiceID'];
+        $privateKey = (isset($lines['PrivateKey'])) ? $lines['PrivateKey'] : null;
+
+        return array(
+            'ServiceID'  => $serviceId,
+            'PrivateKey' => $privateKey,
+        );
+    }
+
+    /**
+     * Delete a hidden service running on this relay by it's onion address.
+     * This will usually be a service created by ControlClient::addHiddenService()
+     *
+     * @param string $serviceId The onion address (without .onion)
+     * @throws ProtocolError If service could not be deleted
+     * @return boolean Always returns true if no exception thrown
+     * @see \Dapphp\TorUtils\ControlClient::addHiddenService()
+     */
+    public function delHiddenService($serviceId)
+    {
+        $cmd = 'DEL_ONION';
+
+        $this->sendData(sprintf("%s %s", $cmd, $serviceId));
+        $reply = $this->readReply($cmd);
+
+        if (!$reply->isPositiveReply()) {
+            throw new ProtocolError($reply[0], $reply->getStatusCode());
+        }
+
+        return true;
     }
 
     /**

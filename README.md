@@ -99,6 +99,12 @@ various pieces of information about the controller and routers on the network.
 - tc_NewNym.php: Uses ControlClient to send the "NEWNYM" signal to the
 controller to change IP addresses (as shown above).
 
+- tc_CreateHiddenService.php: Tells the controller to create a new Onion
+("Hidden") Service.  This example shows how to programatically add a new hidden
+service, delete it, and re-create it with the private key that was generated.
+The private key can be securely stored to restart the service at a later time
+using the same onion address.
+
 - tc_SendData.php: Shows how to use ControlClient to send arbitrary commands
 and read the response from the controller.  Replies are returned as 
 ProtocolReply objects which give easy access to the status of the reply (e.g.
@@ -135,7 +141,6 @@ the controller using the provided functions to issue commands:
 - TAKEOWNERSHIP
 - DROPGUARDS
 - HSFETCH
-- ADD_ONION / DEL_ONION
 - HSPOST
 
 ## Copyright:
