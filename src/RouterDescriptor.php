@@ -189,9 +189,18 @@ class RouterDescriptor
                     $this->{$key}['reject'] = array();
 
                 if (isset($value['accept'])) {
-                    array_push($this->{$key}['accept'], $value['accept']);
-                } else if (isset($value['reject'])) {
-                    array_push($this->{$key}['reject'], $value['reject']);
+                    if (is_array($value['accept'])) {
+                        $this->{$key}['accept'] = array_merge($this->{$key}['accept'], $value['accept']);
+                    } else {
+                        array_push($this->{$key}['accept'], $value['accept']);
+                    }
+                }
+                if (isset($value['reject'])) {
+                    if (is_array($value['reject'])) {
+                        $this->{$key}['reject'] = array_merge($this->{$key}['reject'], $value['reject']);
+                    } else {
+                        array_push($this->{$key}['reject'], $value['reject']);
+                    }
                 }
             } else if ($key === 'or_address') {
                 array_push($this->{$key}, $value);

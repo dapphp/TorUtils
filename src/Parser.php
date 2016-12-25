@@ -340,9 +340,17 @@ class Parser
     private function _parseIPv6Policy($line)
     {
         list($policy, $portlist) = explode(' ', $line);
+        $ports = explode(',', $portlist);
+        $p     = array($policy => $ports);
+
+        if (isset($p['reject'])) {
+            $p['accept'] = array('*:*');
+        } else {
+            $p['reject'] = array('*:*');
+        }
 
         return array(
-            'exit_policy6' => array($policy => $portlist),
+            'exit_policy6' => $p,
         );
     }
 
