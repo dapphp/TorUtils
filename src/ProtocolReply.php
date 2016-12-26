@@ -129,7 +129,10 @@ class ProtocolReply implements \Iterator, \ArrayAccess
         if (preg_match('/^(\d{3})-' . preg_quote($this->_command, '/') . '=(.*)$/', $line, $match)) {
             // ###-COMMAND=data reply...
             $status        = $match[1];
-            $this->_lines[]= $match[2];
+
+            if (strlen(trim($match[2])) > 0) {
+                $this->_lines[]= $match[2];
+            }
         } else if (preg_match('/^(\d{3})\+' . preg_quote($this->_command, '/') . '=$/', $line, $match)) {
             // ###+COMMAND=
             $status = $match[1];
