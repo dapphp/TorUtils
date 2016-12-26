@@ -613,7 +613,7 @@ class Parser
         if (isset($reply['AUTH'])) {
             $values = $this->_parseDelimitedData($reply['AUTH']);
 
-            if (!isset($values['methods'])) {
+            if (!isset($values['methods']) || empty($values['methods'])) {
                 throw new ProtocolError('PROTOCOLINFO reply did not contain any authentication methods');
             }
 
