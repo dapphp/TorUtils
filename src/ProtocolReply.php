@@ -148,7 +148,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess
             } else {
                 $this->_lines[$match[2]] = $match[3];
             }
-        } else if (preg_match('/^(\d{3})\s*(.*)$/', $line, $match)) {
+        } else if (!$this->_statusCode && preg_match('/^(\d{3})\s*(.*)$/', $line, $match)) {
             // ### STATUS
             $status         = $match[1];
             $this->_lines[] = $match[2];
