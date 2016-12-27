@@ -6,7 +6,7 @@ use Dapphp\TorUtils\DirectoryClient;
 
 $client = new DirectoryClient();
 
-$descriptor = $client->getServerDescriptor('FE32CAC855ABC707ED7FEDAF720046FE914EB491');
+$descriptor = $client->getServerDescriptor('79E169B25E4C7CE99584F6ED06F379478F23E2B8');
 
 echo sprintf("%-19s %40s\n", $descriptor->nickname, $descriptor->fingerprint);
 echo sprintf("Running %s\n", $descriptor->platform);

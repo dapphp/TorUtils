@@ -1,7 +1,7 @@
 <?php
 
-require '../src/ControlClient.php';
-require '../src/TorCurlWrapper.php';
+require __DIR__ . '/../src/ControlClient.php';
+require __DIR__ . '/../src/TorCurlWrapper.php';
 
 // list of country codes to use
 $countries = array('US', 'FR', 'RU', 'GB', 'CA');

@@ -56,7 +56,7 @@ try {
     $config['IDontExist'] = 'some string value';
     $tc->setConf($config);
 } catch (\Exception $ex) {
-    echo $ex->getMessage();
+    echo $ex->getMessage() . "\n";
 }
 
 $tc->quit();
