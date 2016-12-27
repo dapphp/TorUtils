@@ -1092,7 +1092,7 @@ class ControlClient
         $reply = $this->readReply($cmd);
 
         if (!$reply->isPositiveReply()) {
-            fclose($this->_sock); // failed auth closes connection
+            @fclose($this->_sock); // failed auth closes connection
             throw new ProtocolError($reply[0], $reply->getStatusCode());
         }
 
