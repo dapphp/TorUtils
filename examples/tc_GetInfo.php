@@ -90,6 +90,24 @@ try {
 }
 
 try {
+    echo "CIRCUITS\n";
+    $circuits = $tc->getInfoCircuitStatus();
+
+    if (sizeof($circuits) > 0) {
+        foreach($circuits as $circuit) {
+            /** @var $circuit \Dapphp\TorUtils\CircuitStatus */
+
+            echo $circuit; // __toString
+        }
+    } else {
+        echo "No active circuits established\n";
+    }
+} catch (\Exception $ex) {
+    echo "Failed to get circuit status: " . $ex->getMessage() . "\n";
+}
+echo "\n";
+
+try {
     echo "Sending heartbeat signal to controller...";
 
     $tc->signal(ControlClient::SIGNAL_HEARTBEAT);

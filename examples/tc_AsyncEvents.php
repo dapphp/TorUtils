@@ -21,18 +21,45 @@ try {
 $tc->setAsyncEventHandler(function($event, $data) {
     // depending on the $event - data may be an array or ProtocolReply object
     // for NS and NEWCONSENSUS events, $data is an array of RouterDescriptor objects keyed by fingerprint
-    echo "Got event $event\n\n";
 
-    var_dump($data);
+    switch($event) {
+        case 'ADDRMAP':
+            echo sprintf(
+                "Resolved %s.  Error: %s.  Address: %s\n",
+                $data['ADDRESS'],
+                (isset($data['error']) ? 'YES' : 'No'),
+                $data['NEWADDRESS']
+            );
+            break;
+
+        case 'INFO':
+        case 'NOTICE':
+        case 'WARN':
+        case 'DEBUG':
+            foreach($data->getReplyLines() as $replyLine) {
+                echo sprintf("LOG: %s\n", $replyLine);
+            }
+            break;
+
+        case 'CIRC':
+            foreach($data as $circuit) {
+                echo $circuit;
+            }
+            break;
+
+        case 'SIGNAL':
+            $signal = $data[0];
+            echo $signal . "\n";
+            break;
+
+        default:
+            echo "Got event $event\n";
+            var_dump($data);
+    }
 });
 
 // tell controller to notify of these events; could also pass events as an array
-$tc->setEvents('NS NEWCONSENSUS SIGNAL CONF_CHANGED STATUS_GENERAL');
-
-// also subscribe to ADDRMAP event and then try to resolve some names
-// resolution is done in the background and nofications sent as ADDRMAP events
-$tc->setEvents('ADDRMAP')
-   ->resolve(array('phpcaptcha.org', 'thepiratebay.se', 'www.torproject.org'));
+$tc->setEvents('ADDRMAP NS NEWCONSENSUS SIGNAL CONF_CHANGED STATUS_GENERAL CIRC INFO NOTICE WARN');
 
 // enable debug output and logging to file so we can see events received
 // $tc->setDebug(1)->setDebugOutputFile(fopen('/tmp/tor.txt', 'w+'));
@@ -44,8 +71,21 @@ while (true) {
     // reply back from the controller, if there is one.  Otherwise readReply blocks
     // until data is available
 
-    $reply = $tc->readReply(); // blocks until reply received
+    $read = $tc->getInfoTrafficRead();
+    $writ = $tc->getInfoTrafficWritten();
+
+    echo "Traffic = $read / $writ                 \r";
     sleep(1);
+
+    // $reply = $tc->readReply(); // blocks until reply received
+    // unless you are ONLY reading events from the controller, don't call
+    // readReply() without sending a command first, otherwise it could block
+    // the script until an event is received.
+    // When an asyncEventHandler function is supplied, events will always be
+    // received and dispatched between other command data and responses but if
+    // events are infrequently received, don't call readReply without having sent
+    // a command first.
+
 }
 
 $tc->quit();

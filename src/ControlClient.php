@@ -77,6 +77,7 @@ class ControlClient
     const GETINFO_IP2COUNTRY       = 'ip-to-country/%s';
     const GETINFO_CONFIGNAMES      = 'config/names';
     const GETINFO_CONFIGTEXT       = 'config-text';
+    const GETINFO_CIRCUITSTATUS    = 'circuit-status';
 
     const GETINFO_STATUS_ORPORT    = 'net/listeners/or';
     const GETINFO_STATUS_DIRPORT   = 'net/listeners/dir';
@@ -535,6 +536,23 @@ class ControlClient
         } else {
             return $reply[0];
         }
+    }
+
+    public function getInfoCircuitStatus()
+    {
+        $cmd = self::GETINFO_CIRCUITSTATUS;
+        $reply = $this->getInfo($cmd);
+        $circuits = array();
+
+        if (!$reply->isPositiveReply()) {
+            throw new ProtocolError($reply[0], $reply->getStatusCode());
+        } else {
+            foreach($reply->getReplyLines() as $line) {
+                $circuits[] = $this->_parser->parseCircuitStatusLine($line);
+            }
+        }
+
+        return $circuits;
     }
 
     /**
@@ -1287,6 +1305,14 @@ class ControlClient
 
             case 'ADDRMAP':
                 $data = $parser->parseAddrMap($reply[0]);
+                break;
+
+            case 'CIRC':
+                $data = array();
+
+                foreach($reply->getReplyLines() as $line) {
+                    $data[] = $this->_parser->parseCircuitStatusLine($line);
+                }
                 break;
 
             // TODO: add more built-in parsing of events
