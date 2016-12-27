@@ -666,12 +666,16 @@ class ControlClient
         $values = array();
 
         foreach($reply as $keyword => $value) {
-            // $value will look like '=value' and $keyword will be a string
+            // $value contains the configuration value and $keyword will be the config option
             // OR $keyword will be numeric and value will look like 'keyword=value'
             if (is_int($keyword)) {
-                list($keyword,$value) = explode('=', $value);
-            } else {
-                $value = ltrim($value, '=');
+                $parts   = explode('=', $value, 2);
+                $keyword = $parts[0];
+                $value   = null;
+
+                if (sizeof($parts) == 2) {
+                    $value = $parts[1];
+                }
             }
 
             $values[$keyword] = $value;
