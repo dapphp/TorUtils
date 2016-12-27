@@ -1243,7 +1243,7 @@ class ControlClient
      *
      * @return string Data received
      */
-    private function _recvData()
+    protected function _recvData()
     {
         $recv = fgets($this->_sock);
 
