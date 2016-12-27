@@ -265,7 +265,8 @@ class ControlClient
     }
 
     /**
-     * Read a complete reply from the controller.
+     * Read a complete reply from the controller.  Multiple line replies that
+     * end with a '250 OK' will have the OK line omitted from the reply.
      *
      * This method will process asynchronous events, call the user callback for
      * async events (if any) and then continue to attempt to read a reply from
@@ -278,47 +279,57 @@ class ControlClient
      */
     public function readReply($cmd = null)
     {
-        $reply = new ProtocolReply($cmd);
-        $first = true;
+        $reply         = new ProtocolReply($cmd);
+        $evreply       = new ProtocolReply();
+        $first         = true;
+        $dataReply     = false;
+        $handlingEvent = false;
 
         while (true) {
             $data = $this->_recvData();
             if ($data === false) break;
 
             if ($this->_isEventReplyLine($data)) {
-                // TODO: invoke a callback or process the event and store it somewhere
-                if ($first) {
-                    $first   = false;
-                    $evreply = new ProtocolReply();
-                }
+                $handlingEvent = true;
                 $evreply->appendReplyLine($data);
-            } else if (trim($data) == '.') {
-                $end = $this->_recvData();
-                if (!$this->_isEndReplyLine($end)) {
-                    throw new ProtocolError('Last read "." line - expected EndReplyLine but got "' . trim($end) . '"');
+            } elseif ($dataReply && trim($data) == '.') {
+                $data = $this->_recvData();
+                if (!$this->_isEndReplyLine($data)) {
+                    throw new ProtocolError('Last read "." line - expected EndReplyLine but got "' . trim($data) . '"');
                 }
-                if (!isset($evreply)) {
-                    break;
-                } else {
-                    $data = $end;
-                    // run code at the end of the loop to process evreply
-                }
-            } else {
-                if (isset($evreply)) {
+
+                if ($handlingEvent) {
                     $evreply->appendReplyLine($data);
                 } else {
-                    $reply->appendReplyLine($data);
-                }
-            }
-
-            if ($this->_isEndReplyLine($data)) {
-                if (isset($evreply)) {
-                    $this->_asyncEventHandler($evreply);
-                    unset($evreply);
-                    $first = true;
-                } else {
+                    if ($first || trim($data) != '250 OK') {
+                        $reply->appendReplyLine($data);
+                    }
                     break;
                 }
+            } elseif (!$dataReply && $this->_isEndReplyLine($data)) {
+                if ($handlingEvent) {
+                    $evreply->appendReplyLine($data);
+                } else {
+                    if ($first || trim($data) != '250 OK') {
+                        $reply->appendReplyLine($data);
+                    }
+                    break;
+                }
+            } else {
+                if ($first && $this->_isDataReplyLine($data)) {
+                    $dataReply = true;
+                }
+
+                $reply->appendReplyLine($data);
+                $first = false;
+            }
+
+            if ($handlingEvent && $this->_isEndReplyLine($data)) {
+                $handlingEvent = false;
+                $this->_asyncEventHandler($evreply);
+                $first     = true;
+                $dataReply = false;
+                $evreply   = new ProtocolReply();
             }
         }
 
@@ -1305,6 +1316,11 @@ class ControlClient
     private function _isMidReplyLine($line)
     {
         return (bool)preg_match('/^\d{3}-/', $line);
+    }
+
+    private function _isDataReplyLine($line)
+    {
+        return (bool)preg_match('/^\d{3}\+/', $line);
     }
 
     /**
