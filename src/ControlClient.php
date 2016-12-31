@@ -58,6 +58,8 @@ use Dapphp\TorUtils\RouterDescriptor;
 class ControlClient
 {
     const GETINFO_VERSION          = 'version';
+    const GETINFO_VERSION_CURRENT  = 'status/version/current';
+    const GETINFO_VERSION_RECOMMENDED = 'status/version/recommended';
     const GETINFO_CFGFILE          = 'config-file';
     const GETINFO_DESCRIPTOR_ALL   = 'desc/all';
     const GETINFO_DESCRIPTOR_ID    = 'desc/id/%s';
@@ -567,6 +569,40 @@ class ControlClient
 
         if ($reply->isPositiveReply()) {
             return $reply[0];
+        } else {
+            throw new ProtocolError($reply[0], $reply->getStatusCode());
+        }
+    }
+
+    /**
+     * Returns the status of the current version.  One of: new, old,
+     * unrecommended, recommended, new in series, obsolete, unknown.
+     * @throws ProtocolError
+     * @return \Dapphp\TorUtils\ProtocolReply
+     */
+    public function getInfoStatusVersionCurrent()
+    {
+        $reply = $this->getInfo(self::GETINFO_VERSION_CURRENT);
+
+        if ($reply->isPositiveReply()) {
+            return $reply[0];
+        } else {
+            throw new ProtocolError($reply[0], $reply->getStatusCode());
+        }
+    }
+
+    /**
+     * Returns array of currently recommended versions.
+     *
+     * @throws ProtocolError
+     * @return \Dapphp\TorUtils\ProtocolReply
+     */
+    public function getInfoStatusVersionRecommended()
+    {
+        $reply = $this->getInfo(self::GETINFO_VERSION_RECOMMENDED);
+
+        if ($reply->isPositiveReply()) {
+            return explode(',', $reply[0]);
         } else {
             throw new ProtocolError($reply[0], $reply->getStatusCode());
         }
