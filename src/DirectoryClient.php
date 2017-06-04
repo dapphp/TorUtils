@@ -242,6 +242,40 @@ class DirectoryClient
     }
 
     /**
+     * Set the preferred directory server to use for lookups.  This server will always be used
+     * first.  If the preferred server times out or fails, the lookup will proceed using a random
+     * server from the list of directory authorities and fallbacks.
+     *
+     * @param string $server The directory server to connect to (e.g. 1.2.3.4:80)
+     * @return \Dapphp\TorUtils\DirectoryClient
+     */
+    public function setPreferredServer($server)
+    {
+        $this->preferredServer = $server;
+
+        return $this;
+    }
+
+    /**
+     * Set the connection timeout period (in seconds).  Attempts to connect to
+     * directories that take longer than this will time out and try the next host.
+     *
+     * @param number $timeout  The connection timeout in seconds
+     * @throws \InvalidArgumentException If timeout is non-numeric or less than 1
+     * @return \Dapphp\TorUtils\DirectoryClient
+     */
+    public function setConnectTimeout($timeout)
+    {
+        if (!preg_match('/^\d+$/', $timeout) || (int)$timeout < 1) {
+            throw new \InvalidArgumentException('Timeout must be a positive integer');
+        }
+
+        $this->_connectTimeout = (int)$timeout;
+
+        return $this;
+    }
+
+    /**
      * Fetch a list of all known router descriptors on the Tor network
      *
      * @return array Array of RouterDescriptor objects
@@ -292,10 +326,17 @@ class DirectoryClient
     private function _request($uri, $directoryServer = null)
     {
         reset($this->_serverList);
+        $used = false;
 
         do {
             // pick a server from the list, it is randomized in __construct
-            $server = $this->getNextServer();
+            if ($this->preferredServer && !$used) {
+                $server = $this->preferredServer;
+                $used   = true;
+            } else {
+                $server = $this->getNextServer();
+            }
+
             if ($server === false) {
                 throw new \Exception('No more directory servers available to query');
             }
