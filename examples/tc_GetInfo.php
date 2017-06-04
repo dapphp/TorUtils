@@ -4,6 +4,7 @@ require_once 'common.php';
 
 use Dapphp\TorUtils\ControlClient;
 use Dapphp\TorUtils\ProtocolError;
+use Dapphp\TorUtils\DirectoryClient;
 
 $tc = new ControlClient();
 
@@ -53,25 +54,34 @@ echo sprintf("*** Tor traffic (read / written): %s / %s ***\n", humanFilesize($r
 echo "\n";
 
 $descriptor = null;
+$relay      = 'MilesPrower'; // example relay for script
 
 try {
-    echo "Fetching relay info for MilesPrower...\n\n";
+    echo "Fetching relay info for $relay...\n\n";
 
     // Fetch info for this descriptor from controller.
-    // This fetches a number of things about the relay including the fingerprint,
-    // Ed25519 identity keys, RSA public keys, cross cert, signing key, contact info,
-    // whether it serves hidden service descriptors, accept/reject list, the router
-    // signature and other things
-    $descriptor = $tc->getInfoDescriptor('MilesPrower');
+    // Modern clients don't download full descriptors by default so use getInfoMicroDescriptor.
+    // To fetch full info, set the Tor option FetchUselessDescriptors to 1 and call $tc->getInfoDescriptor() instead.
+    // When using getInfoDescriptor(), there's no need to use the DirectoryClient below.
+    // Microdescriptors include the nickname, onion key, ntor onion key, family, accept/reject rules, and the ed25519 id key
+    $descriptor = $tc->getInfoMicroDescriptor($relay);
 
     // If descriptor found, query directory info to get flags.
     // Directory info is a reduced set of data including consensus data like
     // the consensus weight, relay flags (e.g. Exit, Guard, HSDir etc), the IP
     // and accept/reject list
-    $dirinfo    = $tc->getInfoDirectoryStatus($descriptor->fingerprint);
+    $dirinfo    = $tc->getInfoDirectoryStatus($relay);
 
     // combine the two RouterDescriptor objects from getInfoDescriptor and getInfoDirectoryStatus
     // into one object
+    $descriptor->combine($dirinfo);
+
+    // Unless FetchUselessDescriptors (see above) is enabled, uptime, bandwidth, contact info, and version can
+    // only be fetched from the directory.
+    // If FetchUselessDescriptors is enabled, this is not needed when calling getInfoDescriptor() instead of getInfoMicroDescriptor().
+    $dc = new DirectoryClient();
+    $dirinfo = $dc->getServerDescriptor($descriptor->fingerprint); // populates uptime, bandwidth, contact info, version
+
     $descriptor->combine($dirinfo);
 
     echo "== Descriptor Info ==\n" .
