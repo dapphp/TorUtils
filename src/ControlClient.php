@@ -1343,6 +1343,11 @@ class ControlClient
                 $data = $parser->parseAddrMap($reply[0]);
                 break;
 
+            case 'BW':
+                list($bw, $read, $written) = explode(' ', $reply[0]);
+                $data = array($read, $written);
+                break;
+
             case 'CIRC':
                 $data = array();
 
