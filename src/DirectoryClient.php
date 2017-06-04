@@ -4,7 +4,7 @@
  * Project:  TorUtils: PHP classes for interacting with Tor
  * File:     DirectoryClient.php
  *
- * Copyright (c) 2015, Drew Phillips
+ * Copyright (c) 2017, Drew Phillips
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -282,7 +282,9 @@ class DirectoryClient
      */
     public function getAllServerDescriptors()
     {
-        $reply = $this->_request('/tor/server/all.z');
+        $reply = $this->_request(
+            sprintf('/tor/server/all%s', (function_exists('gzuncompress') ? '.z' : ''))
+        );
 
         $descriptors = $this->_parser->parseDirectoryStatus($reply);
 
@@ -302,7 +304,7 @@ class DirectoryClient
             $fp = $fingerprint;
         }
 
-        $uri = sprintf('/tor/server/fp/%s.z', $fp);
+        $uri = sprintf('/tor/server/fp/%s%s', $fp, (function_exists('gzuncompress') ? '.z' : ''));
 
         $reply = $this->_request($uri);
 
@@ -361,6 +363,11 @@ class DirectoryClient
 
             list($headers, $body) = explode("\r\n\r\n", $response, 2);
             $headers = $this->_parseHttpResponseHeaders($headers);
+
+            if ($headers['status_code'] == '503') {
+                trigger_error("Directory $server returned 503 {$headers['message']}", E_USER_NOTICE);
+                continue;
+            }
 
             if ($headers['status_code'] !== '200') {
                 throw new \Exception(
