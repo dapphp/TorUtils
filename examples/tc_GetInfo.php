@@ -20,8 +20,12 @@ try {
 
 // ask controller for tor version
 $ver = $tc->getVersion();
+$rec = $tc->getInfoStatusVersionCurrent();
+$cur = $tc->getInfoStatusVersionRecommended();
 
-echo "*** Connected to controller***\n*** Controller is running Tor $ver ***\n";
+echo "*** Connected to controller***\n*** Controller is running Tor $ver ($rec) ***\n";
+echo "Current recommended versions are: " . implode(', ', $cur) . "\n";
+echo "\n";
 
 try {
     // get tor node's external ip, if known.
@@ -47,6 +51,8 @@ $writ = $tc->getInfoTrafficWritten();
 echo sprintf("*** Tor traffic (read / written): %s / %s ***\n", humanFilesize($read), humanFilesize($writ));
 
 echo "\n";
+
+$descriptor = null;
 
 try {
     echo "Fetching relay info for MilesPrower...\n\n";
@@ -120,15 +126,17 @@ try {
 
 echo "\n\n";
 
-try {
-    $descriptor->country = $tc->getInfoIpToCountry($descriptor->ip_address);
-} catch (ProtocolError $pe) {
-    echo "Failed to get IP country for relay at {$descriptor->ip_address}: " . $pe->getMessage() . "\n\n";
+if ($descriptor) {
+    try {
+        $descriptor->country = $tc->getInfoIpToCountry($descriptor->ip_address);
+    } catch (ProtocolError $pe) {
+        echo "Failed to get IP country for relay at {$descriptor->ip_address}: " . $pe->getMessage() . "\n\n";
+    }
+
+    echo "Dumping raw RouterDescriptor object:\n";
+
+    print_r($descriptor);
 }
-
-echo "Dumping raw RouterDescriptor object:\n";
-
-print_r($descriptor);
 
 echo "Closing connection to controller\n";
 $tc->quit();
