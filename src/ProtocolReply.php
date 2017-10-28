@@ -151,8 +151,9 @@ class ProtocolReply implements \Iterator, \ArrayAccess
             } else {
                 $this->_lines[$match[2]] = $match[3];
             }
-        } else if (preg_match('/^(\d{3})\s*(.*)$/', $line, $match)) {
+        } else if (preg_match('/^([2456][015]\d)\s*(.*)$/', $line, $match)) {
             // ### STATUS
+            // https://gitweb.torproject.org/torspec.git/tree/control-spec.txt - Section 4. Replies
             if (!$this->_statusCode) {
                 $status         = $match[1];
             }
