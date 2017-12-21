@@ -227,7 +227,8 @@ class DirectoryClient
     private $preferredServer;
 
     private $_connectTimeout = 5;
-    private $_userAgent = 'dapphp/TorUtils 1.1.8';
+    private $readTimeout = 30;
+    private $_userAgent = 'dapphp/TorUtils 1.1.10';
 
     private $_parser;
     private $_serverList;
@@ -275,6 +276,31 @@ class DirectoryClient
         $this->_connectTimeout = (int)$timeout;
 
         return $this;
+    }
+
+    /**
+     * Set the read timeout in seconds (default = 30).  Directory requests
+     * that fail to receive any data after this many seconds will time out
+     * and try the next host.
+     *
+     * @param number $timeout  The read timeout in seconds
+     * @throws \InvalidArgumentException If timeout is non-numeric or less than 1
+     * @return \Dapphp\TorUtils\DirectoryClient
+     */
+    public function setReadTimeout($timeout)
+    {
+        if (!preg_match('/^\d+$/', $timeout) || (int)$timeout < 1) {
+            throw new \InvalidArgumentException('Timeout must be a positive integer');
+        }
+
+        $this->readTimeout = (int)$timeout;
+
+        return $this;
+    }
+
+    public function getReadTimeout()
+    {
+        return $this->readTimeout;
     }
 
     /**
@@ -353,15 +379,54 @@ class DirectoryClient
 
             $request = $this->_getHttpRequest('GET', $host, $uri);
 
-            fwrite($fp, $request);
+            $written = fwrite($fp, $request);
+
+            if ($written === false) {
+                trigger_error("Failed to write directory request to $server", E_USER_NOTICE);
+                continue;
+            } elseif (strlen($request) != $written) {
+                trigger_error("Request to $server failed; could not write all data", E_USER_NOTICE);
+                continue;
+            }
 
             $response = '';
 
+            stream_set_blocking($fp, 0);
+
+            $read   = array($fp);
+            $write  = null;
+            $except = null;
+            $err    = false;
+
             while (!feof($fp)) {
-                $response .= fgets($fp);
+                $changed = stream_select($read, $write, $except, $this->readTimeout);
+
+                if ($changed === false) {
+                    trigger_error("stream_select() returned error while reading data from $server", E_USER_NOTICE);
+                    $err = true;
+                    break;
+                } elseif ($changed < 1) {
+                    trigger_error("Failed to read all data from $server within timeout", E_USER_NOTICE);
+                    $err = true;
+                    break;
+                } else {
+                    $data = fgets($fp);
+
+                    if ($data === false) {
+                        trigger_error("Directory read failed while talking to $server", E_USER_NOTICE);
+                        $err = true;
+                        break;
+                    } else {
+                        $response .= $data;
+                    }
+                }
             }
 
             fclose($fp);
+
+            if ($err) {
+                continue;
+            }
 
             list($headers, $body) = explode("\r\n\r\n", $response, 2);
             $headers = $this->_parseHttpResponseHeaders($headers);
@@ -369,11 +434,20 @@ class DirectoryClient
             if ($headers['status_code'] == '503') {
                 trigger_error("Directory $server returned 503 {$headers['message']}", E_USER_NOTICE);
                 continue;
+            } elseif ($headers['status_code'] == '504') {
+                // observed this from various fallback dirs. This code is not defined in dir-spec.txt
+                trigger_error("Directory $server returned 504 {$headers['message']}", E_USER_NOTICE);
+                continue;
             }
 
             if ($headers['status_code'] !== '200') {
                 throw new \Exception(
-                    sprintf('Directory returned a negative response code to request.  %s %s', $headers['status_code'], $headers['message'])
+                    sprintf(
+                        'Directory %s returned a negative response code to request.  %s %s',
+                        $server,
+                        $headers['status_code'],
+                        $headers['message']
+                    )
                 );
             }
 
