@@ -51,11 +51,9 @@ use Dapphp\TorUtils\ProtocolReply;
 class DirectoryClient
 {
     /**
-     * https://gitweb.torproject.org/tor.git/tree/src/or/config.c#n1052
-     *
-     * @var $DirectoryAuthorities List of directory authorities
+     * @var $directoryAuthorities List of directory authorities https://gitweb.torproject.org/tor.git/tree/src/or/config.c#n1052
      */
-    private $DirectoryAuthorities = array(
+    protected $directoryAuthorities = array(
         '7BE683E65D48141321C5ED92F075C55364AC7123' => '193.23.244.244:80', // dannenberg
         '7EA6EAD6FD83083C538F44038BBFA077587DD755' => '194.109.206.212:80', // dizum
         'CF6D0AAFB385BE71B8E111FC5CFF4B47923733BC' => '154.35.175.225:80', // Faravahar
@@ -68,9 +66,12 @@ class DirectoryClient
         '24E2F139121D4394C54B5BCC368B3B411857C413' => '204.13.164.118:80', // bastet
     );
 
-    // List updated 2017/06/04 (commit blob cc37e5f9aff6bedfa7752c2e9966de58ad68b2fb)
-    // NIA = Not In Atlas (atlas.torproject.org) - The fingerprint was not found in Atlas on the date given
-    private $directoryFallbacks = array(
+    /**
+     * @var array Array of directory fallbacks from https://gitweb.torproject.org/tor.git/tree/src/or/fallback_dirs.inc
+     */
+    protected $directoryFallbacks = array(
+        // List updated 2017/06/04 (commit blob cc37e5f9aff6bedfa7752c2e9966de58ad68b2fb)
+        // NIA = Not In Atlas (atlas.torproject.org) - The fingerprint was not found in Atlas on the date given
         '0111BA9B604669E636FFD5B503F382A4B7AD6E80' => '176.10.104.240:80',
         '01A9258A46E97FF8B2CAC7910577862C14F2C524' => '193.171.202.146:9030',
         '025B66CEBC070FCB0519D206CF0CF4965C20C96E' => '185.100.85.61:80',
@@ -224,24 +225,24 @@ class DirectoryClient
         'FFA72BD683BC2FCF988356E6BEC1E490F313FB07' => '193.11.164.243:9030',
     );
 
-    private $preferredServer;
+    protected $preferredServer;
 
-    private $_connectTimeout = 5;
-    private $readTimeout = 30;
-    private $_userAgent = 'dapphp/TorUtils 1.1.10';
+    protected $connectTimeout = 5;
+    protected $readTimeout = 30;
+    protected $userAgent = 'dapphp/TorUtils 1.1.10';
 
-    private $_parser;
-    private $_serverList;
+    protected $parser;
+    protected $serverList;
 
     /**
      * DirectoryClient constructor
      */
     public function __construct()
     {
-        $this->_serverList = array_merge($this->DirectoryAuthorities, $this->directoryFallbacks);
-        shuffle($this->_serverList);
+        $this->serverList = array_merge($this->directoryAuthorities, $this->directoryFallbacks);
+        shuffle($this->serverList);
 
-        $this->_parser = new Parser();
+        $this->parser = new Parser();
     }
 
     /**
@@ -273,7 +274,7 @@ class DirectoryClient
             throw new \InvalidArgumentException('Timeout must be a positive integer');
         }
 
-        $this->_connectTimeout = (int)$timeout;
+        $this->connectTimeout = (int)$timeout;
 
         return $this;
     }
@@ -314,7 +315,7 @@ class DirectoryClient
             sprintf('/tor/server/all%s', (function_exists('gzuncompress') ? '.z' : ''))
         );
 
-        $descriptors = $this->_parser->parseDirectoryStatus($reply);
+        $descriptors = $this->parser->parseDirectoryStatus($reply);
 
         return $descriptors;
     }
@@ -336,7 +337,7 @@ class DirectoryClient
 
         $reply = $this->_request($uri);
 
-        $descriptors = $this->_parser->parseDirectoryStatus($reply);
+        $descriptors = $this->parser->parseDirectoryStatus($reply);
 
         if (sizeof($descriptors) == 1) {
             return array_shift($descriptors);
@@ -355,7 +356,7 @@ class DirectoryClient
      */
     private function _request($uri, $directoryServer = null)
     {
-        reset($this->_serverList);
+        reset($this->serverList);
         $used = false;
 
         do {
@@ -374,7 +375,7 @@ class DirectoryClient
             list($host, $port) = @explode(':', $server);
             if (!$port) $port = 80;
 
-            $fp = fsockopen($host, $port, $errno, $errstr, $this->_connectTimeout);
+            $fp = fsockopen($host, $port, $errno, $errstr, $this->connectTimeout);
             if (!$fp) continue;
 
             $request = $this->_getHttpRequest('GET', $host, $uri);
@@ -496,7 +497,7 @@ class DirectoryClient
             "Connection: close\r\n" .
             "User-Agent: %s\r\n" .
             "\r\n",
-            $method, $uri, $host, $this->_userAgent
+            $method, $uri, $host, $this->userAgent
         );
 
         return $request;
@@ -544,8 +545,8 @@ class DirectoryClient
      */
     private function getNextServer()
     {
-        $server = current($this->_serverList);
-        next($this->_serverList);
+        $server = current($this->serverList);
+        next($this->serverList);
         return $server;
     }
 }
