@@ -4,7 +4,7 @@
  * Project:  TorUtils: PHP classes for interacting with Tor
  * File:     ControlClient.php
  *
- * Copyright (c) 2016, Drew Phillips
+ * Copyright (c) 2017, Drew Phillips
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -31,7 +31,7 @@
  * Any modifications to the library should be indicated clearly in the source code
  * to inform users that the changes are not a part of the original software.
  *
- * @copyright 2016 Drew Phillips
+ * @copyright 2017 Drew Phillips
  * @author Drew Phillips <drew@drew-phillips.com>
  *
  */
@@ -104,11 +104,11 @@ class ControlClient
     /** @var addHiddenService flag to create a new 1024 bit RSA private key */
     const ONION_KEYTYPE_RSA1024 = 'RSA1024';
 
+    /** @var addHiddenService flag to create a next gen onion key using curve25519 */
+    const ONION_KEYTYPE_CURVE25519 = 'ED25519-V3';
+
     /** @var addHiddenService flag to use the best algorithm for NEW private key generation */
     const ONION_KEYBLOB_BEST    = 'BEST';
-
-    /** @var addHiddenService flag for creating a new RSA 1024 bit key */
-    const ONION_KEYBLOB_RSA1024 = 'RSA1024';
 
     /** @var Don't return the new private key when creating a hidden service.
      * Note that if "DiscardPK" flag is specified, there is no way to recreate
@@ -826,7 +826,7 @@ class ControlClient
         // TODO: add $options support for ClientAuth.
 
         $keyType = (isset($options['KeyType'])) ? $options['KeyType'] : self::ONION_KEYTYPE_NEW;
-        $keyBlob = (isset($options['KeyBlob'])) ? ltrim($options['KeyBlob'], 'RSA1024:') : self::ONION_KEYBLOB_BEST;
+        $keyBlob = (isset($options['KeyBlob'])) ? $options['KeyBlob'] : self::ONION_KEYBLOB_BEST;
         $opts    = sprintf("%s:%s", $keyType, $keyBlob);
         $flags   = '';
         $target  = ''; // target port
