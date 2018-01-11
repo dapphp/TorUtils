@@ -4,7 +4,7 @@
  * Project:  TorUtils: PHP classes for interacting with Tor
  * File:     ProtocolReply.php
  *
- * Copyright (c) 2015, Drew Phillips
+ * Copyright (c) 2017, Drew Phillips
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -31,7 +31,7 @@
  * Any modifications to the library should be indicated clearly in the source code
  * to inform users that the changes are not a part of the original software.
  *
- * @copyright 2015 Drew Phillips
+ * @copyright 2017 Drew Phillips
  * @author Drew Phillips <drew@drew-phillips.com>
  *
  */
@@ -151,9 +151,10 @@ class ProtocolReply implements \Iterator, \ArrayAccess
             } else {
                 $this->_lines[$match[2]] = $match[3];
             }
-        } else if (preg_match('/^([2456][015]\d)\s*(.*)$/', $line, $match)) {
+        } else if (preg_match('/^(25|[456][015]\d)\s*(.*)$/', $line, $match)) {
             // ### STATUS
             // https://gitweb.torproject.org/torspec.git/tree/control-spec.txt - Section 4. Replies
+            // Positive completion replies begin with 25x
             if (!$this->_statusCode) {
                 $status         = $match[1];
             }
