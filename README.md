@@ -168,3 +168,10 @@ the controller using the provided functions to issue commands:
     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
     POSSIBILITY OF SUCH DAMAGE.
+
+## Donate:
+
+BTC: 1Aw3BqXR9EPFcNn435fbFftByyCsTAcDFw  
+ETH: 0x51A1057D485da13fB9C37C8ed3C5B3BA59e950D1  
+Flattr: [OpenInternet](https://flattr.com/submit/auto?fid=4v1d1e&url=https%3A%2F%2Fopeninternet.io)  
+
