@@ -5,7 +5,7 @@ directory authorities and servers, and DNS exit lists.
 
 ## Version:
 
-**1.1.9**
+**1.1.10**
 
 ## Author:
 
@@ -145,7 +145,7 @@ the controller using the provided functions to issue commands:
 
 ## Copyright:
 
-    Copyright (c) 2016 Drew Phillips
+    Copyright (c) 2017 Drew Phillips
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
