@@ -5,7 +5,7 @@ directory authorities and servers, and DNS exit lists.
 
 ## Version:
 
-**1.1.10**
+**1.1.11**
 
 ## Author:
 
