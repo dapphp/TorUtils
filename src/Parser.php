@@ -155,7 +155,7 @@ class Parser
         $descriptor  = new RouterDescriptor();
 
         foreach($reply as $line) {
-            if ($line == 'OK')     continue; // for DirectoryClient HTTP responses
+            if (preg_match('/^200 OK/i', $line)) continue; // for DirectoryClient HTTP responses
             if (trim($line) == '') continue;
 
             $opt = false;
