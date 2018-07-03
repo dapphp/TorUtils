@@ -183,7 +183,7 @@ class TorDNSEL
         $fp = fsockopen('udp://' . $dns_server, $port, $errno, $errstr);
 
         if (!$fp) {
-            throw new \Exception("Faild to send DNS request. Error {$errno}: {$errstr}");
+            throw new \Exception("Failed to send DNS request. Error {$errno}: {$errstr}");
         }
 
         fwrite($fp, $query);
