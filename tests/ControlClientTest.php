@@ -83,6 +83,43 @@ class ControlClientTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(str_repeat('x', 80), $reply[500]);
     }
 
+    public function testParseReplyWithAsyncEvent()
+    {
+        $cmd = 'GETCONF SOCKSPORT ORPORT';
+        $response = array(
+            "650 CIRC 212 EXTENDED \$844AE9CAD04325E955E2BE1521563B79FE7094B7~Smeerboel BUILD_FLAGS=NEED_CAPACITY PURPOSE=GENERAL TIME_CREATED=2016-12-22T06:11:06.611813\r\n",
+            "250-SOCKSPORT=9050\r\n",
+            "250 ORPORT=0\r\n",
+        );
+
+        $GLOBALS['async_event'] = '';
+        $GLOBALS['async_data']  = '';
+
+        $tc    = $this->getMock($response);
+
+        $tc->setAsyncEventHandler(function($event, $data) {
+            $GLOBALS['async_event'] = $event;
+            $GLOBALS['async_data']  = $data;
+        });
+
+        $reply = $tc->readReply($cmd);
+
+        // the async event data comes first, but it should be read and handled
+        // by the async event handler, and then the response to the issued
+        // GETCONF command should be handled properly and returned in $reply
+
+        $this->assertEquals(250,    $reply->getStatusCode());
+        $this->assertEquals('9050', $reply['SOCKSPORT']);
+        $this->assertEquals(null,   $reply['ORPORT']); // Port 0 is turned to null
+
+        $this->assertEquals('CIRC', $GLOBALS['async_event']);
+        $this->assertInstanceOf(Dapphp\TorUtils\CircuitStatus::class, $GLOBALS['async_data'][0]);
+        $this->assertEquals('EXTENDED', $GLOBALS['async_data'][0]->status);
+        $this->assertEquals('212', $GLOBALS['async_data'][0]->id);
+        $this->assertEquals('GENERAL', $GLOBALS['async_data'][0]->purpose);
+
+    }
+
     public function testAuthentication()
     {
         $response = array(

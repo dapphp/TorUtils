@@ -80,6 +80,37 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $info  = $p->parseProtocolInfo($reply);
     }
 
+    public function testParseCircuitStatusReply()
+    {
+        $cmd  = 'GETINFO circuit-status';
+        $data = "250+circuit-status=\n" .
+                 "621 BUILT \$D42876442AE9D9E6B88A59901E893921DE85D514~Unnamed,\$58ED9C9C35E433EE58764D62892B4FFD518A3CD0~SamAAdams2,\$335746A6DEB684FABDF3FC5835C3898F05C5A5A8~KyleBroflovski BUILD_FLAGS=NEED_CAPACITY PURPOSE=GENERAL TIME_CREATED=2018-05-13T18:17:45.079054\n" .
+                 "622 BUILT \$D42876442AE9D9E6B88A59901E893921DE85D514~Unnamed,\$BF0FB582E37F738CD33C3651125F2772705BB8E8~quadhead,\$5DC945CE8FB2A37E6E2795ECD2709BB21F8714B0~Unnamed BUILD_FLAGS=NEED_CAPACITY PURPOSE=GENERAL TIME_CREATED=2018-05-13T18:17:45.924044\n" .
+                 "623 BUILT \$D42876442AE9D9E6B88A59901E893921DE85D514~Unnamed,\$52178B12915D00B6DFFCBDAC0E298EFB0E41C8C7~torpidsITseflow,\$F45C2B9B294259C647FA504D2231811B7F28C81F~IPfailD BUILD_FLAGS=NEED_CAPACITY PURPOSE=GENERAL TIME_CREATED=2018-05-13T18:17:46.924863\n" .
+                 ".\n" .
+                 "250 OK\n";
+
+        $p     = new Parser();
+        $reply = new ProtocolReply($cmd);
+
+        foreach (explode("\n", $data) as $line) {
+            $reply->appendReplyLine($line);
+        }
+
+        $this->assertEquals(250, $reply->getStatusCode());
+
+        $first = $reply->getReplyLines()[1];
+
+        /** \Dapphp\TorUtils\CircuitStatus $circ */
+        $circ = $p->parseCircuitStatusLine($first);
+
+        $this->assertInstanceOf(\Dapphp\TorUtils\CircuitStatus::class, $circ);
+
+        $this->assertEquals(621, $circ->id);
+        $this->assertEquals('GENERAL', $circ->purpose);
+        $this->assertEquals('2018-05-13T18:17:45.079054', $circ->created);
+    }
+
     // DATA PROVIDERS
     public function getCircuitStatusLines()
     {
