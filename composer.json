@@ -10,7 +10,7 @@
     "email" : "drew@drew-phillips.com",
     "homepage" : "http://drew-phillips.com"
   } ],
-  "keywords" : [ "tor", "anonynimity", "onion", "client", "curl" ],
+  "keywords" : [ "tor", "tor client", "anonynimity", "onion", "curl" ],
   "autoload" : {
     "psr-4" : {
       "Dapphp\\TorUtils\\" : "src/"
