@@ -80,6 +80,8 @@ class ControlClient
     const GETINFO_CONFIGNAMES      = 'config/names';
     const GETINFO_CONFIGTEXT       = 'config-text';
     const GETINFO_CIRCUITSTATUS    = 'circuit-status';
+    const GETINFO_CURTIME_LOCAL    = 'current-time/local';
+    const GETINFO_CURTIME_UTC      = 'current-time/utc';
 
     const GETINFO_STATUS_ORPORT    = 'net/listeners/or';
     const GETINFO_STATUS_DIRPORT   = 'net/listeners/dir';
@@ -555,6 +557,44 @@ class ControlClient
         }
 
         return $circuits;
+    }
+
+    /**
+     * Get the current UTC time as returned by the system.
+     * Introduced in 0.3.4.1-alpha.
+     *
+     * @throws ProtocolError
+     * @return The current system time in UTC
+     */
+    public function getInfoCurrentTime()
+    {
+        $cmd = self::GETINFO_CURTIME_UTC;
+        $reply = $this->getInfo($cmd);
+
+        if (!$reply->isPositiveReply()) {
+            throw new ProtocolError($reply[0], $reply->getStatusCode());
+        } else {
+            return $reply[0];
+        }
+    }
+
+    /**
+     * Get the current local time as returned by the system.
+     * Introduced in 0.3.4.1-alpha.
+     *
+     * @throws ProtocolError
+     * @return The current system time in the local time zone
+     */
+    public function getInfoCurrentLocalTime()
+    {
+        $cmd = self::GETINFO_CURTIME_LOCAL;
+        $reply = $this->getInfo($cmd);
+
+        if (!$reply->isPositiveReply()) {
+            throw new ProtocolError($reply[0], $reply->getStatusCode());
+        } else {
+            return $reply[0];
+        }
     }
 
     /**
