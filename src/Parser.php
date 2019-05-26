@@ -153,6 +153,11 @@ class Parser
     {
         $descriptors = array();
         $descriptor  = new RouterDescriptor();
+        $mds         = false;
+
+        if (strpos($reply[0], 'onion-key') === 0 || strpos($reply[1], 'onion-key') === 0) {
+            $mds = true; // parsing full microdescriptor list
+        }
 
         foreach($reply as $line) {
             if (preg_match('/^200 OK/i', $line)) continue; // for DirectoryClient HTTP responses
@@ -168,9 +173,12 @@ class Parser
             $values = explode(' ', $line, 2); if (sizeof($values) < 2) $values[1] = null;
             list ($keyword, $value) = $values;
 
-            if ($keyword == 'router') {
-                if ($descriptor && $descriptor->fingerprint)
+            if ($keyword == 'router' || ($keyword == 'onion-key' && $mds)) {
+                if ($descriptor && $descriptor->fingerprint) {
                     $descriptors[$descriptor->fingerprint] = $descriptor;
+                } elseif ($descriptor && $mds) {
+                    $descriptors[] = $descriptor;
+                }
 
                 $descriptor = new RouterDescriptor();
             }
@@ -188,7 +196,11 @@ class Parser
             }
         }
 
-        $descriptors[$descriptor->fingerprint] = $descriptor;
+        if ($descriptor->fingerprint) {
+            $descriptors[$descriptor->fingerprint] = $descriptor;
+        } else {
+            $descriptors[] = $descriptor;
+        }
 
         return $descriptors;
     }

@@ -64,6 +64,7 @@ class ControlClient
     const GETINFO_DESCRIPTOR_ALL   = 'desc/all';
     const GETINFO_DESCRIPTOR_ID    = 'desc/id/%s';
     const GETINFO_DESCRIPTOR_NAME  = 'desc/name/%s';
+    const GETINFO_UDECRIPTOR_ALL   = 'md/all'; // All known microdescriptors - first implemented in 0.3.5.1-alpha
     const GETINFO_UDESCRIPTOR_ID   = 'md/id/%s';
     const GETINFO_UDESCRIPTOR_NAME = 'md/name/%s';
     const GETINFO_DORMANT          = 'dormant';
@@ -419,9 +420,20 @@ class ControlClient
      * microdescriptors, so use this, instead of getInfoDescriptor to get
      * info about an OR.
      *
-     * @param null|string $descriptorNameOrID The descriptor nickname or fingerprint, or null to fetch all descriptors
+     * $descriptorNameOrId can be null or '*' to fetch a complete list of
+     * microdescrptors from the controller. Note: Full microdescriptor lists
+     * from the controller do not include relay fingerprints, nicknames, or
+     * signing keys, so the usefulness may be limited. Because these elements
+     * are not available, the array of descriptors returned is indexed
+     * numerically in the order in which the descriptors were returned by the
+     * controller.
+     *
+     * @param null|string $descriptorNameOrID The descriptor nickname or fingerprint, or null|* to fetch all descriptors
      * @throws \Exception If $descriptorNameOrID is not a valid finterprint or nickname
      * @throws ProtocolError
+     *
+     * @see \Dapphp\TorUtils\DirectoryClient::getAllServerDescriptors() See also getAllServerDescriptors()
+     *
      * @return array|RouterDescriptor
      */
     public function getInfoMicroDescriptor($descriptorNameOrID = null)
@@ -429,8 +441,10 @@ class ControlClient
         if ($this->_isFingerprint($descriptorNameOrID)) {
             $cmd = self::GETINFO_UDESCRIPTOR_ID;
             if ($descriptorNameOrID[0] != '$') $descriptorNameOrID = '$' . $descriptorNameOrID;
-        } else if ($this->_isNickname($descriptorNameOrID)) {
+        } elseif ($this->_isNickname($descriptorNameOrID)) {
             $cmd = self::GETINFO_UDESCRIPTOR_NAME;
+        } elseif ($descriptorNameOrID == '*' || is_null($descriptorNameOrID)) {
+            $cmd = self::GETINFO_UDECRIPTOR_ALL;
         } else {
             throw new \Exception(sprintf('"%s" is not a valid router fingerprint or nickname', $descriptorNameOrID));
         }
@@ -443,7 +457,7 @@ class ControlClient
 
         $descriptors = $this->_parser->parseDirectoryStatus($reply);
 
-        if (!is_null($descriptorNameOrID)) {
+        if (!is_null($descriptorNameOrID) && $descriptorNameOrID != '*') {
             return array_shift($descriptors);
         } else {
             return $descriptors;
