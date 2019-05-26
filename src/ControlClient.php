@@ -83,6 +83,7 @@ class ControlClient
     const GETINFO_CIRCUITSTATUS    = 'circuit-status';
     const GETINFO_CURTIME_LOCAL    = 'current-time/local';
     const GETINFO_CURTIME_UTC      = 'current-time/utc';
+    const GETINFO_UPTIME           = 'uptime';
 
     const GETINFO_STATUS_ORPORT    = 'net/listeners/or';
     const GETINFO_STATUS_DIRPORT   = 'net/listeners/dir';
@@ -571,6 +572,26 @@ class ControlClient
         }
 
         return $circuits;
+    }
+
+    /**
+     * Get the uptime (in seconds) of the Tor daemon.
+     *
+     * Requires Tor 0.3.5.1-alpha or later.
+     *
+     * @throws ProtocolError
+     * @return Uptime of the Tor daemon (in seconds)
+     */
+    public function getInfoUptime()
+    {
+        $cmd = self::GETINFO_UPTIME;
+        $reply = $this->getInfo($cmd);
+
+        if (!$reply->isPositiveReply()) {
+            throw new ProtocolError($reply[0], $reply->getStatusCode());
+        } else {
+            return $reply[0];
+        }
     }
 
     /**
