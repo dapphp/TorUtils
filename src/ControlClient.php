@@ -92,6 +92,10 @@ class ControlClient
     const GETINFO_STATUS_NATDPORT  = 'net/listeners/natd';
     const GETINFO_STATUS_DNSPORT   = 'net/listeners/dns';
     const GETINFO_STATUS_CONTROLPORT = 'net/listeners/control';
+    // The extor and httptunnel lists were added in 0.3.2.12, 0.3.3.10, and
+    // 0.3.4.6-rc.
+    const GETINFO_STATUS_EXTORPORT = 'net/listeners/extor';
+    const GETINFO_STATUS_HTTPTUNPORT = 'net/listeners/httptunnel';
 
     const SIGNAL_RELOAD        = 'RELOAD';
     const SIGNAL_SHUTDOWN      = 'SHUTDOWN';
@@ -688,7 +692,17 @@ class ControlClient
      * is a key in the array.  Values are null if Tor is not listening for that
      * service, or the port number used by the service.
      *
-     * @return array Array with keys "or, dir, socks, trans, natd, dns"
+     * Possible keys are:
+     * - or: the OR port (if Tor is running in server mode)
+     * - dir: the directory port (if Tor is running as a directory)
+     * - socks: The SOCKS port for client connections
+     * - trans: The transparent proxy port
+     * - natd: NATD protocol port
+     * - dns: Port to use for anonymously resolving DNS queries over Tor
+     * - extorport: The for Extended ORPort connections from your pluggable transports
+     * - httptunport: The port for proxy connections using the "HTTP CONNECT" protocol instead of SOCKS
+     *
+     * @return array Array with keys "or, dir, socks, trans, natd, dns, extorport, httptunport"
      */
     public function getListeners()
     {
@@ -699,6 +713,8 @@ class ControlClient
             'trans' => self::GETINFO_STATUS_TRANSPORT,
             'natd'  => self::GETINFO_STATUS_NATDPORT,
             'dns'   => self::GETINFO_STATUS_DNSPORT,
+            'extorport' => self::GETINFO_STATUS_EXTORPORT,
+            'httptunport' => self::GETINFO_STATUS_HTTPTUNPORT,
         ];
 
         foreach ($ports as $which => $port) {
