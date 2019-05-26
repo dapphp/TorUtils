@@ -45,6 +45,14 @@ try {
 
 echo sprintf("*** Controller IP Address: %s  / Fingerprint: %s ***\n", $address, $fingerprint);
 
+try {
+    $uptime = $tc->getInfo(ControlClient::GETINFO_UPTIME);
+} catch (ProtocolError $pex) {
+    $uptime = 'Uptime not supported by this version of Tor';
+}
+
+echo sprintf("  Uptime: %s\n", $uptime);
+
 // ask controller how many bytes Tor has transferred
 $read = $tc->getInfoTrafficRead();
 $writ = $tc->getInfoTrafficWritten();
@@ -54,7 +62,7 @@ echo sprintf("*** Tor traffic (read / written): %s / %s ***\n", humanFilesize($r
 echo "\n";
 
 $descriptor = null;
-$relay      = 'MilesPrower'; // example relay for script
+$relay      = 'InMemoryOfJohnKerr'; // example relay for script
 
 try {
     echo "Fetching relay info for $relay...\n\n";
