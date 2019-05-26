@@ -2,24 +2,25 @@
 
 /**
  * PHP script to extract the list of directory authorities and fallback
- * directories from Tor's src/or/config.c and src/or/fallback_dirs.c and print
- * the list as a PHP array for inclusion in DirectoryClient.php
+ * directories from Tor's src/app/config/auth_dirs.inc and
+ * src/app/config/fallback_dirs.c and print the list as a PHP array for
+ * inclusion in DirectoryClient.php
  *
- * To use, place a copy of the most recent config.c and fallback_dirs.inc in
+ * To use, place a copy of the most recent auth_dirs.inc and fallback_dirs.inc in
  * the same directory as this file.
  *
  */
 
-$file = __DIR__ . '/config.c';
+$file = __DIR__ . '/auth_dirs.inc';
 
 if (is_readable($file)) {
     $config = file_get_contents($file);
 
-    if (!preg_match('/\*default_authorities\[\]\s+=\s+{(.*?)}/is', $config, $match)) {
-        die('Could not find directory authorities in config.c');
+    if (!preg_match('/^"([\w\d]+) orport=/ism', $config)) {
+        die('Could not find directory authorities in auth_dirs.inc');
     }
 
-    $dirs = trim($match[1]);
+    $dirs = $config;
     $dirs = explode(',', $dirs);
 
     printf("Exporting %d directory authorities\n", sizeof($dirs));

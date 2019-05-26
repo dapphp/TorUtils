@@ -1,2 +1,2 @@
-config.c
+auth_dirs.inc
 fallback_dirs.inc
