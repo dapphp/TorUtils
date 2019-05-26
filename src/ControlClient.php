@@ -105,6 +105,9 @@ class ControlClient
     const SIGNAL_NEWNYM        = 'NEWNYM';
     const SIGNAL_CLEARDNSCACHE = 'CLEARDNSCACHE';
     const SIGNAL_HEARTBEAT     = 'HEARTBEAT';
+    // Signals to tell Tor to become active or dormant (added in 0.4.0.1-alpha)
+    const SIGNAL_ACTIVE        = 'ACTIVE';
+    const SIGNAL_DORMANT       = 'DORMANT';
 
     /** @var addHiddenService flag to create a new private key */
     const ONION_KEYTYPE_NEW     = 'NEW';
