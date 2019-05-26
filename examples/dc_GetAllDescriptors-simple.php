@@ -10,6 +10,7 @@ $descriptors = $client->getAllServerDescriptors();
 
 echo sprintf("We know about %d descriptors.\n\n", sizeof($descriptors));
 
+/** @var \Dapphp\TorUtils\RouterDescriptor $descriptor */
 foreach($descriptors as $descriptor) {
     echo sprintf("%-19s %s %16s:%s\n", $descriptor->nickname, $descriptor->fingerprint, $descriptor->ip_address, $descriptor->or_port);
 
