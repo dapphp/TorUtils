@@ -313,6 +313,26 @@ class DirectoryClient
     }
 
     /**
+     * Get the list of Tor directory authority servers
+     *
+     * @return array Array of directory authorities, keyed by fingerprint (value may be a string [ip address] or array of IP addresses)
+     */
+    public function getDirectoryAuthorities()
+    {
+        return $this->directoryAuthorities;
+    }
+
+    /**
+     * Get the list of Tor directory authority servers
+     *
+     * @return array Array of directory fallbacks, keyed by fingerprint (value may be a string [ip address] or array of IP addresses)
+     */
+    public function getDirectoryFallbacks()
+    {
+        return $this->directoryFallbacks;
+    }
+
+    /**
      * Fetch a list of all known router descriptors on the Tor network
      *
      * @return array Array of RouterDescriptor objects
