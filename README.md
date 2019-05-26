@@ -1,3 +1,9 @@
+<p align="center">
+<a href="https://travis-ci.org/dapphp/TorUtils"><img src="https://travis-ci.org/dapphp/TorUtils.svg?branch=master" alt="Build Status"></a>
+<a href="https://packagist.org/packages/dapphp/torutils"><img src="https://poser.pugx.org/dapphp/torutils/downloads" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/dapphp/torutils"><img src="https://poser.pugx.org/dapphp/torutils/v/stable" alt="Latest Stable Version"></a>
+</p>
+
 ## Name:
 
 **Dapphp\TorUtils** - PHP classes for interacting with the Tor control protocol,
@@ -5,7 +11,7 @@ directory authorities and servers, and DNS exit lists.
 
 ## Version:
 
-**1.1.12**
+**1.1.13**
 
 ## Author:
 
