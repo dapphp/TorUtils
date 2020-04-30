@@ -4,7 +4,7 @@ use Dapphp\TorUtils\ControlClient;
 
 class ControlClientTest extends PHPUnit_Framework_TestCase
 {
-    protected function getMock($data = null)
+    protected function getMockControlClient($data = null)
     {
         $tc = new ControlClientMock();
 
@@ -18,7 +18,7 @@ class ControlClientTest extends PHPUnit_Framework_TestCase
     public function testSingleLinePositiveReply()
     {
         $response = array("250 OK\r\n");
-        $tc       = $this->getMock($response);
+        $tc       = $this->getMockControlClient($response);
         $reply    = $tc->readReply();
 
         $this->assertEquals(250, $reply->getStatusCode());
@@ -36,7 +36,7 @@ class ControlClientTest extends PHPUnit_Framework_TestCase
             "250 OK\r\n",
         );
 
-        $tc    = $this->getMock($response);
+        $tc    = $this->getMockControlClient($response);
         $reply = $tc->readReply($cmd);
 
         $this->assertEquals(250, $reply->getStatusCode());
@@ -53,7 +53,7 @@ class ControlClientTest extends PHPUnit_Framework_TestCase
             "250 OK\r\n",
         );
 
-        $tc    = $this->getMock($response);
+        $tc    = $this->getMockControlClient($response);
         $reply = $tc->readReply($cmd);
 
         $this->assertEquals(250, $reply->getStatusCode());
@@ -75,7 +75,7 @@ class ControlClientTest extends PHPUnit_Framework_TestCase
         $response[] = ".\r\n";
         $response[] = "250 OK\r\n";
 
-        $tc    = $this->getMock($response);
+        $tc    = $this->getMockControlClient($response);
         $reply = $tc->readReply($cmd);
 
         $this->assertEquals(250, $reply->getStatusCode());
@@ -95,7 +95,7 @@ class ControlClientTest extends PHPUnit_Framework_TestCase
         $GLOBALS['async_event'] = '';
         $GLOBALS['async_data']  = '';
 
-        $tc    = $this->getMock($response);
+        $tc    = $this->getMockControlClient($response);
 
         $tc->setAsyncEventHandler(function($event, $data) {
             $GLOBALS['async_event'] = $event;
@@ -130,7 +130,7 @@ class ControlClientTest extends PHPUnit_Framework_TestCase
             "250 OK\r\n", // authenticate reply
         );
 
-        $tc = $this->getMock($response);
+        $tc = $this->getMockControlClient($response);
 
         $tc->authenticate("password");
 
@@ -151,7 +151,7 @@ class ControlClientTest extends PHPUnit_Framework_TestCase
         $this->expectExceptionCode(515);
         $this->expectExceptionMessage('Authentication failed: Password did not match HashedControlPassword *or* authentication cookie.');
 
-        $tc = $this->getMock($response);
+        $tc = $this->getMockControlClient($response);
         $tc->authenticate("this is most definitely the wrong password ;)");
     }
 }
