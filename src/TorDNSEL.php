@@ -49,13 +49,15 @@ class TorDNSEL
      * This function determines if the remote IP address is a Tor exit node
      * that permits connections to the specified IP:Port combination.
      *
-     * @param string $ip IP address (dotted quad) of the local server
-     * @param string $port Numeric port the remote client is connecting to (e.g. 80, 443, 53)
-     * @param string $remoteIp IP address of the client (potential Tor exit) to look up
-     * @param string $dnsServer The DNS server to query (by default queries exitlist.torproject.org)
-     * @return boolean true if the $remoteIp is a Tor exit node that allows connections to $ip:$port
+     * @deprecated 1.1.14 Will be removed in future releases and replaced by a simpler interface
+     *
+     * @param string $ip No longer used. IP address (dotted quad) of the local server
+     * @param string $port No longer used. Numeric port the remote client is connecting to (e.g. 80, 443, 53)
+     * @param string $remoteIp IP address of the client (potential Tor exit relay) to check
+     * @param string $dnsServer The DNS server to query (by default queries check-01.torproject.org)
+     * @return boolean true if the $remoteIp is a Tor exit relay
      */
-    public static function IpPort($ip, $port, $remoteIp, $dnsServer = 'exitlist.torproject.org')
+    public static function IpPort($ip, $port, $remoteIp, $dnsServer = 'check-01.torproject.org')
     {
         $dnsel = new self();
 
@@ -63,11 +65,11 @@ class TorDNSEL
         // where {ip} is the destination IP address and {port} is the destination port
         // and {rip} is the remote (user) IP address which may or may not be a Tor router exit address
 
-        $host  = implode('.', array_reverse(explode('.', $remoteIp))) .
-                 '.' . $port . '.' .
-                 implode('.', array_reverse(explode('.', $ip))) .
-                 '.ip-port' .
-                 '.exitlist.torproject.org';
+        $host = sprintf(
+            '%s.%s',
+            implode('.', array_reverse(explode('.', $remoteIp))),
+            'dnsel.torproject.org'
+        );
 
         return $dnsel->_dnsLookup($host, $dnsServer);
     }
