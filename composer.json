@@ -3,7 +3,7 @@
   "description" : "PHP classes for interacting with Tor over the control protocol, querying directory authorities and servers, and DNS exit lists",
   "license" : "BSD-3-Clause",
   "require" : {
-    "php" : ">=5.3"
+    "php" : ">=5.4"
   },
   "authors" : [ {
     "name" : "Drew Phillips",
