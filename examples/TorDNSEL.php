@@ -7,22 +7,19 @@ include __DIR__ . '/../src/TorDNSEL.php';
 // Practical usage on a web server:
 /*
 try {
-    $isTor = TorDNSEL::IpPort(
-        $_SERVER['SERVER_ADDR'],
-        $_SERVER['SERVER_PORT'],
-        $_SERVER['REMOTE_ADDR']
-    );
-    var_dump($isTor);
+    if (TorDNSEL::isTor($_SERVER['SERVER_ADDR'])) {
+        // do something special for Tor users
+    } else {
+        // not using Tor, educate them! :-D
+    }
  } catch (\Exception $ex) {
-     echo $ex->getMessage() . "\n";
+     error_log("Tor DNSEL query failed: " . $ex->getMessage());
  }
 */
 
 // Test lookups
-// First array index is the remote IP (client/potential exit node)
-// Second is the server IP
-// Third is the server port
-// Fourth is the DNS server to query
+// First array index is the remote IP (client/potential exit relay)
+// second is the DNS server to use for the query (consider using your local caching resolver!)
 $lookups = array(
     array('195.176.3.20',    'check-01.torproject.org'), /* DigiGesTor4e3 */
     array('185.220.103.4',   '1.1.1.1'), /* CalyxInstitute16 */
@@ -37,14 +34,34 @@ foreach($lookups as $lookup) {
     list($remoteIP, $server) = $lookup;
 
     try {
+        echo "[o] Checking $remoteIP using server $server...\n";
+
         // send DNS request to Tor DNS exit list service
         // returns true if $remoteIP is a Tor exit relay
-        $isTor = TorDNSEL::IpPort(null, null, $remoteIP, $server);
+        $isTor = TorDNSEL::isTor($remoteIP, $server);
 
-        echo sprintf("Connection from %s *%s* a Tor exit relay.\n",
-            $remoteIP, ($isTor ? 'is' : 'is NOT'));
+        if ($isTor) {
+            echo "[+] Tor exit relay: *YES*\n";
+        } else {
+            echo "[-] Tor exit relay: No\n";
+            echo "[-] Fingerprint(s): N/A\n";
+        }
+
+        if ($isTor) {
+            $fingerprints = TorDNSEL::getFingerprints($remoteIP, $server);
+
+            if (!empty($fingerprints)) {
+                echo sprintf(
+                    "[+] Fingerprint(s): %s\n",
+                    join(', ', $fingerprints)
+                );
+            } else { /* Service should return a fingerprint if address is an exit relay */ }
+        }
+
+        echo "\n";
+
     } catch (\Exception $ex) {
-        echo sprintf("Query for %s failed. Error: %s\n",
-            $remoteIP, $ex->getMessage());
+        echo sprintf("[!] Query failed: %s\n",
+            $ex->getMessage());
     }
 }
