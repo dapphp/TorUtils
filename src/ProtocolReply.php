@@ -139,18 +139,12 @@ class ProtocolReply implements \Iterator, \ArrayAccess
         } elseif (preg_match('/^650(?:\+|-)/', $line)) {
             $status = 650;
             $this->_lines[] = substr($line, 4);
-        } elseif (preg_match('/^(\d{3})-(\w+)(?:=|\s*)(.*)$/', $line, $match)) {
+        } elseif (preg_match('/^(\d{3})-(.*)$/', $line, $match)) {
             // ###-DATA RESPONSE
             // or
             // ###-Key=Value response
             $status = $match[1];
-
-            if ($match[1][0] != '2') {
-                // GETCONF can return multiple lines like "552-Unrecognized configuration key xxx"
-                $this->_lines[] = $match[2] . ' ' . $match[3];
-            } else {
-                $this->_lines[$match[2]] = $match[3];
-            }
+            $this->_lines[] = $match[2];
         } elseif (
             preg_match('/^(25\d)\s*(.*)$/', $line, $match)
             ||
@@ -160,7 +154,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess
             // https://gitweb.torproject.org/torspec.git/tree/control-spec.txt - Section 4. Replies
             // Positive completion replies begin with 25x
             if (!$this->_statusCode) {
-                $status         = $match[1];
+                $status = $match[1];
             }
             $this->_lines[] = $match[2];
         } else {
