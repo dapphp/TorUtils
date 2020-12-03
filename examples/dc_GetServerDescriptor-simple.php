@@ -8,7 +8,7 @@ $client = new DirectoryClient();
 //$client->setPreferredServer('1.2.3.4:80'); // Optional server to always use first for directory lookups
 
 try {
-    $descriptor = $client->getServerDescriptor('79E169B25E4C7CE99584F6ED06F379478F23E2B8');
+    $descriptor = $client->getServerDescriptor('81C55D403A82BF6E7C3FBDBD41D102B7088900D9');
 } catch (\Exception $ex) {
     echo "Request to directory failed: " . $ex->getMessage() . "\n";
     exit;
