@@ -49,7 +49,7 @@ try {
 // the types of hidden services keys we can create
 $keyTypes = [
     ControlClient::ONION_KEYTYPE_CURVE25519 => 'Hidden Service v3 (ED25519-V3)',
-    ControlClient::ONION_KEYTYPE_RSA1024    => 'Hidden Service v2 (RSA1024)'
+    //ControlClient::ONION_KEYTYPE_RSA1024    => 'Hidden Service v2 (RSA1024)' // Obselete
 ];
 
 foreach($keyTypes as $keyType => $keyDesc) {
