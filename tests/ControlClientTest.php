@@ -137,6 +137,25 @@ class ControlClientTest extends PHPUnit_Framework_TestCase
         $this->addToAssertionCount(1);
     }
 
+    public function testAuthentication2()
+    {
+        $response = array(
+            "250-PROTOCOLINFO 1\r\n",
+            "250-AUTH METHODS=COOKIE,SAFECOOKIE,HASHEDPASSWORD COOKIEFILE=\"/Users/nosx/Library/Application Support/TorBrowser-Data/Tor/control_auth_cookie\"\r\n",
+            "250-VERSION Tor=\"0.4.3.6\"\r\n",
+            "250 OK\r\n",
+            "250 OK\r\n", // authenticate reply
+        );
+
+        $tc = $this->getMockControlClient($response);
+
+        $tc->authenticate("password");
+
+        $this->addToAssertionCount(1);
+    }
+
+
+
     public function testFailedAuthentication()
     {
         $response = array(

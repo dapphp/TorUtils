@@ -242,9 +242,9 @@ class ControlClient
 
         if (in_array('NONE', $pinfo['methods'])) {
             $this->authenticateNone();
-        } else if ($password !== null && in_array('HASHEDPASSWORD', $pinfo['methods'])) {
+        } elseif ($password !== null && in_array('HASHEDPASSWORD', $pinfo['methods'])) {
             $this->authenticatePassword($password);
-        } else if (in_array('SAFECOOKIE', $pinfo['methods'])) {
+        } elseif (in_array('SAFECOOKIE', $pinfo['methods'])) {
             $this->authenticateSafecookie($pinfo['cookiefile']);
         } else {
             throw new \Exception('No suitable authentication methods available');
@@ -1154,6 +1154,16 @@ class ControlClient
         }
 
         return $this;
+    }
+
+    /**
+     * Get the Parser object used by the controller
+     *
+     * @return Parser
+     */
+    public function getParser()
+    {
+        return $this->_parser;
     }
 
     /**

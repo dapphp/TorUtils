@@ -699,14 +699,14 @@ class Parser
     {
         $bandwidth = $this->_parseDelimitedData($line, 'w');
 
-        if (!isset($bandwidth['bandwidth'])) {
+        if (!isset($bandwidth['Bandwidth'])) {
             throw new ProtocolError("Bandwidth value not present in 'w' line");
         }
 
         return array(
-            'bandwidth'            => $bandwidth['bandwidth'],
-            'bandwidth_measured'   => (isset($bandwidth['measured']) ? $bandwidth['measured'] : null),
-            'bandwidth_unmeasured' => (isset($bandwidth['unmeasured']) ? $bandwidth['unmeasured'] : null),
+            'bandwidth'            => $bandwidth['Bandwidth'],
+            'bandwidth_measured'   => (isset($bandwidth['Measured']) ? $bandwidth['Measured'] : null),
+            'bandwidth_unmeasured' => (isset($bandwidth['Unmeasured']) ? $bandwidth['Unmeasured'] : null),
         );
     }
 
@@ -728,34 +728,45 @@ class Parser
          250 OK
          */
         $methods = $cookiefile = $version = null;
+        $info    = $reply[0];
+        $auth    = $reply[1];
+        $version = $reply[2];
 
-        if (isset($reply['AUTH'])) {
-            $values = $this->_parseDelimitedData($reply['AUTH']);
-
-            if (!isset($values['methods']) || empty($values['methods'])) {
-                throw new ProtocolError('PROTOCOLINFO reply did not contain any authentication methods');
-            }
-
-            $methods = $values['methods'];
-
-            if (isset($values['cookiefile'])) {
-                $cookiefile = $values['cookiefile'];
-            }
-        } else {
-            throw new ProtocolError('PROTOCOLINFO response did not contain AUTH line');
+        $pInfo   = array_map('trim', explode(' ', $info, 2));
+        if (sizeof($pInfo) != 2 || $pInfo[0] != 'PROTOCOLINFO') {
+            throw new ProtocolError(sprintf('Unexpected PROTOCOLINFO response; got "%s"', $info));
+        } elseif (!preg_match('/^\d$/', $pInfo[1])) {
+            throw new ProtocolError(sprintf('Invalid PROTOCOLINFO version. Expected 1*DIGIT; got "%s"', $pInfo[1]));
         }
 
-        if (isset($reply['VERSION'])) {
-            $version = $this->_parseDelimitedData($reply['VERSION']);
-
-            if (!isset($version['tor'])) {
-                throw new ProtocolError('PROTOCOLINFO version line did not match expected format');
-            }
-
-            $version = $version['tor'];
-        } else {
-            throw new ProtocolError('PROTOCOL INFO response did not contain VERSION line');
+        $authInfo = array_map('trim', explode(' ', $auth, 2));
+        if (sizeof($authInfo) != 2 || $authInfo[0] != 'AUTH') {
+            throw new ProtocolError(sprintf('Expected AUTH line; got "%s"', $auth));
         }
+
+        $values = $this->_parseDelimitedData($authInfo[1]);
+
+        if (!isset($values['METHODS']) || empty($values['METHODS'])) {
+            throw new ProtocolError('PROTOCOLINFO reply did not contain any authentication methods');
+        }
+
+        $methods = $values['METHODS'];
+
+        if (isset($values['COOKIEFILE'])) {
+            $cookiefile = $values['COOKIEFILE'];
+        }
+
+        $versionInfo = array_map('trim', explode(' ', $version, 2));
+        if (sizeof($versionInfo) != 2 || $versionInfo[0] != 'VERSION') {
+            throw new ProtocolError(sprintf('Expected VERSION line; got "%s"', $version));
+        }
+
+        $version = $this->_parseDelimitedData($versionInfo[1]);
+        if (!isset($version['Tor'])) {
+            throw new ProtocolError('PROTOCOLINFO VERSION line did not match expected format');
+        }
+
+        $version = $version['Tor'];
 
         return array(
             'methods'    => explode(',', $methods),
@@ -785,19 +796,184 @@ class Parser
         return $key;
     }
 
+    public function parseKeywordArguments($input)
+    {
+        $eventData = [];
+        $offset    = 0;
+
+        do {
+            $keyword = '';
+            $value   = null;
+
+            $temp    = substr($input, $offset);
+            $keyword = $this->parseAlpha($temp);
+
+            $offset += strlen($keyword);
+
+            if ($input[$offset] != '=') {
+                throw new \InvalidArgumentException(
+                    sprintf('Expected "=" at offset %d, got %s', $offset, $input[$offset])
+                );
+            }
+
+            $offset++;
+
+            $temp = substr($input, $offset);
+
+            if (0 === strlen($temp)) {
+                // empty value, end of line
+                $value = '';
+            } elseif ($input[$offset] == ' ') {
+                // empty value, more keywords remain
+                $value = '';
+                $offset += 1;
+            } elseif ($input[$offset] == '"') {
+                $value = $this->parseQuotedString($temp);
+                $offset += strlen($value) + 3;
+            } else {
+                $value = $this->parseNonSpDquote($temp);
+                $offset += strlen($value) + 1;
+            }
+
+            $eventData[$keyword] = $value;
+
+        } while ($offset < strlen($input));
+
+        return $eventData;
+    }
+
+    public function parseAlpha($input)
+    {
+        if (preg_match('/([a-zA-Z_]{1,})/', $input, $match)) {
+            return $match[1];
+        } else {
+            throw new \InvalidArgumentException("Illegal keyword format");
+        }
+    }
+
+    public function parseQuotedString($input)
+    {
+        $len = strlen($input);
+        $val = '';
+        $terminated = false;
+
+        for ($i = 1; $i < $len; ++$i) {
+            $c = $input[$i];
+
+            if ($c == '"') {
+                if (strlen($val) > 1 && $val[strlen($val)-1] != '\\') {
+                    $terminated = true;
+                    break;
+                }
+            }
+
+            if (preg_match('/[\x01-\x08\x0b\x0c\x0e-\x7f]/', $c)) {
+                $val .= $c;
+            }
+        }
+
+        if (!$terminated) {
+            throw new \InvalidArgumentException("Unterminated quote string encountered");
+        }
+
+        return $val;
+
+        if (preg_match('/^"([\x01-\x08\x0b\x0c\x0e-\x7f]*)"(?:\s|$)/', $input, $match)) {
+            return $match[1];
+        } else {
+            throw new \InvalidArgumentException("Illegal quoted string $input encountered");
+        }
+    }
+
+    public function parseNonSpDquote($input)
+    {
+        if (preg_match('/^([\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]+)(?:\s|$)/', $input, $match)) {
+            return $match[1];
+        } else {
+            throw new \InvalidArgumentException("Illegal keyword argument string encountered: $input");
+        }
+    }
+
+    public function parseDelimitedData($data, $prefix = null, $delimiter = '=', $boundary = ' ')
+    {
+        return $this->_parseDelimitedData($data, $prefix, $delimiter, $boundary);
+    }
+
     private function _parseDelimitedData($data, $prefix = null, $delimiter = '=', $boundary = ' ')
     {
         $return = array();
+        $items  = array();
 
         if ($prefix && is_string($prefix)) {
             $data = preg_replace('/^' . preg_quote($prefix) . ' /', '', $data);
         }
 
+        $item   = '';
+        $value  = '';
+        $state  = 'i';
+        $quoted = false;
+        $length = strlen($data);
+
+        for ($p = 0; $p < $length; ++$p) {
+            $c   = $data[$p];
+            $eof = $p + 1 >= $length;
+
+            switch ($state) {
+                case 'i':
+                    if ($c == $delimiter) {
+                        $state = 'd';
+                    } else {
+                        $item .= $c;
+                    }
+                    break;
+
+                case 'd':
+                    if ($c == '"') {
+                        $quoted = true;
+                        $state  = 'dr';
+                    } else {
+                        $value .= $c;
+                        $quoted = false;
+                        $state  = 'dr';
+                    }
+                    break;
+
+                case 'dr':
+                    if ((!$quoted && $c == $boundary) || ($quoted && $c == '"')) {
+                        $state = 'n';
+                        // fall through to next case
+                    } else {
+                        $value .= $c;
+                        break;
+                    }
+
+
+                case 'n':
+                    $return[$item] = $value;
+                    $item = $value = '';
+                    $state = 'i';
+                    $quoted = false;
+                    break;
+            }
+        }
+
+        if ($eof) {
+            if ($quoted) {
+                throw new \Exception("EOF encountering while parsing quoted value in delimited data");
+            }
+
+            $return[$item] = $value;
+        }
+
+        return $return;
+
+        /*
         if (strpos($data, $boundary) === false) {
             $items = array($data);
         } else {
             $items = explode($boundary, $data);
         }
+        */
 
         foreach ($items as $item) {
             if (strpos($item, $delimiter) === false) {

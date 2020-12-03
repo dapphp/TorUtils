@@ -65,6 +65,26 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $info);
     }
 
+    public function testParseProtocolInfo2()
+    {
+        $p     = new Parser();
+        $reply = new ProtocolReply('PROTOCOLINFO 1');
+        $reply->appendReplyLine("250-PROTOCOLINFO 1\n");
+        $reply->appendReplyLine("250-AUTH METHODS=COOKIE,SAFECOOKIE,HASHEDPASSWORD COOKIEFILE=\"/Users/nosx/Library/Application Support/TorBrowser-Data/Tor/control_auth_cookie\"\n");
+        $reply->appendReplyLine("250-VERSION Tor=\"0.4.4.5\"\n");
+        $reply->appendReplyLine("250 OK\n");
+
+        $info  = $p->parseProtocolInfo($reply);
+
+        $expected = array(
+            'methods'    => array('COOKIE', 'SAFECOOKIE', 'HASHEDPASSWORD'),
+            'cookiefile' => '/Users/nosx/Library/Application Support/TorBrowser-Data/Tor/control_auth_cookie',
+            'version'    => '0.4.4.5',
+        );
+
+        $this->assertEquals($expected, $info);
+    }
+
     /**
      * @expectedException \Dapphp\TorUtils\ProtocolError
      */
