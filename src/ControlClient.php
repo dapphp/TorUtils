@@ -958,15 +958,16 @@ class ControlClient
             throw new ProtocolError($reply[0], $reply->getStatusCode());
         }
 
-        $lines = $reply->getReplyLines();
+        $values = [];
+        foreach($reply->getReplyLines() as $line) {
+            $values = array_merge($values, $this->getParser()->parseDelimitedData($line));
+        }
 
-        $serviceId  = $lines['ServiceID'];
-        $privateKey = (isset($lines['PrivateKey'])) ? $lines['PrivateKey'] : null;
+        if (empty($values['ServiceID'])) {
+            throw new \Exception("Failure creating hidden service. Did not get ServiceID from controller response.");
+        }
 
-        return array(
-            'ServiceID'  => $serviceId,
-            'PrivateKey' => $privateKey,
-        );
+        return $values;
     }
 
     /**
