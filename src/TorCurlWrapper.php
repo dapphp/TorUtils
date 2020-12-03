@@ -51,6 +51,7 @@ class TorCurlWrapper
 {
     private $_ch;
     private $_info;
+    private $statusLine;
     private $_responseHeaders;
     private $_responseBody;
     private $_socksHost;
@@ -221,6 +222,16 @@ class TorCurlWrapper
     }
 
     /**
+     * Get the HTTP status line from the last response.
+     *
+     * @return string The HTTP status line from the last response
+     */
+    public function getHttpStatusLine()
+    {
+        return $this->statusLine;
+    }
+
+    /**
      * Gets the response headers from the previous request
      *
      * @param string|null $header The header (case-insensitive) to get, or an array of headers if null
@@ -304,7 +315,7 @@ class TorCurlWrapper
             }
 
             list($headers, $this->_responseBody) = explode("\r\n\r\n", $response, 2);
-            $this->_responseHeaders = $this->_parseHeaders($headers);
+            list($this->statusLine, $this->_responseHeaders) = $this->_parseHeaders($headers);
 
             return true;
         }
@@ -314,19 +325,19 @@ class TorCurlWrapper
      * Parse response headers into an array keyed by header name
      *
      * @param string $headers  String of HTTP response headers
-     * @return array Returns headers in an array keyed by name
+     * @return array Returns array with first element being the HTTP status line and then an array of headers
      */
     private function _parseHeaders($headers)
     {
         $parsed  = array();
         $headers = explode("\r\n", $headers);
-        array_shift($headers); // remove http response code
+        $status_line = array_shift($headers); // remove http response code
 
         foreach($headers as $header) {
             list($name, $value) = explode(':', $header, 2);
             $parsed[$name] = ltrim($value);
         }
 
-        return $parsed;
+        return [ $status_line, $parsed ];
     }
 }
