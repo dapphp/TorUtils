@@ -332,7 +332,7 @@ class DirectoryClient
      */
     public function getAllServerDescriptors()
     {
-        $reply = $this->_request(
+        $reply = $this->request(
             sprintf('/tor/server/all%s', (function_exists('gzuncompress') ? '.z' : ''))
         );
 
@@ -356,7 +356,7 @@ class DirectoryClient
 
         $uri = sprintf('/tor/server/fp/%s%s', $fp, (function_exists('gzuncompress') ? '.z' : ''));
 
-        $reply = $this->_request($uri);
+        $reply = $this->request($uri);
 
         $descriptors = $this->parser->parseDirectoryStatus($reply);
 
@@ -371,11 +371,10 @@ class DirectoryClient
      * Pick a random dir authority to query and perform the HTTP request for directory info
      *
      * @param string $uri Uri to request
-     * @param string $directoryServer IP and port of the directory to query
      * @throws \Exception No authorities responded
      * @return \Dapphp\TorUtils\ProtocolReply The reply from the directory authority
      */
-    private function _request($uri, $directoryServer = null)
+    private function request($uri)
     {
         reset($this->serverList);
         $used = false;
@@ -399,7 +398,7 @@ class DirectoryClient
             $fp = fsockopen($host, $port, $errno, $errstr, $this->connectTimeout);
             if (!$fp) continue;
 
-            $request = $this->_getHttpRequest('GET', $host, $uri);
+            $request = $this->getHttpRequest('GET', $host, $uri);
 
             $written = fwrite($fp, $request);
 
@@ -451,7 +450,7 @@ class DirectoryClient
             }
 
             list($headers, $body) = explode("\r\n\r\n", $response, 2);
-            $headers = $this->_parseHttpResponseHeaders($headers);
+            $headers = $this->parseHttpResponseHeaders($headers);
 
             if ($headers['status_code'] == '503') {
                 trigger_error("Directory $server returned 503 {$headers['message']}", E_USER_NOTICE);
@@ -510,18 +509,16 @@ class DirectoryClient
      * @param string $uri The request URI
      * @return string Completed HTTP request
      */
-    private function _getHttpRequest($method, $host, $uri)
+    private function getHttpRequest($method, $host, $uri)
     {
-        $request = sprintf(
+        return sprintf(
             "%s %s HTTP/1.0\r\n" .
-            "Host: $host\r\n" .
+            "Host: %s\r\n" .
             "Connection: close\r\n" .
             "User-Agent: %s\r\n" .
             "\r\n",
             $method, $uri, $host, $this->userAgent
         );
-
-        return $request;
     }
 
     /**
@@ -531,7 +528,7 @@ class DirectoryClient
      * @throws \Exception Response was not a valid http response
      * @return array Array with http status_code, message, and lines of headers
      */
-    private function _parseHttpResponseHeaders($headers)
+    private function parseHttpResponseHeaders($headers)
     {
         $lines    = explode("\r\n", $headers);
         $response = array_shift($lines);
