@@ -94,8 +94,9 @@ class ControlClientTest extends PHPUnit_Framework_TestCase
 
         $GLOBALS['async_event'] = '';
         $GLOBALS['async_data']  = '';
+        $values = [];
 
-        $tc    = $this->getMockControlClient($response);
+        $tc = $this->getMockControlClient($response);
 
         $tc->setAsyncEventHandler(function($event, $data) {
             $GLOBALS['async_event'] = $event;
@@ -108,9 +109,13 @@ class ControlClientTest extends PHPUnit_Framework_TestCase
         // by the async event handler, and then the response to the issued
         // GETCONF command should be handled properly and returned in $reply
 
+        foreach($reply->getReplyLines() as $line) {
+            $values = array_merge($values, $tc->getParser()->parseKeywordArguments($line));
+        }
+
         $this->assertEquals(250,    $reply->getStatusCode());
-        $this->assertEquals('9050', $reply['SOCKSPORT']);
-        $this->assertEquals(null,   $reply['ORPORT']); // Port 0 is turned to null
+        $this->assertEquals('9050', $values['SOCKSPORT']);
+        $this->assertEquals('0',   $values['ORPORT']);
 
         $this->assertEquals('CIRC', $GLOBALS['async_event']);
         $this->assertInstanceOf(Dapphp\TorUtils\CircuitStatus::class, $GLOBALS['async_data'][0]);
