@@ -245,7 +245,7 @@ class DirectoryClient
      * server from the list of directory authorities and fallbacks.
      *
      * @param string $server The directory server to connect to (e.g. 1.2.3.4:80)
-     * @return \Dapphp\TorUtils\DirectoryClient
+     * @return self
      */
     public function setPreferredServer($server)
     {
@@ -267,7 +267,7 @@ class DirectoryClient
      *
      * @param number $timeout  The connection timeout in seconds
      * @throws \InvalidArgumentException If timeout is non-numeric or less than 1
-     * @return \Dapphp\TorUtils\DirectoryClient
+     * @return self
      */
     public function setConnectTimeout($timeout)
     {
@@ -287,7 +287,7 @@ class DirectoryClient
      *
      * @param number $timeout  The read timeout in seconds
      * @throws \InvalidArgumentException If timeout is non-numeric or less than 1
-     * @return \Dapphp\TorUtils\DirectoryClient
+     * @return self
      */
     public function setReadTimeout($timeout)
     {
@@ -329,6 +329,7 @@ class DirectoryClient
      * Fetch a list of all known router descriptors on the Tor network
      *
      * @return array Array of RouterDescriptor objects
+     * @throws \Exception If directory requests failed
      */
     public function getAllServerDescriptors()
     {
@@ -336,15 +337,14 @@ class DirectoryClient
             sprintf('/tor/server/all%s', (function_exists('gzuncompress') ? '.z' : ''))
         );
 
-        $descriptors = $this->parser->parseDirectoryStatus($reply);
-
-        return $descriptors;
+        return $this->parser->parseDirectoryStatus($reply);
     }
 
     /**
      * Fetch directory information about a router
      * @param string|array $fingerprint router fingerprint or array of fingerprints to get information about
      * @return mixed Array of RouterDescriptor objects, or a single RouterDescriptor object
+     * @throws \Exception
      */
     public function getServerDescriptor($fingerprint)
     {
@@ -483,7 +483,7 @@ class DirectoryClient
                 if ($body === false) {
                     throw new \Exception('Failed to inflate response data');
                 }
-            } else if ($encoding == 'identity') {
+            } elseif ($encoding == 'identity') {
                 // nothing to do
             } else {
                 throw new \Exception('Directory sent response in an unknown encoding: ' . $encoding);
