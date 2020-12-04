@@ -1,6 +1,6 @@
 {
   "name" : "dapphp/torutils",
-  "description" : "PHP classes for interacting with Tor over the control protocol, querying directory authorities and servers, and DNS exit lists",
+  "description" : "Classes for interacting with Tor over the control protocol, querying directory authorities and servers, DNS exit lists, a curl wrapper that makes it easy to use Tor's SOCKS proxy, and more.",
   "license" : "BSD-3-Clause",
   "require" : {
     "php" : ">=5.5"
