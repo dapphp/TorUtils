@@ -3,7 +3,8 @@
   "description" : "PHP classes for interacting with Tor over the control protocol, querying directory authorities and servers, and DNS exit lists",
   "license" : "BSD-3-Clause",
   "require" : {
-    "php" : ">=5.5"
+    "php" : ">=7.2",
+    "ext-curl": "*"
   },
   "authors" : [ {
     "name" : "Drew Phillips",
@@ -19,6 +20,6 @@
   "type" : "library",
   "homepage" : "https://github.com/dapphp/TorUtils",
   "require-dev": {
-    "phpunit/phpunit": "^5.7"
+    "phpunit/phpunit": "^8.5"
   }
 }
