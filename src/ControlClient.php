@@ -38,11 +38,6 @@
 
 namespace Dapphp\TorUtils;
 
-require_once 'Parser.php';
-require_once 'ProtocolReply.php';
-require_once 'RouterDescriptor.php';
-require_once 'ProtocolError.php';
-
 use Dapphp\TorUtils\ProtocolReply;
 use Dapphp\TorUtils\ProtocolError;
 use Dapphp\TorUtils\RouterDescriptor;

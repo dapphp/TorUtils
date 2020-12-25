@@ -38,13 +38,9 @@
 
 namespace Dapphp\TorUtils;
 
-require_once 'RouterDescriptor.php';
-require_once 'ProtocolReply.php';
-require_once 'ProtocolError.php';
-
+use Dapphp\TorUtils\ProtocolError;
 use Dapphp\TorUtils\RouterDescriptor;
 use Dapphp\TorUtils\ProtocolReply;
-use Dapphp\TorUtils\ProtocolError;
 
 /**
  * Class for parsing replies from the control connection or directories.

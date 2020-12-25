@@ -1,10 +1,10 @@
 <?php
 
+require_once __DIR__ . '/common.php';
+
 error_reporting(E_ALL); ini_set('display_errors', 1);
 
 header('Content-type: text/html; charset=utf-8');
-
-require_once __DIR__ . '/../src/TorCurlWrapper.php';
 
 // initialize a new TorCurlWrapper object
 $torcurl = new Dapphp\TorUtils\TorCurlWrapper('127.0.0.1', '9050');

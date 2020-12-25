@@ -38,9 +38,6 @@
 
 namespace Dapphp\TorUtils;
 
-require_once 'Parser.php';
-require_once 'ProtocolReply.php';
-
 use Dapphp\TorUtils\Parser;
 use Dapphp\TorUtils\ProtocolReply;
 

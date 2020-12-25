@@ -1,7 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../src/DirectoryClient.php';
-require_once __DIR__ . '/../src/ControlClient.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 function uptimeToString($seconds, $array = true)
 {
