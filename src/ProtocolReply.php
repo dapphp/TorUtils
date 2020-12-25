@@ -50,6 +50,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
 {
     private $_statusCode;
     private $_command;
+    private $_dataReply = false;
     private $_position = 0;
     private $_lines = array();
     private $_dirty = true;
@@ -133,10 +134,11 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
             if (strlen(trim($match[2])) > 0) {
                 $this->_lines[]= $match[2];
             }
-        } elseif (preg_match('/^(\d{3})\+' . preg_quote($this->_command, '/') . '=$/', $line, $match)) {
+        } elseif ($first && preg_match('/^(\d{3})\+' . preg_quote($this->_command, '/') . '=$/', $line, $match)) {
             // ###+COMMAND=
             $status = $match[1];
-        } elseif (preg_match('/^650(?:\+|-)/', $line)) {
+            $this->_dataReply = true;
+        } elseif (preg_match('/^650[+\-]/', $line)) {
             $status = 650;
             $this->_lines[] = substr($line, 4);
         } elseif (preg_match('/^(\d{3})-(.*)$/', $line, $match)) {
@@ -146,9 +148,11 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
             $status = $match[1];
             $this->_lines[] = $match[2];
         } elseif (
-            preg_match('/^(25\d)\s*(.*)$/', $line, $match)
-            ||
-            preg_match('/^([456][015]\d)\s*(.*)$/', $line, $match)
+            !$this->_dataReply && (
+              preg_match('/^(25\d)\s*(.*)$/', $line, $match)
+              ||
+              preg_match('/^([456][015]\d)\s*(.*)$/', $line, $match)
+            )
         ) {
             // ### STATUS
             // https://gitweb.torproject.org/torspec.git/tree/control-spec.txt - Section 4. Replies
