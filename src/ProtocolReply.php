@@ -46,7 +46,7 @@ namespace Dapphp\TorUtils;
  * access to individual lines of data from the response.
  *
  */
-class ProtocolReply implements \Iterator, \ArrayAccess
+class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
 {
     private $_statusCode;
     private $_command;
@@ -287,5 +287,10 @@ class ProtocolReply implements \Iterator, \ArrayAccess
     {
         unset($this->_lines[$offset]);
         $this->_dirty = true;
+    }
+
+    public function count()
+    {
+        return count($this->_lines);
     }
 }
