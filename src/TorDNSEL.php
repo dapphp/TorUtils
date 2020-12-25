@@ -61,26 +61,6 @@ class TorDNSEL
     ];
 
     /**
-     * Perform a DNS lookup of an IP-port combination to the public Tor DNS
-     * exit list service.
-     *
-     * This function determines if the remote IP address is a Tor exit node
-     * that permits connections to the specified IP:Port combination.
-     *
-     * @deprecated 1.1.14 Will be removed in future releases and replaced by a simpler interface
-     *
-     * @param string $ip No longer used. IP address (dotted quad) of the local server
-     * @param string $port No longer used. Numeric port the remote client is connecting to (e.g. 80, 443, 53)
-     * @param string $remoteIp IP address of the client (potential Tor exit relay) to check
-     * @param string $dnsServer The DNS server to query (by default queries check-01.torproject.org)
-     * @return boolean true if the $remoteIp is a Tor exit relay
-     */
-    public static function IpPort($ip, $port, $remoteIp, $dnsServer = 'check-01.torproject.org')
-    {
-        return static::isTor($remoteIp, $dnsServer);
-    }
-
-    /**
      * Check if a remote IP address is a Tor exit relay by querying the address against Tor DNS Exit List service.
      * This check sends a DNS "A" query to the $dnsServer (or the default if none is provided) and checks the answer to
      * determine if the visitor is coming from a Tor exit or not.
