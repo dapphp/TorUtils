@@ -103,6 +103,10 @@ class Parser
         $descriptor  = null;
 
         foreach($reply->getReplyLines() as $line) {
+            if ($line == '.' || $line == '250 OK') {
+                continue;
+            }
+
             switch($line[0][0]) {
                 case 'r':
                     if ($descriptor != null)
@@ -131,6 +135,9 @@ class Parser
                 case 'p':
                     $descriptor->setArray($this->_parsePLine($line));
                     break;
+
+                default:
+                    //var_dump("UNKNOWN ROUTER STATUS LINE {$line[0][0]}: ", $line);
             }
         }
 
@@ -207,25 +214,17 @@ class Parser
             throw new \Exception('Data passed to parseAddrMap must begin with ADDRMAP');
         }
 
-        if (!preg_match('/^ADDRMAP ([^\s]+) ([^\s]+) "([^"]+)"/', $line, $match)) {
-            throw new ProtocolError("Failed to parse ADDRMAP line '{$line}'");
+        if (!preg_match('/^ADDRMAP ([^\s]+) ([^\s]+) (?:(NEVER|"[^"]+"))( .*)?$/', $line, $match)) {
+            throw new ProtocolError("Invalid ADDRMAP line '{$line}'");
         }
 
-        $map = array(
+        $map = [
             'ADDRESS'    => $match[1],
             'NEWADDRESS' => $match[2],
-            'EXPIRY'     => $match[3],
-        );
+            'EXPIRY'     => str_replace('"', '', $match[3]),
+        ];
 
-        if (preg_match('/error="?([^"\s]+)"?/', $line, $match)) {
-            $map['error'] = $match[1];
-        }
-        if (preg_match('/EXPIRES="([^"]+)"/', $line, $match)) {
-            $map['EXPIRES'] = $match[1];
-        }
-        if (preg_match('/CACHED="([^"]+)"/', $line, $match)) {
-            $map['CACHED'] = $match[1];
-        }
+        $map = array_merge($map, $this->parseKeywordArguments($match[4]));
 
         return $map;
     }
@@ -798,9 +797,12 @@ class Parser
         $offset    = 0;
 
         do {
-            $keyword = '';
-            $value   = null;
+            if ($input[$offset] == ' ') {
+                $offset++;
+                continue;
+            }
 
+            $value   = null;
             $temp    = substr($input, $offset);
             $keyword = $this->parseAlpha($temp);
 
@@ -873,12 +875,6 @@ class Parser
         }
 
         return $val;
-
-        if (preg_match('/^"([\x01-\x08\x0b\x0c\x0e-\x7f]*)"(?:\s|$)/', $input, $match)) {
-            return $match[1];
-        } else {
-            throw new \InvalidArgumentException("Illegal quoted string $input encountered");
-        }
     }
 
     public function parseNonSpDquote($input)
@@ -897,13 +893,13 @@ class Parser
 
     private function _parseDelimitedData($data, $prefix = null, $delimiter = '=', $boundary = ' ')
     {
-        $return = array();
-        $items  = array();
+        $return = [];
 
         if ($prefix && is_string($prefix)) {
             $data = preg_replace('/^' . preg_quote($prefix) . ' /', '', $data);
         }
 
+        $eof    = true;
         $item   = '';
         $value  = '';
         $state  = 'i';
@@ -934,15 +930,14 @@ class Parser
                     }
                     break;
 
+                /** @noinspection PhpMissingBreakStatementInspection */
                 case 'dr':
                     if ((!$quoted && $c == $boundary) || ($quoted && $c == '"')) {
-                        $state = 'n';
-                        // fall through to next case
+                        $state = 'n'; // fall through to next case
                     } else {
                         $value .= $c;
                         break;
                     }
-
 
                 case 'n':
                     $return[$item] = $value;
@@ -959,29 +954,6 @@ class Parser
             }
 
             $return[$item] = $value;
-        }
-
-        return $return;
-
-        /*
-        if (strpos($data, $boundary) === false) {
-            $items = array($data);
-        } else {
-            $items = explode($boundary, $data);
-        }
-        */
-
-        foreach ($items as $item) {
-            if (strpos($item, $delimiter) === false) {
-                trigger_error("Delimiter not found in data '" . $item . "'");
-                continue;
-            }
-
-            $values = explode($delimiter, $item, 2);
-
-            $values[1] = trim($values[1], '"');  // remove surrounding quotes from data
-
-            $return[strtolower($values[0])] = $values[1];
         }
 
         return $return;
