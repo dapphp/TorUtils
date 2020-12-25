@@ -1,8 +1,9 @@
 <?php
 
 use Dapphp\TorUtils\TorDNSEL;
+use PHPUnit\Framework\TestCase;
 
-class TorDNSELTest extends PHPUnit_Framework_TestCase
+final class TorDNSELTest extends TestCase
 {
     public function testGetDnsName()
     {

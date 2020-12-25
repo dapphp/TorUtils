@@ -2,7 +2,9 @@
 
 use Dapphp\TorUtils\ControlClient;
 
-class ControlClientTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+final class ControlClientTest extends TestCase
 {
     protected function getMockControlClient($data = null)
     {

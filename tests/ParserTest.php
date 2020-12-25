@@ -6,7 +6,9 @@ use Dapphp\TorUtils\ProtocolReply;
 use Dapphp\TorUtils\RouterDescriptor;
 use Dapphp\TorUtils\ProtocolError;
 
-class ParserTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+final class ParserTest extends TestCase
 {
     /**
      * @dataProvider getRouterStatusReplies
