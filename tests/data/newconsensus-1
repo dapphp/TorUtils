@@ -1,0 +1,806 @@
+650+NEWCONSENSUS
+r flageolet AAbeLnfjw+xeGCWwduUlf9IA7Qo j1StyRYvz7JCXtPhnrbxh6kMpcg 2020-12-09 14:09:57 80.195.122.166 9090 9091
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=1750
+r seele AAoQ1DAR6kkoo19hBAX5K0QztNw BZG6lS8xsjwbadqle3jiNYX/1dA 2020-12-09 14:32:41 98.234.189.216 9001 0
+s Running Stable V2Dir Valid
+w Bandwidth=6
+r CalyxInstitute14 ABG9JIWtRdmE7EFZyI/AZuXjMA4 EgqcTiN56h3Iuz591WXy+9SV8Cs 2020-12-09 08:25:42 162.247.74.201 443 80
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=30200
+r 220VoltLive2 ABLiyQZzB7zWByF5wzs1Zl7MiCg ogN64dCZvsadCc1mbEcyOIumbno 2020-12-09 05:24:09 110.32.66.193 9001 9030
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=79
+r 0x616e6f6e ACDYogSoH8jIodeeIyRiFwXeTy8 XXlGAzslkUcgHqjjJsoC4iwYzn4 2020-12-09 03:12:27 178.17.170.116 443 80
+a [2a00:1dc0:caff:b2::26ac]:443
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=6600
+r Unnamed ACNTZPtl0P5fugKKwwO1pm2q7ds GPrvnQT1kN0OKmqVt19dB2m/234 2020-12-08 23:08:37 173.255.208.248 443 0
+s Fast Running Stable Valid
+w Bandwidth=4200
+r skylarkRelay ACQOyytTWqTB4YdNdE36avLl6UE rFJhpkqQ6ZHJrSQ3j0qzhfOKbDs 2020-12-09 05:07:53 95.111.230.178 443 0
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=8890
+r rotor25 ADQsDhVdRULlU5F4iy13nxRXjes pIixidlpWLog10lrXlnmSiQzrnY 2020-12-08 23:36:45 188.24.72.187 9001 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=4300
+r xX0seamus0Xx ADv6G2zFy+/V0Agvj8mvKohoqPs 6vFdPm3UpOAKntNKlpQy2LgFJgM 2020-12-09 09:31:36 188.214.132.49 9001 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=31200
+r VSIFskylab AD14gl4Llgnuz/Xk4FKXF3cuU8c IsgbvYrocOuUSrn/cWpcLbLSrQw 2020-12-09 04:31:08 104.218.63.73 443 80
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=2160
+r iriseden AFB5pCNWGDzqWjrdI5MD9E8S5+o phbCDuUIg92+oNppWwiUXFYHSsc 2020-12-09 08:03:54 62.210.177.189 9001 9030
+a [2001:bc8:32d7:308::203]:9001
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=97700
+r Athena AF7ZchP3JYZ+QiuNwEQzYbuyTjw ISyfJTDsv8N7g+Z8BJm0ZpXveDc 2020-12-09 06:56:46 104.244.79.75 443 9030
+a [2605:6400:30:fb10:d07b:edfd:2c84:bb4a]:443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=13000
+r venenata AHfd3bVJVCFM/uD+iqhd3IV+fIo KYHraFoLUhKr9Pd9mIelJK/0HW8 2020-12-09 09:28:50 71.19.144.65 9001 0
+a [2605:2700:0:2:a800:ff:fe2c:cd37]:9001
+s Fast Running Stable Valid
+w Bandwidth=10000
+r SilverbackRelay AHhhedsOZRQUL0TbQWZjhxLzTa4 Hn0RAPrOkRahhT+E71GiWnIB8bI 2020-12-09 12:49:45 198.251.87.226 443 80
+a [2604:4d40:2000:704::1]:443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=4630
+r Relay5000 AIUFfBe9LhgJ4oSCXwb5TnL7QYw LU2urg6vs5KCKOARUrpK0IPHQlY 2020-12-09 09:18:22 148.251.75.247 4080 8000
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=94700
+r BlackBeluga AJYtLdC5vzpq8dXrIBEyOIrKFCQ jaSYZbXUBXXkw55Np/f8FKM8pH4 2020-12-09 05:12:33 5.189.155.39 9001 0
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=598
+r jactr AJhR35M3VLAN3odvzkCIzhtJQME bVeHo3C07qs+HVmzm7rEM2ZLpSI 2020-12-09 09:36:12 84.40.112.70 9001 9030
+s Running Stable V2Dir Valid
+w Bandwidth=14
+r mharelay ALV79hT37TBRBztdRSb/CyOvIXs GljWJfIrP7UcjqxffP/Il52noQI 2020-12-09 06:14:29 158.174.145.139 9001 0
+a [2001:9b1:403c::1337]:9001
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=69000
+r Unnamed ALvLiXpy2Hhg4wWnhP8200DlPRA EruNl5kipTaRRTq6cnxyS+ABJko 2020-12-08 23:03:26 45.66.156.176 443 8443
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=5800
+r iriseden AMItO8GCLrjqOArwQkUzc5nnluI rA+hcpqwI508Pw2sHbBHrpr3Ak4 2020-12-09 03:48:37 62.210.89.9 9001 9030
+a [2001:bc8:32d7:20e::103]:9001
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=77000
+r effiorg1984 AMzmqE5tY6GkLhBYObyO1dSxZmk RSQEggwBdaO0g5vZpsNeG21IYhg 2020-12-09 06:39:34 89.236.112.100 443 80
+s Exit Fast Guard Running Stable V2Dir Valid
+w Bandwidth=16900
+r Quintex55 ANyurj5UwygJ5/fMS/Km/Gj8VS8 ouGuqT8y3PYrFTk9Vhm4xCes1eg 2020-12-08 22:36:12 199.249.230.144 443 80
+a [2620:7:6001::144]:80
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=4700
+r dragonhoard AOFknmn/kdfwHnSl5i7xT32ZFeQ SNeiMx4d+4SZ+atCuqNYwepCc5o 2020-12-09 10:02:42 116.203.50.182 8080 8008
+a [2a01:4f8:1c1c:b16b::1]:8080
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=24000
+r SemTempoIrmao AOid3vlEtC/WUvgMJIDV4g3xMZQ yYQkTjy/GHEjPfk9QAvDZtpEJxU 2020-12-09 05:14:42 193.234.225.67 9001 0
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=13000
+r Unnamed AOqv3AXc1uvR4G4LTx810W3wuoA WVDwZAI6yz6QSXxM7bse8QAePTE 2020-12-09 13:36:27 116.203.69.33 443 0
+s Fast Running Stable Valid
+w Bandwidth=30800
+r IBDUUIBAD APHyR7ORuEy2wiFyC8v8Df25ERc ENBjdj8RVFEXgBUhcp8HtIOm5/4 2020-12-09 12:53:25 81.169.180.28 9001 9030
+a [2a01:238:43b6:5400:b72e:eec2:4615:a65]:9050
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=15700
+r gftorrelay AQQjHeELXyZy9OQvFGssvZsNvbU UcHISVeUv/o5oMR7h4+HuPUACAg 2020-12-09 09:57:54 86.164.128.179 443 0
+s Fast Running V2Dir Valid
+w Bandwidth=196
+r favorableechopatch AQlwaYSqXhWDbpsgoUQYXdd0QR4 RmZ1bUbNFchahLXXMTD1IiUWcTM 2020-12-09 04:09:47 34.209.214.211 9001 9030
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=693
+r MYLEXr2 AQt3KEVEEfSFzinUx5oUU0FRwsQ DUD6jl+hfkjUy5m0ulahjYkh76c 2020-12-09 00:07:40 77.123.42.148 446 801
+a [2001:470:1f15:325:f66d:4ff:fee7:954c]:446
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=2510
+r DigiGesTor1e1 ARG6m2BGaeY2/9W1A/OCpLetboA vd65tYiF3IGllH2saMchJdwYEHw 2020-12-09 07:35:04 176.10.104.240 443 80
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=29000
+r torex13 ARZKgWsYI3JTwN/UNhCu+nfJBv0 TgNzYgNYIn65xgklQy7JTtcFPhs 2020-12-09 03:03:18 198.98.57.234 443 0
+s Exit Fast Running Stable Valid
+w Bandwidth=9200
+r motauri ARgbMb5YYMfWbaiPiK1SLAZHD9k JvURMwC8bjFwXfw2f28ieFCJipI 2020-12-09 00:37:30 95.143.193.125 443 80
+s Exit Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=275
+r bauruine ASTrpnMhMqJ1/2dIKR6JXcKGbvo CBx75An8uFtAUDzfbzPQLTIdpFg 2020-12-09 01:53:35 84.16.79.73 443 8080
+a [2001:1600:3:12:f816:3eff:fef3:a07b]:443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=54000
+r disobey ASpnaF8D1msj1hftg/hCWWbp1Ss PrKThyqLM4Bua3lNOk7bl+RpuA8 2020-12-09 12:51:25 172.97.202.91 9001 0
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=622
+r bang1 ATZpawJaxVA4R9c2/p89ZesnpZY VvVff+lWpwP6NW+gFm7+vFzqK4k 2020-12-08 21:56:33 134.209.159.74 443 80
+a [2400:6180:100:d0::8bb:6001]:443
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=784
+r CanterSecure01 AThKXZxtNDUnAb+G0E5fQGyyVq4 HfBTjQooT1mdwDLw02iz+QA0Abs 2020-12-09 11:34:28 45.9.148.31 9001 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=29000
+r Unnamed AT3TVVFquQNYAZflBqRcnVIqwHg y0W0iZYVLdfzeyqdmY+GPmfRe8I 2020-12-09 00:45:55 185.186.79.251 443 0
+s Fast Running Stable Valid
+w Bandwidth=23900
+r insist AUvQljY3O3jMKLpw42xxkOPeI2o 2vbVFCBL4P8RQ/oB+wxgMnf6ntQ 2020-12-09 12:55:53 5.57.243.59 993 992
+s Fast Running V2Dir Valid
+w Bandwidth=17000
+r 8ac97a37 AU4kwM0h0rmCnoQdXsHTxBX4Zr8 WRsVV6jdlZ75xd//kNkzGjRZYJQ 2020-12-09 11:53:39 138.201.122.55 443 0
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=88000
+r marsmellow AU7iS8vaFg8jayVHpGObJ+MDoec 2oX3C5W9T5zDBMFhmK1kAfsyrF4 2020-12-09 09:49:11 62.251.89.74 9001 0
+a [2001:985:a751:1:428d:5cff:fe5f:7f92]:9001
+s Fast Running Stable V2Dir Valid
+w Bandwidth=159
+r Minducus AVGMBBeEPpcJsVs7AEvINM3mepI CAd+i5E3Dx5XEzMIpE+6MPyTRlY 2020-12-09 00:00:00 204.228.147.42 9001 0
+s Fast Running Valid
+w Bandwidth=340
+r d0dak AWCT7kuumvRz/AyBGp0Q/aqco0s FeiW9MsGkVVKOg0/j6mHjKbGsSw 2020-12-08 23:22:54 62.65.106.163 443 0
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=509
+r nobody AWL6ssobf+KG/zWKG0Xh5TFwrW8 HcTCeHuIFV++DhjYGE6X3pbTUec 2020-12-09 14:03:49 95.79.25.190 9001 9030
+s Running Stable V2Dir Valid
+w Bandwidth=28
+r noce AWZNQagfgXo+cUANa/1AlHqkCvs EidDDIqNOGZlZ6rU86k4xJZ5EyY 2020-12-09 04:05:28 216.127.173.78 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=4430
+r Unnamed AWpUU8K5HJX3z7FAjA1/z0XAunU eFUK2KOXDpu1wwh0NWmu/o1bjCA 2020-12-09 03:03:16 31.220.1.233 9001 9030
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=38000
+r LastResort AXIqYNwOqmTXkFrWCjJCxgkec9E tObhmNazegk8T5Xs02dC5WteuZM 2020-12-09 14:00:10 185.112.146.155 9001 0
+s Fast Running Stable Valid
+w Bandwidth=155
+r CheenaTorExit1 AXKfEKgd3YqS13CyEzCC61bHXiY zplTZN2DhBJBTtkqt4iiyvo1Gw4 2020-12-09 14:25:07 178.17.170.135 9001 9030
+a [2a00:1dc0:caff:3a::dcbe]:9001
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=3490
+r hedden AXOnqLqdMgQ2QbaXJtMqmt/ibRY jMp5tADSKF6NXo4DTPSDgGMg19E 2020-12-09 13:08:20 93.174.93.133 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=8700
+r Bigdaddy AXsIzBY0JM1qukrdQEK0F01JRzI LU/c8OePA0nJTS/fGWDuSfngEq4 2020-12-09 09:50:29 185.21.217.32 10042 20042
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=70200
+r Unnamed AY3Zw6DSrQ/8rjl42JQYwbiLgdU xmuq8wscPvkeLVT6puyf9fg2uJE 2020-12-09 08:51:28 142.4.213.12 443 8443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=1780
+r Unnamed AZgfCa8I6x7Gn5GzHYm2x2dXYgo ZzWTqWR/BpyViRGEzcuzDeDzG/o 2020-12-09 08:25:22 54.36.112.244 9001 9030
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=57
+r Unnamed AZxTaJ2uxRjTd/ivr1qebvIDooI e87NzxKkR4iYZ6Vtb+6US8+Povo 2020-12-09 08:21:21 91.138.184.109 9001 9030
+s Running V2Dir Valid
+w Bandwidth=29
+r LeftBehind1 AZ4g41JIG9RaPOfWaRoQ+1MYUPs vklrRlvrIwZ0e4zrNX9K72u66Uo 2020-12-08 21:13:50 36.55.201.103 9001 9030
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=75
+r PyotrTorpotkinTwo AZ/rIs4Ey9BIm38kvgOFGLZPoiM W0zmkhea9jdyGFp77Rf4wkDxNNQ 2020-12-09 08:33:06 142.44.243.133 9001 9030
+a [2607:5300:201:3100::3e59]:9002
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=8940
+r rixtyminutes Aa4t4xQnbIL8zDYDocLzI45lRMk ojHEHGeLJnHj930qW+MqSESHR3Q 2020-12-09 01:21:17 149.56.233.142 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=14500
+r Hydra14 AbcMfEl/yGZ9teuCxA2PkhTWpIQ r9pViUzxp/WV8Hj0rY9uUtprDWY 2020-12-09 13:50:59 51.15.225.216 9001 80
+a [2001:bc8:47a4:1734::1]:9001
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=37000
+r PlasmaTor AcsOinXTWFs3ia1ZpC05rVGk4+0 8sPEWus20Hb60fpS79NUaNWqWvw 2020-12-09 13:24:39 189.103.17.109 42536 42566
+s Fast Running V2Dir Valid
+w Bandwidth=267
+r Overjump AcsuKXqPWG27z5jwKKPRpJsKt7o 1t1MKK1ak8cwARSXPU8nUxU8c7Q 2020-12-09 04:32:12 103.228.53.155 9001 9030
+s Exit Running Stable V2Dir Valid
+w Bandwidth=1
+r Vegvisir AdmDBLkJSYSEIEDd3hqMzBXrL/M VOew4+qti6sWA2stAYpP5L6J2sw 2020-12-09 13:28:27 99.241.160.189 9001 9030
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=456
+r Unnamed AeGagSrwpMlYSTHNbcPsB87uOiM jJ3Y/W6ZnTOQTUIlchSvY9VvoGs 2020-12-09 12:14:36 185.113.143.86 443 8443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=6720
+r Ubermensch Afc9vZtWwx49Oq65X4zx3rfZpy8 +fTQQYv9GE8JjUBJ93eJ3GKsQko 2020-12-09 10:37:22 158.69.35.227 9001 9030
+a [2607:5300:203:3888:158:69:35:227]:9001
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=27800
+r Unnamed AfxxydcD5oJKSo/quEvz7JpUP94 2sS2o8qhH7/CD07/8lwAtx/wC4A 2020-12-09 04:24:14 218.110.145.138 443 80
+s Fast Running V2Dir Valid
+w Bandwidth=78
+r relayon0308 Af3I6S0ygIR9hW2h+b/CtM0sLug WjVf8mUj7sFUKGSqr0f/Py2lq84 2020-12-09 11:22:40 185.220.101.209 30209 40209
+a [2a0b:f4c2:2::209]:20209
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=24200
+r daskapital Af4hN8QuSAJQeh/ZewFYEW/Xiow g6xJvEMvTGveRoDxouEMjzjKqE0 2020-12-09 09:56:19 85.214.141.131 443 80
+a [2a01:238:438c:5200:1a03:ed1f:ae7e:e9fa]:9050
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=27000
+r RS1Lselectel Af+chXHRwJ+o0qzOcn1VMP7BADg dtUclrApTPz6cxXAXlkYdGv08Ko 2020-12-09 05:06:03 31.184.218.180 9001 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=26000
+r GrmmlDag Ah3c1of9UFt+p+ddps7w13iqB/s nv6G4ILLdD1q9Qtifx8KEJSgncY 2020-12-09 05:46:04 213.239.215.221 9001 9030
+a [2a01:4f8:a0:90b0:789d:6a4:95f3:a78c]:9001
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=52600
+r frickySpeed t3XTfmypKI/X0Ml3y1W3vrEeAXk Drw6/iqXQKZP1RMZwJ8sNpGtHiY 2020-12-09 12:51:12 185.205.210.245 9001 0
+s Exit Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=750
+r hdiadhiahfiahbxaxao t3gGba121u6n0NMagvFoqEwNeVU 968W5tzDrz86BAZxHvYf9aAKzS8 2020-12-09 01:24:03 213.173.161.104 9001 9030
+a [2a03:b940:161:104::1]:9001
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=13700
+r Unnamed t8xkxWbqZIZTe6QYeHDi90R2PKU sF1hak4rioBTxxhG9zH9VYA+PMg 2020-12-09 12:02:50 188.218.47.5 9361 9737
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=677
+r piersic t+9kfvZZcmxxYkOoKHfSCqeXjrw 7MgyUwRyG/0cVpe0doOPtNglHGw 2020-12-08 21:15:37 185.227.82.7 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=6200
+r Harlock uBs4kCvwJr8lkcotc7mc7rA/CGk j2ZH1JBpZKrK6njijVi9YlWJQjo 2020-12-09 10:06:20 158.69.205.92 9001 9030
+a [2607:5300:201:3000::4dc0]:9001
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=8250
+r Unnamed uC0M3lYI8yKDRBWT/0Gngn6xz88 fcOCOp3YJRgU9I/+RId9UJciX6A 2020-12-09 02:57:10 142.4.212.31 443 8443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=8850
+r mj2 uEmCT4/NeusTDfNW9ZK6QMaGygg /2Kla2994Ghhl+mzaSvJQGvMGAs 2020-12-09 01:43:34 93.115.86.6 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=37500
+r gourdon uF5qsrXxFVNrLahHo/uZuKmF1Dc B7PuOZfILvhGHLxNsNDGXctbWOk 2020-12-09 05:27:25 92.92.33.51 9001 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=51000
+r snoop uH1GEk/Li9iHzHdDSfM17R+EGfY APWJCrna4nP0x96LFXBdbCykfaY 2020-12-09 06:49:25 91.233.116.29 9001 9030
+a [2a0c:f040::4435:1eff:fe35:4e8a]:9001
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=9890
+r eyeswideshut uJDLPFoF7SliX4cqHuRieIx9+ss 9M9KsTfq2jEfgwuaWL2wF5pzo9o 2020-12-09 09:23:48 82.223.55.187 9001 0
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=5080
+r bauruine uPLNoT5QgBvB4G/dHKmEredrz3s FAX5S3cgHV0aw96nxqcScyivC/4 2020-12-09 03:15:06 92.223.65.204 443 80
+a [2a03:90c0:154::cb]:443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=8100
+r Unnamed uPbmiza+4r9Uh1C9zMPCp9tWpiM WrE/ff78EaDAihL7SgJGtWTvw1M 2020-12-08 23:50:46 51.68.182.30 443 0
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=37900
+r scratchingnoises uPexYpYyh9IZnQdburLE+5Qbs5A prphU7oYI7EkQnW3RDTiEboGgRw 2020-12-09 04:42:23 83.212.75.10 443 0
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=14300
+r noregerbest uRThkFGhfF+A8/HP9jhePbXlJqw zO0RHed+9zjhtiMX/mbri0lef0c 2020-12-08 20:53:06 92.220.0.139 9001 0
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=1880
+r Assange008fr2 uRoesw5m1SAm780elr/A6WbIPm0 XJpvBq97YTpXeXy07+fLYFqASeg 2020-12-09 13:18:49 62.210.105.46 9201 9211
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=16500
+r Unnamed uTmophSGnN+yQPXvt4ujdTtQ6XM Su+jZySWvYxFSkq2Rv2Ld8dGcjo 2020-12-09 13:44:27 172.105.103.105 443 0
+s Fast Running Stable Valid
+w Bandwidth=3490
+r podeaTorNode uUCqyULpkp5nPDUz9RDFJhtQeQw 4TTaTz+mDvjOb2d/MwsY2IjKMyM 2020-12-09 05:35:04 85.214.253.107 9001 0
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=17000
+r MightyMasturbator uU45RU2Ot+bcfI45+Mi43MoAM8s /VlzK2K+94hc5pW2IcsRR5U5AGI 2020-12-09 00:47:38 109.229.210.6 9001 9030
+s Running Stable V2Dir Valid
+w Bandwidth=25
+r brokolimc1 uWot8cI9+RadcK3gmTvQAzEfUdo zRnFRLcg7xeskjMcLhmQjacZkJI 2020-12-09 14:39:19 91.9.177.219 9001 9100
+s Fast Running Stable V2Dir Valid
+w Bandwidth=298
+r duckgo uYd8ep6tdDnBhra0wohWEro3mHQ Y0OQfZYz4AuoVbkuPGiJqipjBSA 2020-12-09 06:28:34 185.165.169.222 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=5420
+r guerbette uY3zAOXqZzV6f13fuiE+boMSonw OTRyr4sG3eZHzpcGB/vrZqBkqJQ 2020-12-09 12:41:13 176.158.122.84 9001 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=25400
+r mobbingsyndromde uZYsGTrkMT1iXpv7lBXEMGIU0zA +q+/nNkcQ8/yWcjkMNGo+aiWeUU 2020-12-09 02:50:41 176.95.148.103 9001 9030
+s Fast Running Stable V2Dir Valid
+w Bandwidth=750
+r TTYC0 ufyN+ok5wSm+ds1l67rKfdrvhPU XtZSs6lh/cSaCUx9M2hzeCkOCQ8 2020-12-09 14:16:53 98.128.172.177 70 0
+s Fast Running V2Dir Valid
+w Bandwidth=3000
+r Unnamed ugBxq+SlvqZpqFJMHNim7rnV/Dk ufQgtmAELGh9bdzsbOlELml0nJA 2020-12-09 14:30:12 188.226.154.180 9001 9030
+s Fast Running Stable V2Dir Valid
+w Bandwidth=812
+r UEUEUEU ujSJAbxqD+TahsU0M0FKMSSTT88 QU1TISIqUpbXqrTMea+Y0fz+f/k 2020-12-09 02:09:07 65.50.203.5 9001 9030
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=45
+r 3raserRelay01 ulOfMwFORrz3aNYbRiBNnd6hfkQ Eajfr3PZzmOAwGpKBul8eyPL/QU 2020-12-09 13:50:11 135.181.37.113 9001 0
+a [2a01:4f9:c010:b3db::1]:9001
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=9800
+r KienjochMo2 umGx7UEB80FiJITBepu+DsW3C/U 95vVt/PmXlQyqNQUIduhNyI+RHs 2020-12-09 06:52:33 176.123.6.13 443 0
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=9540
+r Unnamed umlLi9raClLQDi+uigAs/TlKmgw 2+wHKmTMPaq5U7w8VSOaTbEs3FE 2020-12-09 11:33:11 185.186.78.194 443 0
+s Fast Running Stable Valid
+w Bandwidth=13600
+r busywatchman unnULTz0WEg8DKyliP9dfNTHBU8 0JwsIQPE6K3Itb88N2axosHkPDE 2020-12-09 13:11:59 195.230.22.38 9001 9030
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=8410
+r tormozuk uoVtIbGiLK5nenEtpMnwhS15nfg XbJo4YeFOI+jstESndIggOD7v4Q 2020-12-08 21:03:17 51.89.152.158 9001 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=71300
+r Unnamed upl3T+9xZVbjfvNAgg/DWPKoSwQ o0BGwe4KalBhKbsrCyE3em4qzFc 2020-12-08 23:20:59 23.237.34.138 443 8443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=2750
+r Digitalcourage4ip2b up1/uatO0PvKVpQdoiz3dwuhpLw qfG7b51nwmy0RcRW4vdWONyIPvk 2020-12-09 12:25:43 185.220.102.249 993 8080
+a [2a0b:f4c1:2::249]:993
+s Exit Fast Guard Running Stable V2Dir Valid
+w Bandwidth=58000
+r Unnamed utdhGHdlvGRlhdGRDQZ1lncJWbU Zew00QyAOXXQw4R9ns0bMSEAkr4 2020-12-09 10:36:47 45.66.156.189 443 8443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=5700
+r Unnamed uucLWmGxKj0x3ulOaXrx/ampuC0 AT+C5C9+DayqMFyVjE/g54wS0u0 2020-12-09 11:44:32 71.105.118.143 9002 9031
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=2770
+r Unnamed uwBMf0xcn65eABhkU3+JOIRE9XI qd9AhUxnpirI3k62eLM1Ii+ATSc 2020-12-09 09:08:01 37.191.195.28 8443 0
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=17600
+r Digitalcourage4ip1b uwNMNO2eYPdwntk/tDKpuhKi8rY Lf6V4G8IOf28ICMwr+z5c8KgUZ0 2020-12-09 12:25:43 185.220.102.248 993 8080
+a [2a0b:f4c1:2::248]:993
+s Exit Fast Guard Running Stable V2Dir Valid
+w Bandwidth=32000
+r lebowsky uwNgYFC1d7UD9Mhds9SCGiQtmo8 lnvmMwFpTFYLiVt4OlIqUMb8CuI 2020-12-08 22:55:56 178.17.174.2 80 443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=4370
+r 0ZQIX7g6 uwxjbeicrGyZXLOAqsjEqqtzG6g XjEWzC26JyK/KeGzd59CpyoC1GI 2020-12-09 14:12:55 77.37.142.179 9749 0
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=4800
+r Warth uxtBQSfwsoyAJDgOWedFSq26IHo YhY99E0r0Dn+ge/J9ee9WtWkBQw 2020-12-09 14:16:17 45.153.160.131 9001 9030
+a [2a0f:9100:110:a::83]:9001
+s Exit Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=17000
+r Assange010us u1YwlnYH2Ki2yoVK+VT+g3LRZio OQZs68TXT7S5/TCGsES+mgAQzhQ 2020-12-08 21:39:28 147.135.114.245 9001 9011
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=9140
+r TORmenTOR u2lhroY1dlxwWUOYfFC9ejn8W+k x0IK6N3dcuw7+JtnQa5s9TYOe5Y 2020-12-08 21:06:36 87.8.3.154 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=2680
+r motor u7u61FMmPXhuw0q2igYhQoiRA0U z+xp/3evfX8hAM9wkNh2OIVeXfs 2020-12-09 07:27:57 46.81.13.19 9321 9322
+a [2003:cc:6f0c:e81c:bbbb:bad4:5326:3d78]:443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=4420
+r Blazkowicz u9GxoiaVOWx13/M4qP96EoBKYHo h85vbs6yH19PAENs2uts6hRhEqE 2020-12-09 08:27:17 178.162.194.210 80 443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=8090
+r Unnamed u+gmk12D1AOlV+xe1Q4/wbUkqYk X7W2gjioeb2p+7gMfc+9WupE/kQ 2020-12-09 14:22:17 107.152.41.66 9001 9030
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=9610
+r partofswarm u/h2PFUfh6HMy2ZSu8CsM2v66i8 h3HRFP/cpH85WbJKZXp6Kd+4nZA 2020-12-09 05:02:24 82.196.11.10 9001 0
+s Fast Running Stable Valid
+w Bandwidth=542
+r node002sln vCONoQ9CfCFoX3ZjF/fglGlUuI8 CMun18TRDKbW4Tjn0p6MRmZT1Iw 2020-12-09 00:35:28 62.210.72.150 9443 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=15700
+r anon vEV8w7qlg4pXeh+JNyXlba6vt+w hEMoHjfjaDqWcDQn2+8O1hZlg6s 2020-12-09 07:20:47 91.192.103.17 443 80
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=33000
+r YagaTorRelay vHrPrASFTHcWfH1mt+RxMU7YxBA jFCSHl86GDfoYMKi+sYl7ZEvlio 2020-12-09 03:42:02 116.203.140.74 9001 9030
+a [2a01:4f8:c0c:e646::1]:9001
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=9800
+r oenx vKNfcMsOelg/xuy4P3VbCD6eLfs cg8Ri9NrAzv0sDijj6mCadwGM1I 2020-12-09 12:47:36 149.28.183.149 9001 9030
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=110
+r arrelay vOfNEQoM95wyfBGR4SAv2/6xR4g /qxE2IzGRpon7WByz51rLhda7Mo 2020-12-09 09:30:05 124.190.169.252 9001 0
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=82
+r brightleopard5 vPL6+VhHEjs/8KVNbNoRoMkLdG0 gjPjo6dBcdHrDIphlQ3vOpHoS6w 2020-12-09 13:07:02 185.177.127.35 9001 9030
+s Fast Running Stable V2Dir Valid
+w Bandwidth=17500
+r Unnamed vPvHoG4ex/pA4+1vg/7VkUPzuv4 PLtOgsWpkVyZLX3a81hcUSpJuwk 2020-12-09 11:24:25 51.210.242.102 9001 9030
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=20400
+r pluto vQINjts1XFNxmUIKryZJ+gRTbJo 9FwsUN3LRyzFqggp9vkJaTX8oIo 2020-12-09 06:02:47 167.86.127.130 443 80
+a [2a02:c207:3004:406::1]:443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=19900
+r Hydra22 vTPvGAsRGLAL3wc+J3EhDjvd2M0 boRqGSjXWi8tiqw7f/PrVNJekRU 2020-12-09 14:48:18 51.178.86.137 9001 80
+s Exit Fast Guard Running Stable V2Dir Valid
+w Bandwidth=41200
+r Unnamed vT++wdZ8SKJYPbN4uSpZxemrTaI bM4FtRO9ZOA/ecRkpxxnHUAE3io 2020-12-09 03:18:14 51.158.147.142 443 8443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=18100
+r donate4Crowdfunding vUFyUzw/cnGrzNnwV+Bv2RVHxCs 2RtboynZj/N5Apz/NavcRejlC0Q 2020-12-09 13:16:12 193.161.193.99 25565 80
+s Running V2Dir Valid
+w Bandwidth=1
+r Schakalium vVUsFl4u0oh9PxzOnP8VXdothuY PyUKaByB65UyZavbiaSMjAqinNE 2020-12-09 09:02:47 213.141.138.174 9001 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=6940
+r HouseDimir vVahw2GW7paLKjRjzNZAGbTlJtg wYg5gLdXKGDO74ZIX3Bf2GQdxh4 2020-12-09 04:47:43 82.181.91.118 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=1400
+r myNiceRelay654397 vWC49eoLjfWaayC3yz8o5cKh3Xo Ym4BKwybUHE6c8zqzrsGsQ5Zijc 2020-12-09 04:12:12 188.154.145.7 9001 0
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=4920
+r bonjour2 vW//GtWoio1Dhw1D7ERQCBtLK7o ymcz7vk/UiXIo31dsdOaHi9U8gI 2020-12-08 21:10:19 188.138.33.149 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=31800
+r cragg vcEXTHlLVWxHt8zmH/5l+xZye2w 4wDT8JP5+lCKcEnETd98JEoWGe8 2020-12-09 10:09:13 190.10.8.50 443 80
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=176
+r ZogZog45 vjlOKNznyuGPqfGDIXceIQL59dE 3p53/XWw7ucmuVwS7h5q/l8pXn4 2020-12-09 05:06:32 90.3.201.135 9003 9032
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=9240
+r Datalove voc3WX8ua0+AWJMgLJNRJYKakC4 ncWEjq7rJNCXa/8lYRzQVK2nBIQ 2020-12-09 12:44:37 78.194.59.118 9001 0
+a [2a01:e34:ec23:b760:5604:a6ff:fec4:58bd]:9001
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=41800
+r CoolPirate vqAj8d2WzlV1y8ulspolzX+lMc0 otb3Y47DBXzgPkjoVnBstXynw20 2020-12-09 13:57:00 62.210.148.210 9001 9030
+s Fast Running Stable V2Dir Valid
+w Bandwidth=8170
+r shardene vqY1yJwFfbjoeVcsaiwYgjnPrWg lIRubH0WDw4UfQ8Rh5q7YC8+ljQ 2020-12-09 06:38:18 185.51.76.178 9001 9030
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=69000
+r AmansAequi vqfAWOzSe+jnOnbL4TqReoMZJoU TazjNaSi9SJA4mPdOq4Spnkhx6o 2020-12-09 04:00:34 85.145.145.201 9001 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=9060
+r snap277 vqpdpxmET38iD8lo9qPXAFTGqHw JILmgsPMH2N+vyne5FR3rFXw/0g 2020-12-09 14:02:56 186.20.239.112 40279 0
+s Running V2Dir Valid
+w Bandwidth=26
+r TOL6 vrpSrIkEXW6taOl33z+YvPgzCq8 qVIYIv7NmjZVRy2o0LKgHc1aBD8 2020-12-08 23:07:38 95.141.36.127 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=47700
+r quadhead vw+1guN/c4zTPDZREl8ncnBbuOg viTo1e7GvPY0UDzKtYiBiqMbmfo 2020-12-09 13:50:47 148.251.190.229 9010 9030
+a [2a01:4f8:211:c68::2]:9010
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=130000
+r cel vykHfZDdZdixWy38h20lx25QV/s ts9/4VEORYk7bgenZs/tbYtFGOU 2020-12-08 23:20:25 62.113.227.124 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=7900
+r whitsun vyzZDOzLXHewk7ZMSw0Z6/tGKFg Fab1l5NU/4Zp7/UkQwO7vtc7KY0 2020-12-09 14:02:05 139.28.38.223 443 80
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=8700
+r TommysTorServer vy6njk8CzFIeZ4Wo7EFpQELIh8w U9EHRp/0a6QXMYrTP+3mlAe4iNo 2020-12-09 06:12:44 78.46.63.113 9001 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=2490
+r LupusreginaBeta v1Dgnu0luChhz5XhqqQtz+9T5dE 8ugiEv3IGsY9ufT7TCBWqE34ReQ 2020-12-09 00:40:02 213.113.2.126 6881 6882
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=46900
+r covfefe v3opxnsFAs8wgrEzK7+8q6rFUNU fccxM9Jqy6YAkRWSIBEWZ0oIxgM 2020-12-08 22:27:22 77.58.250.110 9001 9030
+a [2001:470:5179:1::233]:9001
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=2520
+r weepy v3v8swlvyB+9C3raZhZEMex/0Rc 2a5FouFIYXAo8iB/3LmUsXknEYc 2020-12-09 04:04:24 178.132.78.148 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=42900
+r hkff2 v4MMaMt3CR/jcF0WSHBNCuORUqA APGaBYFqz67dlHLAflwAaUZGcEU 2020-12-09 14:00:54 198.98.48.175 443 80
+s Exit Fast Running V2Dir Valid
+w Bandwidth=1590
+r stalag v6kF6hDf1Uo4oMEZ+uABgt5MFzs 6cT5f7zobns1Uv8jvetKR0asgFQ 2020-12-09 00:13:07 91.223.82.154 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=39600
+r Yggdrasil v7FLmt8fGeWSWMrn/NuqyZN7exA fXRWcU4NixkP0S/Non4Nj538IEo 2020-12-08 21:51:10 51.15.118.10 443 80
+a [2001:bc8:1820:192f::1]:443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=44000
+r Unnamed v72VS+YiX/8UZOZq5keq1gQpNt0 K4kvyW6xPxQhuVc78qv255j0Yvo 2020-12-09 07:33:50 51.75.54.84 443 8443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=39400
+r Torrific v8Luv+Map4KUmqfUEARr8o6vicg gUnUbdJijuPVR+e0Y2rFxpfnUzg 2020-12-09 12:36:19 108.56.180.75 443 0
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=6370
+r tremor v8RzQ0IgnI0XKqzCg3UBFvdDWcY fEOI2D4hhXrhX9eV8ydBsnC8M/o 2020-12-09 01:55:20 185.100.87.242 9000 8000
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=19100
+r Unnamed v83nxE3I8iIhaqz/RtPijXItMtM b+ue1vJdRMY85FSqYasjPovAQaM 2020-12-09 13:57:44 62.80.227.49 9001 9030
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=2630
+r joaobiscoito v9DdvJKddSt8WCMyXa4eA8rHGuc FyANWtlqVf7ybYJ80WcRumoW7oY 2020-12-09 01:39:27 179.100.109.59 9001 9030
+s Fast Running V2Dir Valid
+w Bandwidth=69
+r Hydra7 wBP2p6Ipf6TNANBe9KHFIiuESyU 2izrhrDQU2vHrvCrmur+cgZ0twA 2020-12-09 13:37:23 51.158.171.35 9001 80
+a [2001:bc8:1824:2539::1]:9001
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=34000
+r CriticlRemrk wCkrY0xHM8eT5x6cYPdE1Gx0xTA SRF8qSmDxq0s/OqlxewLpXmkrjc 2020-12-09 09:42:18 149.28.174.234 9001 8080
+s Running V2Dir Valid
+w Bandwidth=59
+r Unnamed wFzl2xb0khuv+vWFhb6Q0KOYD+s h+EP2sDG0KkFWW2s1wKZpaIq4KM 2020-12-09 13:53:06 170.75.164.141 443 0
+s Fast Running Stable Valid
+w Bandwidth=7600
+r Dampfkartoffeln wHiQMZM/f0tRBHY22dMbemw58XU q43omS7Ub2CILUQ0dQwhlHXdlyY 2020-12-08 23:01:00 78.42.14.61 444 0
+s Fast Running Valid
+w Bandwidth=7000
+r cdustueckscheisse wIBJE7tDHWTgYh5bzl2pfWJMrNE VVMhkHPPbebCYA3i0pd4io+iPYI 2020-12-09 07:46:54 45.83.40.96 443 0
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=3900
+r schmaggofatz wIDRIAwdnT5Tjvd3pNwFx9p3v8Q L1jtyH0OZjwXrlZ2IgayK+rU2vs 2020-12-09 04:29:20 178.82.241.4 9001 0
+s Fast Running Stable V2Dir Valid
+w Bandwidth=1500
+r NevadaRdTorRelay wIEB+xoTF+qQPJcPr6PgNAqctfc bkSSpClL6nQ4rOCXobvvAgJf4Tg 2020-12-09 04:15:49 69.173.181.160 9001 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=1580
+r twofish wLq5LdGP+D4xXMEUI49xz254LWY 7VTUYAspe5JqsUk9TlNDPBOD1WI 2020-12-08 21:22:58 164.160.129.5 443 0
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=1040
+r RattyRelay wMu9F/hIyPmkkQSpbbSYATsw8U8 GIjIV1c15G9M9gXei90q02E0Fmk 2020-12-09 00:00:25 85.167.112.152 9001 9030
+a [2001:4643:975a::7]:9001
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=19700
+r CogitoErgoSum wNC3zMAHZP9AC9EBHwDP9Y07evI s+5h32QaDPEwHDxL/50ZQyFi2hI 2020-12-09 02:48:35 145.239.95.15 443 80
+a [2001:41d0:601:1100::10b3]:443
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=15000
+r FreedomForParrots2 wOamZwZDhbnLWmhc6wa4Xt2mqgA yAwkB3slRLpB1mJVuIJz4FvsWEA 2020-12-09 03:01:04 77.123.155.45 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=13000
+r flies wPUIraFK5+qfj2ZQrxSbjfw1tZg qQHY/rLn1lX88tjZjl1WKNxdFZ0 2020-12-09 05:19:00 89.187.143.81 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=9420
+r taine wTDdkUqNDkhOaNzGgbQ0oLoETZ0 1keJg5QPK89ZjcWaRpYz6WNfbh4 2020-12-09 07:18:30 130.193.15.186 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=7810
+r AussieOnion wYQeS6fEoba6AS5DIFcKvvZtYLA /e0czLwVXtdC2MbEr8879Bn6NJw 2020-12-08 21:12:43 194.193.140.34 9001 9030
+s Fast Running V2Dir Valid
+w Bandwidth=69
+r fiedlerRelay03 wbUTu14VoYh7atyowBBjBzL8OJo BmxdUQzs9c9g5juMrN+YyFvfedU 2020-12-09 14:10:32 37.120.190.160 9001 0
+a [2a03:4000:6:b39a::2]:9001
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=6400
+r fuckcensorchip wbecTNm3E7u2sFIhVbRqe/47+q4 vxOTnvTeLsSUeCpdxSPp5YBiUwU 2020-12-08 21:17:54 89.163.216.11 443 9030
+a [2001:4ba0:cafe:df9::1]:443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=23700
+r MapleCrew wbjGiHhnztJWRFQFj5CCMR+vGsc 7KMBGv5j9thTp7S2AUXN6Z6Bb4Q 2020-12-09 06:42:32 192.99.35.91 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=17800
+r pros2 wbtn0/vtaNS61ADRpJxbeezjll4 VYsxGmiZhbirbBsuFNdqC/YY2AY 2020-12-09 08:07:12 145.239.84.172 80 0
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=10700
+r Unnamed wdWwTxm0XqD0+mW1ffyiZdAP2As VtUO7R8TJ+G2A+vL43lgMNlWeIM 2020-12-08 21:31:41 142.4.215.43 443 8443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=11000
+r ylxdzsw wf/yejjfjcizENB4wT4j8ICvKVc 60iCSUjqTs6XXd+D/k34BHDTAXI 2020-12-08 21:21:27 207.180.198.205 9001 0
+s Running Stable V2Dir Valid
+w Bandwidth=26
+r xe4 wgaEQkgGD//NrclohJcqVjquAFw mAPBK7Ef3hvQuCFf/caMnfdqe+M 2020-12-09 06:17:38 79.145.100.183 9004 0
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=6900
+r torMidi whUhH4j/z4xucMw0x22glI490ko kK1JTR6dD+YgBVoYzYttLBK8x9U 2020-12-09 01:14:53 82.64.152.247 9001 0
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=5830
+r FroggiePeppie wjmVLQyOTqvD5rCo4LYjaJF048Y wI3e9bA/Pcxm2alJ3JMiaSQDgBk 2020-12-09 03:29:06 94.23.195.99 9090 4443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=63900
+r AntifascistTorRelay wl5cYol7rLowlXHCVICEtFBQ/t8 GxGEhcEjFVv6sAaH6iNmS8uS1Kc 2020-12-09 14:16:23 185.217.93.92 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=22000
+r EXBRIT wpERRkDqMzpqxYAbXg7JXAEt/ms HH+5gXJIenRYz4fAqTaN8TLoHDo 2020-12-09 02:32:37 23.129.64.214 443 80
+a [2620:18c::214]:443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=3220
+r bgsv2 wrG/dmuVz3uLOBNX9sN2RhtY3rg sH+yzHrAMP0AX9I2maZBfQ49E9E 2020-12-09 07:06:59 93.104.213.2 9001 9030
+a [2a02:c205:3004:1323::1]:9001
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=4900
+r t4cc0reTor2 wrRRmfxvmOIb+v4IMzSPKI+jN+M UdmSYYk1e+2+iyzeip61JY5HgYU 2020-12-09 06:33:35 51.15.39.65 9001 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=27300
+r Unnamed wsHdPA4fNwpTeEeS5Ck6hEg6670 rq9V2+FYVu7JGVoojSPtBo8dxpk 2020-12-09 08:18:17 195.189.96.79 443 0
+s Fast Running Valid
+w Bandwidth=16900
+r Knowhere wvZTpc7jDI1XE/pK5/demSpHkZY 9/7wiurziQLqP5i/CG8Q1iA89LA 2020-12-08 22:13:57 51.254.114.134 9001 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=24800
+r RocklinTorRelay wvs0bs6kj8mArUQrrbfNEOFOU6Y /UyqTgZnaZuNLhV/RL4WK4HhEx8 2020-12-09 03:05:20 76.14.151.174 9001 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=3370
+r jmarshall2 w2NuyktAkABWWQqn2/xu0JN5hS8 U9YkvtWHE75/Wy3kwB/JjQYLFhE 2020-12-09 12:31:27 93.92.205.248 9121 9140
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=12600
+r pataky w3+HwBJeJuas9UNm+iGYIJ6Far4 79CmCnIombirJOu1Im6tBDcRB4s 2020-12-08 23:36:42 185.80.222.164 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=7800
+r Solarhost w4RgsLWuRDlAgn/zCGAuX0oStcQ olvTB2HzeHyo7BJt+iewrSfRFNo 2020-12-09 10:54:52 94.249.192.203 443 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=9690
+r itriedondebian w8cpAgJmBxmE/Ye/e+Au2zoGnis eo6N4mhT9spEVKoGgtIdrQTx1vY 2020-12-09 14:00:31 157.231.48.66 9001 0
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=78
+r Logforme2 w+Dp6h/z/Pwn6Fa/5hUzAg3X8JA f+yA6QndZLxZBlwHFzYv/bzXtmA 2020-12-09 08:18:05 85.228.173.240 444 9031
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=54000
+r usbrillantor xAqJ56IRYDD3D7n1YpzHmptL47k qS4DTlm57pgPVUnCcOTvkzSKbws 2020-12-09 04:02:27 170.39.218.3 9001 0
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=3010
+r tor4ever4 xBEHrwvWQT4NphS8UfNJoyD5MwE tlkBUHu/7kPG/nkOvPtxhDKDsQI 2020-12-09 01:31:18 45.62.230.216 9001 0
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=935
+r zebra620 xBTyj9K+wVUwJCmbMdTnJr6454g 5mbvik7SDbO2DMgd/X808TSC+04 2020-12-08 22:53:40 188.138.112.60 1521 1433
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=12000
+r Unnamed xDANPAO7QfX2K66Pxix4rA6Y0bw 41CRcA9VrP5f7yW66YgilgKm0mI 2020-12-09 03:26:38 78.94.141.202 9001 0
+s Running Stable V2Dir Valid
+w Bandwidth=12
+r shellfish01 xDgnu5S1nOYZhzEPgKA1xaud8AI R0HbrF8lX1ga0KIwwZ4LHns5FiI 2020-12-08 20:52:36 78.46.193.215 9001 9030
+a [2a01:4f8:c17:71fa::1]:9001
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=11500
+r jerailNode xEIxgYiHPZQbGcJibsbmUZErRts u6U8rvePcruW698v4FJxCGPDN9A 2020-12-08 22:21:48 209.226.147.139 9001 9030
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=2990
+r Mustvares xMvlQHg0gXZ843F5H81tkbP5oec 9BzOZQYO0YAs3APQy1E47ZrLE9I 2020-12-09 10:21:03 163.172.48.238 90 443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=25600
+r Uwantsmooke xNQ+wYF597LoGH1+KE1tVHIXs54 k054NRj98Ffk1AJLGJlTavaJgoU 2020-12-09 04:04:13 192.254.79.138 31337 29031
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=6740
+r EhRelay xP0kA8ySkpe1WaSeWCUWlE91xqk S3eEMpBhluB2UtoFfdFagVg4pCE 2020-12-09 14:47:27 165.22.236.251 9001 9030
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=227
+r meatloaf229 xULUUtQtvQGgcdLaHObuFa9A9cI 96d5QSStDEI2kAUVhwXShlCbyFE 2020-12-09 14:37:55 67.163.135.106 443 80
+s Exit Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=88
+r iansh4e xVT08e9xnTOqYSRXlgyInx+2Sks 5WGbUuLuyikygK+ZqokYNkyek8E 2020-12-09 06:23:05 51.75.64.187 9100 9101
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=35000
+r torrelay xXfFbq1lTIKdH/L4YTP4mhpZqok fMoEM1FbZIVuc7f650MjCQGINQI 2020-12-08 21:18:41 185.163.45.253 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=6700
+r pablobm007 xa8RtZW+IR5C0aEhq+yJUV07DLw NiO6GgL0sV1YpZjyseXAV0ph970 2020-12-09 13:52:42 159.65.10.189 9001 9030
+a [2400:6180:0:d1::509:3001]:9050
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=365
+r TokaNokaLokaKoka xbDSmuoKBWgnStZ7qOPF0IZCFdw eZZ/LiIB9V4X13EF9p8+EdWc4oE 2020-12-09 04:29:49 51.83.203.121 1200 1100
+a [2001:41d0:602:308f::b1]:1200
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=2100
+r ohsally xdVdEfJsUqa/7o3SPCUFSKpn6aw T4qhlQ8iTTIqeLwL9J4R3TWcmfE 2020-12-09 14:13:34 93.95.100.166 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=4620
+r AlliumCepa xfIU9/nMvwkyTJqgMnYBUCQ6GWw lM0QbsFQzeVr3ZVcSKUASdWuKaQ 2020-12-09 05:37:35 51.178.82.201 9001 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=46600
+r vega2 xfcT5QO58lFkLEmpmLBJjd2AK3I eg5X6SirMu1UDeb9o7whI7GSjV0 2020-12-09 13:55:19 185.163.117.147 9001 9030
+a [2a03:4000:3b:367:1429:66ff:fe5f:8d33]:9001
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=7780
+r HSB xfdqe0WaaO3SVWgDJfY3C2DgvDw JdiyNJDHBYYbrHEpXlGv8BztO+A 2020-12-09 05:16:52 5.9.82.76 9001 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=2600
+r Unnamed xjEQvdhzbSwqcz/5YvWNWP3mOi0 x9or47cWq0GYYlXaISnnSMP7tfw 2020-12-09 02:25:04 148.251.192.160 80 443
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=94100
+r tORu xj9Ox0Nxk71gcNXL0Oq7thDdAqo PsT9BtOPM6F+Cf8NQcDlkzX4Su8 2020-12-09 12:52:50 54.37.138.104 443 80
+a [2001:41d0:601:1100::218b]:443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=6190
+r Unnamed xkPHKhA8e/k7Hfn0+ChlErnEQ4w qbDu4sAEzzRTdTNoPfYjJikVHEY 2020-12-09 07:54:57 198.245.49.191 443 8443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=11400
+r Eliise04 xkZuGhHBzp3jCznyh0fiJrvBOac WFiY+hetphgoBo+ji/ORBoWpdDM 2020-12-09 13:17:06 185.195.237.117 443 80
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=5950
+r privexrelayde1 xk60VTqjCNj7wxTXO0QXjkyxHDU 4QIn+7vDSYn6YpKgM1aJJxA71VA 2020-12-08 23:13:17 148.251.183.205 8080 8081
+a [2a01:4f8:211:cc::2]:8080
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=81500
+r KoenzkTorRelay2 xlED+Husp0bogWucbXqkYN7AUWo b40k2oyjGsXy0yREaafA+8dVIDQ 2020-12-09 03:41:37 159.69.152.157 9001 9030
+a [2a01:4f8:1c1c:78a::1]:9001
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=5920
+r hydrosam xnzzxoU0irbYwFBZlR7UpVeC5BQ sD+rehd6zqpjNw7lWSxg2+0xYmU 2020-12-08 22:21:47 50.89.99.177 9001 9030
+s Fast Running V2Dir Valid
+w Bandwidth=434
+r Unnamed xpvj8DJqcyhVZQG+I3QI8ydIJH0 bLs6BnCabYq1UwEpCbY3VW0U7qw 2020-12-09 12:42:46 95.216.148.168 443 8443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=31700
+r Geheimschreiber xp0k+TU+FthegrSp5Fcd+vbc9TE RzdH9j96ohfB5K+IaCntBljz7yw 2020-12-09 01:50:31 31.52.239.227 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=1890
+r relayon0312 xuGEwJg8aLfov8YhXnKJ4J6Xqg4 Wp/7mFH0SkXyovCJFoCKuevcDRc 2020-12-09 11:24:52 185.220.101.202 30202 40202
+a [2a0b:f4c2:2::202]:20202
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=27900
+r Assange023gr xuORDLrcptLX6TKrMaA47dam+3k tZnX437y05QBU7JK2aKMiF6p9cg 2020-12-09 07:03:42 185.4.134.104 9001 9011
+a [2a02:c500:2:110::2d49]:9001
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=7200
+r TorOrDie4privacyNET xxBvDGp88PWSy6/3x5vYEVOxtfU BhLQapvI0OsPj1/yUVYkoQsWgxk 2020-12-09 02:04:12 37.157.254.113 443 80
+a [2001:4ba0:ffff:58::3]:443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=28700
+r freakonion x04sf7URhhpInGD3UDpv10wScj4 bPhUYLV/RWFXeK/KIFBaLrT8oow 2020-12-09 01:37:25 5.103.132.68 9001 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=4070
+r americium1997 x1zdgYMWq7yDn58N2uyHP89gw3A QfYf9yHnFSmVDCZ+u7sRc2IhZAE 2020-12-09 13:58:56 51.77.136.241 9001 0
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=18000
+r Unnamed x4fCq/ob4+NzPDy9twDvUEvzbak UEb/CiiwUReoM37jBJTBdP5XHLo 2020-12-09 10:30:31 51.38.80.237 443 80
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=19800
+r t0adwarri0r x5RtmhkrvkTByKkmqLE1rEldZjY SCI0tKRRQ3WYaoA2LTThKZwZ0D4 2020-12-09 07:59:04 198.50.238.128 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=4850
+r Skylar x7BlmHITROyo8xvonK+2Qv6ldUg k0RUJ25+Z5/1mEeLhUHIRzv8f8o 2020-12-09 08:26:17 195.116.17.161 9001 9002
+s Fast Running Stable V2Dir Valid
+w Bandwidth=1700
+r flaus x7aht2tkdts9qMlg4mLMdCW1xfg Ks+0ULNjllCwqOaPNKPrW3Pwol4 2020-12-09 04:20:11 62.109.4.115 443 80
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=6700
+r Unnamed x9SPo3Xx3m6jn9lTM6dHW72Dkx0 FvqyWQnYrAUQbLMLuJMroNVwL1s 2020-12-09 05:28:11 51.158.147.56 443 8443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=19500
+r Almighty x/R9FtJiz+G/9wfoeYs8oBRVJCM i2dVzLmksUV9OZzS8cbh1Xegmco 2020-12-09 08:46:57 95.216.187.91 9029 9030
+a [2a01:4f9:c010:dcc2::1]:9029
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=9130
+r MCdrKNe2 x/9gbVnH9r7KijQdPPEbQj84LV0 bBw/GOmtwDb1wIUIVEQE4yq57Xc 2020-12-09 03:39:31 94.16.121.20 9001 0
+s Fast Running Stable Valid
+w Bandwidth=16500
+r Unnamed yAS+j7HHxC1DxKXiA553qg/zqLQ M0kbvkCXT7RT9eevJH69IpJ3p0w 2020-12-09 14:09:34 192.42.116.161 9001 9030
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=644
+r WhitmerIsACunt yEE1fPoPLOlmku8h1RXWvwsBcDY mGLvAYe8RgoBGznHNGWMxsW5Uxs 2020-12-09 00:10:59 185.142.239.49 9001 9002
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=10600
+r quenakjopert yG98shNBlw3t9LYBfM5fQdcXkok 6XAqwf5CKjfoxZkOBWwxY5nbrQ0 2020-12-09 14:41:59 109.194.141.52 9001 9030
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=1950
+r theia4 yHpNi1NPeP3w9GObVfEhQB/vJZw 2V79z6dKE8uy/v+MqQNeK7HPMns 2020-12-09 01:34:44 50.7.74.173 443 80
+a [2001:49f0:d002:2::54]:443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=7260
+r Unnamed yKlZMzIIePyqrLMxkV6Sa694olk t6AUOmfWdWxvpl3SHkefyhEZMFM 2020-12-09 13:58:55 159.69.6.142 443 0
+s Fast Running Stable Valid
+w Bandwidth=44200
+r Unnamed yLYkIrI+TYXdaNhA0UAiZsZ+D5w D6RZoWOQJlRLyBa3Du0HhaSkRBI 2020-12-09 00:06:10 74.121.191.178 443 8443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=7530
+r Rigel2020 yL7z3wevOLaN0NqRsjsZ69LHZn8 aLfhKK2vD9onxKEY695h/sSHvew 2020-12-09 06:55:24 94.16.122.65 80 443
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=9320
+r iansh9r yMRuPk8AqSw0SzZ+RfnWPruDHeE 8row1fXPE+u93X8dypF83DRRuc0 2020-12-09 04:05:24 107.152.35.150 9100 9101
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=9580
+r lunartown yOWNQegmgwom/uxPJaZ14ex+y/s berBEoBimRj2q5shGNge8qLFS7c 2020-12-09 13:07:12 41.208.71.9 9001 9030
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=2280
+r Assange003ru yPQC/fieW1HYYq1o2MF9+lo3G6A 7LJc/pnsxWVPpWHdLvaiH8qupv4 2020-12-09 12:40:27 185.22.172.106 9001 9011
+a [2a00:1838:36:29::9001]:9001
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=18500
+r relayon0318 yPb2wYNEVPHpJ6SgXo5U62I9S3M QiQ8K92F4h58dI5yq66NRLTxM1I 2020-12-09 05:18:38 185.220.101.203 30203 40203
+a [2a0b:f4c2:2::203]:20203
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=40800
+r cowcat yQyjt/4BoUa4Jo1Wl33EosAkueo zPlM7dW/E4Ofewl/ZOBFTs+03A0 2020-12-09 08:04:58 192.160.102.165 9001 80
+a [2620:132:300c:c01d::5]:9002
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=13000
+r BantuRelay ySeLYCAl+uQ5u1VLxOEYTP8aKr8 lirmeAkhWsKFaaenzKRjoim6GiY 2020-12-09 13:55:27 54.251.87.143 9001 9030
+s Fast HSDir Running Stable V2Dir Valid
+w Bandwidth=333
+r punasipuli yTAAp1TxknrNO2BzS9jUF4aL8EM wMZQZzIeOBJSUL3rAPMCQQRabOI 2020-12-09 01:40:47 94.140.116.25 9001 9030
+a [2a02:7aa0:1201::6eb7:1743]:9001
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=9080
+r pbx yg9ZFvIUd+rTblP9ej0O6l/aL6Y 3OxuqYjTg69yeHpwnTf+1iqc4OA 2020-12-09 03:10:05 94.140.116.167 9001 0
+s Fast Running Stable Valid
+w Bandwidth=4800
+r OnionWindows yilgP+IUPJvwav52q115QBlCccE 63LYrcG2pY0GlqLxDM1ASzb2WdQ 2020-12-09 00:40:03 80.211.150.177 9001 0
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=1590
+r privacy4every1 ykLZWUf/5f29pRE5+vgJtDUu/+w KM+Ht/WkmpxkZtXd524I20vWPP4 2020-12-09 12:32:38 66.228.51.207 9001 0
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=2210
+r renewablefreedom ypRwQhcmDnSD2ohxnKzXqUxWTVw hGOslGStyOGNHz0Qlp+Eaxdp6X4 2020-12-09 14:27:00 185.220.102.8 443 0
+a [2a0b:f4c1::8]:443
+s Exit Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=41000
+r Heimdall ysHusyT4ztrpxDLpnOj0Ld9MtJA pHKcbKhqKQa6YItNKdYHpaeyif0 2020-12-09 13:58:12 51.89.23.157 9001 9050
+a [2001:41d0:701:1100::2896]:9001
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=22000
+r PrivcyGermanyRelay /svqXppv95nBVh/FuRK2pf4yVdQ 7qQAf3LszdpgGl0Z4fN2tjrKsKs 2020-12-08 21:36:38 51.195.41.148 9001 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=46700
+r BestKorea /xVOAmWtwk/bHYu6NEVeMkyf5Ac uQ9VpZe9os/rIDAsDEHPgapRFwo 2020-12-09 02:46:25 51.15.220.171 9001 0
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=4190
+r ZibaHost /zV2OoveBznvAdOz5i7t/KgWj5A iwyC+iKjQZzeWn7vum8b0qW2woE 2020-12-09 06:51:10 46.35.178.213 443 80
+s Fast Running V2Dir Valid
+w Bandwidth=1640
+r eeeeeee /49WteGjY0H4T/cpJ86z8Kxrxqk HdaW6FC7U6JmPKqnA+lGNg9PjrM 2020-12-09 12:11:13 46.4.123.182 9001 9030
+s Fast Guard HSDir Running Stable V2Dir Valid
+w Bandwidth=91600
+r Lule /6cr1oO8L8+Yg1bmvsHkkPMT+wc Xyl+mqljQ910Ehj1VH65eVfaJ4I 2020-12-09 04:22:11 193.11.164.243 9001 9030
+a [2001:6b0:7:125::243]:9001
+s Fast Guard Running Stable V2Dir Valid
+w Bandwidth=46200
+.
+650 OK

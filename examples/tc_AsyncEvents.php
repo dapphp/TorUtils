@@ -17,6 +17,13 @@ try {
     exit;
 }
 
+// List of async events the client can receive AsyncEvent objects for, otherwise ProtocolReply objects are returned.
+// To maintain compatibility with events added in later versions, callers must explicitly supply the events that are
+// expected to be returned as TorUtils/Event/* objects vs. ProtocolReply objects. This helps ensure code doesn't break
+// when future versions introduce new Event classes that are not recognized.
+$knownEvents = [ 'ADDRMAP', 'GUARD', 'DEBUG', 'INFO', 'NOTICE', 'WARN', 'ERR', 'NEWCONSENSUS', 'STREAM', 'CIRC', 'BW', 'SIGNAL', ];
+//$knownEvents = [ 'NS', 'NEWCONSENSUS', ];
+
 // register anonymous function as the event handler for async events
 $tc->setAsyncEventHandler(function($event, $data) {
     // depending on the $event - data may be an array or ProtocolReply object
@@ -24,42 +31,62 @@ $tc->setAsyncEventHandler(function($event, $data) {
 
     switch($event) {
         case 'ADDRMAP':
-            echo sprintf(
-                "Resolved %s.  Error: %s.  Address: %s\n",
-                $data['ADDRESS'],
-                (isset($data['error']) ? 'YES' : 'No'),
-                $data['NEWADDRESS']
-            );
+            // Address map event
+            echo $data;
+            break;
+
+        case 'BW':
+            // Bandwidth event
+            echo $data;
             break;
 
         case 'INFO':
         case 'NOTICE':
         case 'WARN':
         case 'DEBUG':
-            foreach($data->getReplyLines() as $replyLine) {
-                echo sprintf("LOG: %s\n", $replyLine);
-            }
+            // Log event
+            echo $data;
             break;
 
         case 'CIRC':
-            foreach($data as $circuit) {
-                echo $circuit;
-            }
+            // Circuit status event
+            echo $data;
+            break;
+
+        case 'GUARD':
+            echo $data;
+            break;
+
+        case 'NEWCONSENSUS':
+            // New network consensus has arrived
+            echo $data;
+            break;
+
+        case 'NS':
+            // Network status changed
+            echo $data;
+            break;
+
+        case 'STREAM':
+            // Stream status event
+            echo $data;
             break;
 
         case 'SIGNAL':
-            $signal = $data[0];
-            echo $signal . "\n";
+            echo $data;
             break;
 
         default:
-            echo "Got event $event\n";
+            echo "Got event '$event'\n";
             var_dump($data);
     }
-});
+
+}, $knownEvents);
 
 // tell controller to notify of these events; could also pass events as an array
-$tc->setEvents('ADDRMAP NS NEWCONSENSUS SIGNAL CONF_CHANGED STATUS_GENERAL CIRC INFO NOTICE WARN');
+$tc->setEvents(join(' ', array_filter($knownEvents, function($item) {
+    return $item != 'DEBUG';
+})));
 
 // enable debug output and logging to file so we can see events received
 // $tc->setDebug(1)->setDebugOutputFile(fopen('/tmp/tor.txt', 'w+'));
@@ -71,21 +98,9 @@ while (true) {
     // reply back from the controller, if there is one.  Otherwise readReply blocks
     // until data is available
 
-    $read = $tc->getInfoTrafficRead();
-    $writ = $tc->getInfoTrafficWritten();
+    $tc->waitForEvent(60); // blocks until event data is received or timeout reached
 
-    echo "Traffic = $read / $writ                 \r";
-    sleep(1);
-
-    // $reply = $tc->readReply(); // blocks until reply received
-    // unless you are ONLY reading events from the controller, don't call
-    // readReply() without sending a command first, otherwise it could block
-    // the script until an event is received.
-    // When an asyncEventHandler function is supplied, events will always be
-    // received and dispatched between other command data and responses but if
-    // events are infrequently received, don't call readReply without having sent
-    // a command first.
-
+    $uptime = $tc->getInfoUptime();
 }
 
 $tc->quit();

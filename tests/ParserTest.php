@@ -1,10 +1,11 @@
 <?php
 
 use Dapphp\TorUtils\Parser;
-use Dapphp\TorUtils\CircuitStatus;
+use Dapphp\TorUtils\Event;
 use Dapphp\TorUtils\ProtocolReply;
 use Dapphp\TorUtils\RouterDescriptor;
 use Dapphp\TorUtils\ProtocolError;
+use Dapphp\TorUtils\Event\StreamStatus;
 
 use PHPUnit\Framework\TestCase;
 
@@ -41,10 +42,70 @@ final class ParserTest extends TestCase
     public function testParseCircuitStatus($line, $expected)
     {
         $p = new Parser();
+        $e = new Event\CircuitStatus();
 
-        $status = $p->parseCircuitStatusLine($line);
+        $reply = new ProtocolReply('CIRC');
+        $reply->appendReplyLine($line);
 
-        $this->assertEquals($expected, $status);
+        $e->parse($reply, $p);
+
+        $this->assertEquals($expected, $e);
+    }
+
+    public function testParseStreamStatus1()
+    {
+        $p = new Parser();
+        $e = new Event\StreamStatus();
+
+        $line = 'STREAM 153 NEW 0 torproject.org:443 SOURCE_ADDR=127.0.0.1:45508 PURPOSE=USER';
+        $reply = new ProtocolReply('STREAM');
+        $reply->appendReplyLine($line);
+
+        $status = $e->parse($reply, $p);
+
+        $this->assertEquals(153, $status->streamId);
+        $this->assertEquals(StreamStatus::STATUS_NEW, $status->streamStatus);
+        $this->assertEquals(0, $status->circuitId);
+        $this->assertEquals('torproject.org:443', $status->target);
+        $this->assertEquals('USER', $status->purpose);
+    }
+
+    public function testParseStreamStatus2()
+    {
+        $p = new Parser();
+        $e = new Event\StreamStatus();
+
+        $line = 'STREAM 153 SENTCONNECT 38 torproject.org:443 METHODS=COOKIE,SAFECOOKIE,HASHEDPASSWORD COOKIEFILE="/var/run/tor/control.authcookie"';
+        $reply = new ProtocolReply('STREAM');
+        $reply->appendReplyLine($line);
+
+        $status = $e->parse($reply, $p);
+
+        $this->assertEquals(153, $status->streamId);
+        $this->assertEquals(StreamStatus::STATUS_SENTCONNECT, $status->streamStatus);
+        $this->assertEquals(38, $status->circuitId);
+        $this->assertEquals('torproject.org:443', $status->target);
+        $this->assertNull($status->purpose);
+    }
+
+    public function testParseStreamStatus3()
+    {
+        $p = new Parser();
+        $e = new Event\StreamStatus();
+
+        $line = 'STREAM 10 NEW 0 37.218.242.217.$09C2AA312AE0DDDF4C5E57CB1BE24158A5408590.exit:9001 PURPOSE=DIR_UPLOAD CLIENT_PROTOCOL=UNKNOWN NYM_EPOCH=0 SESSION_GROUP=-2 ISO_FIELDS= OTHERFOO=BAR';
+        $reply = new ProtocolReply('STREAM');
+        $reply->appendReplyLine($line);
+
+        $status = $e->parse($reply, $p);
+
+        $this->assertEquals(10, $status->streamId);
+        $this->assertEquals(StreamStatus::STATUS_NEW, $status->streamStatus);
+        $this->assertEquals(0, $status->circuitId);
+        $this->assertEquals('UNKNOWN', $status->clientProtocol);
+        $this->assertEquals('DIR_UPLOAD', $status->purpose);
+        $this->assertEquals('-2', $status->sessionGroup);
+        $this->assertEquals('', $status->isoFields);
     }
 
     public function testParseProtocolInfo()
@@ -87,9 +148,6 @@ final class ParserTest extends TestCase
         $this->assertEquals($expected, $info);
     }
 
-    /**
-     * @expectedException \Dapphp\TorUtils\ProtocolError
-     */
     public function testParseBadProtocolInfo()
     {
         $p     = new Parser();
@@ -99,38 +157,8 @@ final class ParserTest extends TestCase
         $reply->appendReplyLine("250-VERSION Tor=\"0.2.9.8\"\n");
         $reply->appendReplyLine("250 OK\n");
 
-        $info  = $p->parseProtocolInfo($reply);
-    }
-
-    public function testParseCircuitStatusReply()
-    {
-        $cmd  = 'GETINFO circuit-status';
-        $data = "250+circuit-status=\n" .
-                 "621 BUILT \$D42876442AE9D9E6B88A59901E893921DE85D514~Unnamed,\$58ED9C9C35E433EE58764D62892B4FFD518A3CD0~SamAAdams2,\$335746A6DEB684FABDF3FC5835C3898F05C5A5A8~KyleBroflovski BUILD_FLAGS=NEED_CAPACITY PURPOSE=GENERAL TIME_CREATED=2018-05-13T18:17:45.079054\n" .
-                 "622 BUILT \$D42876442AE9D9E6B88A59901E893921DE85D514~Unnamed,\$BF0FB582E37F738CD33C3651125F2772705BB8E8~quadhead,\$5DC945CE8FB2A37E6E2795ECD2709BB21F8714B0~Unnamed BUILD_FLAGS=NEED_CAPACITY PURPOSE=GENERAL TIME_CREATED=2018-05-13T18:17:45.924044\n" .
-                 "623 BUILT \$D42876442AE9D9E6B88A59901E893921DE85D514~Unnamed,\$52178B12915D00B6DFFCBDAC0E298EFB0E41C8C7~torpidsITseflow,\$F45C2B9B294259C647FA504D2231811B7F28C81F~IPfailD BUILD_FLAGS=NEED_CAPACITY PURPOSE=GENERAL TIME_CREATED=2018-05-13T18:17:46.924863\n" .
-                 ".\n" .
-                 "250 OK\n";
-
-        $p     = new Parser();
-        $reply = new ProtocolReply($cmd);
-
-        foreach (explode("\n", $data) as $line) {
-            $reply->appendReplyLine($line);
-        }
-
-        $this->assertEquals(250, $reply->getStatusCode());
-
-        $first = $reply->getReplyLines()[1];
-
-        /** \Dapphp\TorUtils\CircuitStatus $circ */
-        $circ = $p->parseCircuitStatusLine($first);
-
-        $this->assertInstanceOf(\Dapphp\TorUtils\CircuitStatus::class, $circ);
-
-        $this->assertEquals(621, $circ->id);
-        $this->assertEquals('GENERAL', $circ->purpose);
-        $this->assertEquals('2018-05-13T18:17:45.079054', $circ->created);
+        $this->expectException(\Dapphp\TorUtils\ProtocolError::class);
+        $p->parseProtocolInfo($reply);
     }
 
     // DATA PROVIDERS
@@ -157,13 +185,14 @@ final class ParserTest extends TestCase
 //      595 BUILT $844AE9CAD04325E955E2BE1521563B79FE7094B7~Smeerboel,$0D5147ED1B34FA9CFF47CFA26A9BE45DAC422E98~Moooooooooooon,$E8E71987BCB8C24DBDF1C3BB0BF3B6C76550A108~xshells BUILD_FLAGS=NEED_CAPACITY PURPOSE=GENERAL TIME_CREATED=2016-12-26T23:03:30.912344 SOCKS_USERNAME="1063549068" SOCKS_PASSWORD="3125842993"
 
         $data = array();
+        $p    = new Parser();
 
-        $c = new CircuitStatus();
-        $c->id = 57;
+        $c = new Event\CircuitStatus($p);
+        $c->id = '57';
         $c->status = 'LAUNCHED';
         $c->buildFlags = array('NEED_CAPACITY');
         $c->purpose = 'GENERAL';
-        $c->created = '2016-12-22T06:11:06.611813';
+        $c->timeCreated = '2016-12-22T06:11:06.611813';
 
         $data[] = array(
             'CIRC 57 LAUNCHED BUILD_FLAGS=NEED_CAPACITY PURPOSE=GENERAL TIME_CREATED=2016-12-22T06:11:06.611813',
@@ -171,17 +200,17 @@ final class ParserTest extends TestCase
         );
 
         // next
-        $c = new CircuitStatus();
-        $c->id = 57;
+        $c = new Event\CircuitStatus($p);
+        $c->id = '57';
         $c->status = 'EXTENDED';
         $c->path = array(
-            array('$844AE9CAD04325E955E2BE1521563B79FE7094B7', 'Smeerboel'),
-            array('$CDA994EF01449CDD2E9410709563A3FA3B92ED41', 'Iridium11'),
-            array('$6E94866ED8CA098BACDFD36D4E8E2B459B8A734E', 'niftybeaver'),
+            array('$844AE9CAD04325E955E2BE1521563B79FE7094B7', 'Smeerboel', 'fingerprint' => '$844AE9CAD04325E955E2BE1521563B79FE7094B7', 'nickname' => 'Smeerboel'),
+            array('$CDA994EF01449CDD2E9410709563A3FA3B92ED41', 'Iridium11', 'fingerprint' => '$CDA994EF01449CDD2E9410709563A3FA3B92ED41', 'nickname' => 'Iridium11',),
+            array('$6E94866ED8CA098BACDFD36D4E8E2B459B8A734E', 'niftybeaver', 'fingerprint' => '$6E94866ED8CA098BACDFD36D4E8E2B459B8A734E', 'nickname' => 'niftybeaver'),
         );
         $c->buildFlags = array('NEED_CAPACITY');
         $c->purpose = 'GENERAL';
-        $c->created = '2016-12-22T06:11:06.611813';
+        $c->timeCreated = '2016-12-22T06:11:06.611813';
 
         $data[] = array(
             'CIRC 57 EXTENDED $844AE9CAD04325E955E2BE1521563B79FE7094B7~Smeerboel,$CDA994EF01449CDD2E9410709563A3FA3B92ED41~Iridium11,$6E94866ED8CA098BACDFD36D4E8E2B459B8A734E~niftybeaver BUILD_FLAGS=NEED_CAPACITY PURPOSE=GENERAL TIME_CREATED=2016-12-22T06:11:06.611813',
@@ -189,13 +218,13 @@ final class ParserTest extends TestCase
         );
 
         // next
-        $c = new CircuitStatus();
-        $c->id = 58;
+        $c = new Event\CircuitStatus($p);
+        $c->id = '58';
         $c->status = 'EXTENDED';
-        $c->path = array(array('$E3FC463D3072410F6618809FF6CBE97276A61B82', 'yoctoMCLgg'));
+        $c->path = array(array('$E3FC463D3072410F6618809FF6CBE97276A61B82', 'yoctoMCLgg', 'fingerprint' => '$E3FC463D3072410F6618809FF6CBE97276A61B82', 'nickname' => 'yoctoMCLgg'));
         $c->buildFlags = array('ONEHOP_TUNNEL', 'IS_INTERNAL', 'NEED_CAPACITY');
         $c->purpose = 'GENERAL';
-        $c->created = '2016-12-22T06:16:44.035229';
+        $c->timeCreated = '2016-12-22T06:16:44.035229';
 
         $data[] = array(
             'CIRC 58 EXTENDED $E3FC463D3072410F6618809FF6CBE97276A61B82~yoctoMCLgg BUILD_FLAGS=ONEHOP_TUNNEL,IS_INTERNAL,NEED_CAPACITY PURPOSE=GENERAL TIME_CREATED=2016-12-22T06:16:44.035229',
@@ -203,17 +232,17 @@ final class ParserTest extends TestCase
         );
 
         // next
-        $c = new CircuitStatus();
-        $c->id = 57;
+        $c = new Event\CircuitStatus($p);
+        $c->id = '57';
         $c->status = 'BUILT';
         $c->path = array(
-            array('$844AE9CAD04325E955E2BE1521563B79FE7094B7', 'Smeerboel'),
-            array('$CDA994EF01449CDD2E9410709563A3FA3B92ED41', 'Iridium11'),
-            array('$6E94866ED8CA098BACDFD36D4E8E2B459B8A734E', 'niftybeaver'),
+            array('$844AE9CAD04325E955E2BE1521563B79FE7094B7', 'Smeerboel', 'fingerprint' => '$844AE9CAD04325E955E2BE1521563B79FE7094B7', 'nickname' => 'Smeerboel'),
+            array('$CDA994EF01449CDD2E9410709563A3FA3B92ED41', 'Iridium11', 'fingerprint' => '$CDA994EF01449CDD2E9410709563A3FA3B92ED41', 'nickname' => 'Iridium11'),
+            array('$6E94866ED8CA098BACDFD36D4E8E2B459B8A734E', 'niftybeaver', 'fingerprint' => '$6E94866ED8CA098BACDFD36D4E8E2B459B8A734E', 'nickname' => 'niftybeaver'),
         );
         $c->buildFlags = array('NEED_CAPACITY');
         $c->purpose = 'GENERAL';
-        $c->created = '2016-12-22T06:11:06.611813';
+        $c->timeCreated = '2016-12-22T06:11:06.611813';
 
         $data[] = array(
             'CIRC 57 BUILT $844AE9CAD04325E955E2BE1521563B79FE7094B7~Smeerboel,$CDA994EF01449CDD2E9410709563A3FA3B92ED41~Iridium11,$6E94866ED8CA098BACDFD36D4E8E2B459B8A734E~niftybeaver BUILD_FLAGS=NEED_CAPACITY PURPOSE=GENERAL TIME_CREATED=2016-12-22T06:11:06.611813',
@@ -221,43 +250,43 @@ final class ParserTest extends TestCase
         );
 
         // next
-        $c = new CircuitStatus();
-        $c->id = 59;
+        $c = new Event\CircuitStatus($p);
+        $c->id = '59';
         $c->status = 'BUILT';
         $c->path = array(
-            array('$844AE9CAD04325E955E2BE1521563B79FE7094B7', 'Smeerboel'),
+            array('$844AE9CAD04325E955E2BE1521563B79FE7094B7', 'Smeerboel', 'fingerprint' => '$844AE9CAD04325E955E2BE1521563B79FE7094B7', 'nickname' => 'Smeerboel'),
         );
         $c->buildFlags = array('ONEHOP_TUNNEL', 'IS_INTERNAL', 'NEED_CAPACITY');
         $c->purpose = 'GENERAL';
-        $c->created = '2016-12-22T06:16:48.305324';
+        $c->timeCreated = '2016-12-22T06:16:48.305324';
         $data[] = array(
             'CIRC 59 BUILT $844AE9CAD04325E955E2BE1521563B79FE7094B7~Smeerboel BUILD_FLAGS=ONEHOP_TUNNEL,IS_INTERNAL,NEED_CAPACITY PURPOSE=GENERAL TIME_CREATED=2016-12-22T06:16:48.305324',
             $c
         );
 
         // next
-        $c = new CircuitStatus();
-        $c->id = 60;
+        $c = new Event\CircuitStatus($p);
+        $c->id = '60';
         $c->status = 'BUILT';
         $c->path = array(
-            array('$FB879163DB5CAC39E936F799D599E76A1C0F6E7A', 'servingsize')
+            array('$FB879163DB5CAC39E936F799D599E76A1C0F6E7A', 'servingsize', 'fingerprint' => '$FB879163DB5CAC39E936F799D599E76A1C0F6E7A', 'nickname' => 'servingsize')
         );
         $c->buildFlags = array('ONEHOP_TUNNEL', 'IS_INTERNAL', 'NEED_CAPACITY');
         $c->purpose = 'GENERAL';
-        $c->created = '2016-12-22T06:16:48.305396';
+        $c->timeCreated = '2016-12-22T06:16:48.305396';
         $data[] = array(
             'CIRC 60 BUILT $FB879163DB5CAC39E936F799D599E76A1C0F6E7A~servingsize BUILD_FLAGS=ONEHOP_TUNNEL,IS_INTERNAL,NEED_CAPACITY PURPOSE=GENERAL TIME_CREATED=2016-12-22T06:16:48.305396',
             $c
         );
 
         // next
-        $c = new CircuitStatus();
-        $c->id = 287;
+        $c = new Event\CircuitStatus($p);
+        $c->id = '287';
         $c->status = 'CLOSED';
-        $c->path = array(array('$0CF8F3E6590F45D50B70F2F7DA6605ECA6CD408F', 'torpidsFRonline4'));
+        $c->path = array(array('$0CF8F3E6590F45D50B70F2F7DA6605ECA6CD408F', 'torpidsFRonline4', 'fingerprint' => '$0CF8F3E6590F45D50B70F2F7DA6605ECA6CD408F', 'nickname' => 'torpidsFRonline4'));
         $c->buildFlags = array('ONEHOP_TUNNEL', 'IS_INTERNAL', 'NEED_CAPACITY');
         $c->purpose = 'GENERAL';
-        $c->created = '2016-12-25T19:32:55.738758';
+        $c->timeCreated = '2016-12-25T19:32:55.738758';
         $c->reason = 'DESTROYED';
         $c->remoteReason = 'FINISHED';
 

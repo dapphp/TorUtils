@@ -41,6 +41,7 @@ namespace Dapphp\TorUtils;
 use Dapphp\TorUtils\ProtocolReply;
 use Dapphp\TorUtils\ProtocolError;
 use Dapphp\TorUtils\RouterDescriptor;
+use Dapphp\TorUtils\Event\AsyncEvent;
 
 /**
  * Tor ControlClient class
@@ -144,7 +145,8 @@ class ControlClient
     private $_debugFp;
     private $_sock;
     private $_parser;
-    private $_eventCallback;
+    private $eventCallback;
+    private $knownEvents;
 
     /**
      * ControlClient constructor.
@@ -160,7 +162,8 @@ class ControlClient
         $this->_debug         = false;
         $this->_debugFp       = fopen('php://stderr', 'w');
         $this->_parser        = new Parser();
-        $this->_eventCallback = null;
+        $this->eventCallback  = null;
+        $this->knownEvents    = [];
         $this->_protocolInfoResponse = null;
     }
 
@@ -283,10 +286,13 @@ class ControlClient
      *
      * This method blocks if there is nothing to be read from the controller.
      *
-     * @param $cmd  The name of the previous command sent to the controller
+     * @param null $cmd The name of the previous command sent to the controller
+     * @param bool $single If true, stop reading after reading a single async event, otherwise read and process as
+     *   many async events as are available and return the first non-event reply. This should normally be left false.
      * @return \Dapphp\TorUtils\ProtocolReply ProtocolReply object containing the response from the controller
+     * @throws \Dapphp\TorUtils\ProtocolError
      */
-    public function readReply($cmd = null)
+    public function readReply($cmd = null, $single = false)
     {
         $reply         = new ProtocolReply($cmd);
         $evreply       = new ProtocolReply();
@@ -301,6 +307,11 @@ class ControlClient
             if ($this->_isEventReplyLine($data)) {
                 $handlingEvent = true;
                 $evreply->appendReplyLine($data);
+
+                if ($this->_isDataReplyLine($data)) {
+                    $dataReply = true;
+                    $first = false;
+                }
             } elseif ($dataReply && trim($data) == '.') {
                 $data = $this->_recvData();
                 if (!$this->_isEndReplyLine($data)) {
@@ -329,8 +340,12 @@ class ControlClient
                     $dataReply = true;
                 }
 
-                $reply->appendReplyLine($data);
-                $first = false;
+                if ($dataReply && $handlingEvent) {
+                    $evreply->appendReplyLine($data);
+                } else {
+                    $reply->appendReplyLine($data);
+                    $first = false;
+                }
             }
 
             if ($handlingEvent && $this->_isEndReplyLine($data)) {
@@ -339,6 +354,8 @@ class ControlClient
                 $first     = true;
                 $dataReply = false;
                 $evreply   = new ProtocolReply();
+
+                if ($single) break;
             }
         }
 
@@ -559,17 +576,26 @@ class ControlClient
         }
     }
 
+    /**
+     *
+     * @return Event\CircuitStatus[] Array of CircuitStatus event objects
+     * @throws \Dapphp\TorUtils\ProtocolError
+     */
     public function getInfoCircuitStatus()
     {
-        $cmd = self::GETINFO_CIRCUITSTATUS;
-        $reply = $this->getInfo($cmd);
-        $circuits = array();
+        $cmd      = self::GETINFO_CIRCUITSTATUS;
+        $reply    = $this->getInfo($cmd);
+        $circuits = [];
+        $parser   = $this->getParser();
 
         if (!$reply->isPositiveReply()) {
             throw new ProtocolError($reply[0], $reply->getStatusCode());
         } else {
-            foreach($reply->getReplyLines() as $line) {
-                $circuits[] = $this->_parser->parseCircuitStatusLine($line);
+            for ($i = 0; $i < count($reply); ++$i) {
+                $r = new ProtocolReply();
+                $r->appendReplyLine('650 CIRC ' . $reply[$i]);
+                $e = new Event\CircuitStatus();
+                $circuits[] = $e->parse($r, $parser);
             }
         }
 
@@ -1171,10 +1197,17 @@ class ControlClient
      * content of the event (typically ProtocolReply, array, or RouterDescriptor)
      *
      * @param callback $callback A valid callback that will be called after event data is received
+     * @param array    $knownEvents An array of async event names that should be
+     * parsed and returned as objects. If an event is subscribed to but not known
+     * to the async handler, a ProtocolReply will be returned for backwards
+     * compatibility instead of an AsyncEvent object. This is to protect clients
+     * from changes in future versions where new event objects are introduced, but not
+     * expected by the client application.
+     *
      * @throws \Exception If the $callback is not a callable function or method
      * @return \Dapphp\TorUtils\ControlClient
      */
-    public function setAsyncEventHandler($callback)
+    public function setAsyncEventHandler($callback, $knownEvents = [])
     {
         if (!is_callable($callback)) {
             throw new \Exception('Callback provided is not callable');
@@ -1187,9 +1220,25 @@ class ControlClient
             throw new \Exception("Supplied callback must accept 2 arguments but it accepts $numargs");
         }
 
-        $this->_eventCallback = $callback;
+        $this->eventCallback = $callback;
+        $this->knownEvents = array_map('strtoupper', $knownEvents);
 
         return $this;
+    }
+
+    public function waitForEvent(?int $tv_sec = NULL, ?int $tv_usec = 0): void
+    {
+        $read   = [ $this->_sock ];
+        $write  = null;
+        $except = null;
+
+        $changed = stream_select($read, $write, $except, $tv_sec, $tv_usec);
+
+        if ($changed === false) {
+            return;
+        } elseif ($changed > 0) {
+            $this->readReply(null, true); // invokes event handler
+        }
     }
 
     /**
@@ -1394,76 +1443,80 @@ class ControlClient
      *
      * @param ProtocolReply $reply Asynchronous reply sent by the controller
      */
-    private function _asyncEventHandler(ProtocolReply $reply)
+    protected function _asyncEventHandler(ProtocolReply $reply)
     {
         // if no callback is set, just return
         // at this point the event has been read and discarded from stream
-        if (is_null($this->_eventCallback) || !is_callable($this->_eventCallback)) return ;
+        if (is_null($this->eventCallback) || !is_callable($this->eventCallback)) return ;
 
         // EVENTS
         /*
-         * CIRC
-         * STREAM
+         * x CIRC
+         * x STREAM
          * ORCONN
-         * BW
-         * *Log messages (Severity = "DEBUG" / "INFO" / "NOTICE" / "WARN"/ "ERR")
+         * x BW
+         * x *Log messages (Severity = "DEBUG" / "INFO" / "NOTICE" / "WARN"/ "ERR")
          * NEWDESC
-         * ADDRMAP
-         * AUTHDIR_NEWDESCS
+         * x ADDRMAP
          * DESCCHANGED
          * *Status events (StatusType = "STATUS_GENERAL" / "STATUS_CLIENT" / "STATUS_SERVER")
-         * GUARD
-         * NS
+         * x GUARD
+         * x NS
          * STREAM_BW
          * CLIENTS_SEEN
-         * NEWCONSENSUS
+         * x NEWCONSENSUS
          * BUILDTIMEOUT_SET
-         * SIGNAL
+         * x SIGNAL
          * CONF_CHANGED
          * CIRC_MINOR
          * TRANSPORT_LAUNCHED
-         * CONN_BW
+         * CONN_BW (testing network only)
          * CIRC_BW
-         * CELL_STATS
+         * CELL_STATS (testing network only)
          * TB_EMPTY
          * HS_DESC
          * HS_DESC_CONTENT
          * NETWORK_LIVENESS
          */
+
+        $asyncEvents = [
+            'ADDRMAP' => Event\AddrMap::class,
+
+            'BW' => Event\Bandwidth::class,
+            'CIRC' => Event\CircuitStatus::class,
+            'STREAM' => Event\StreamStatus::class,
+
+            'DEBUG'  => Event\Log\Debug::class,
+            'INFO'   => Event\Log\Info::class,
+            'NOTICE' => Event\Log\Notice::class,
+            'WARN'   => Event\Log\Warn::class,
+            'ERR'    => Event\Log\Err::class,
+
+            'GUARD' => Event\Guard::class,
+            'NEWCONSENSUS' => Event\NewConsensus::class,
+            'NS' => Event\NetworkStatus::class,
+
+            'SIGNAL' => Event\Signal::class,
+        ];
+        $asyncEventHandlers = [];
+
         $parser      = new Parser();
         list($event) = explode(' ', $reply[0]);
 
-        switch($event) {
-            case 'NEWCONSENSUS':
-            case 'NS':
-                $data = $parser->parseRouterStatus($reply);
-                break;
+        if (array_key_exists($event, $asyncEvents) && in_array($event, $this->knownEvents)) {
+            if (isset($asyncEventHandlers[$event])) {
+                $handler = $asyncEventHandlers[$event];
+            } else {
+                $evClass = $asyncEvents[$event];
+                $handler = new $evClass();
+            }
 
-            case 'ADDRMAP':
-                $data = $parser->parseAddrMap($reply[0]);
-                break;
-
-            case 'BW':
-                list($bw, $read, $written) = explode(' ', $reply[0]);
-                $data = array($read, $written);
-                break;
-
-            case 'CIRC':
-                $data = array();
-
-                foreach($reply->getReplyLines() as $line) {
-                    $data[] = $this->_parser->parseCircuitStatusLine($line);
-                }
-                break;
-
-            // TODO: add more built-in parsing of events
-
-            default:
-                $data = $reply;
-                break;
+            $data = $handler->parse($reply, new Parser());
+        } else {
+            $data = $reply;
         }
 
-        call_user_func($this->_eventCallback, $event, $data);
+        call_user_func($this->eventCallback, $event, $data);
     }
 
     /**
