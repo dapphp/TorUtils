@@ -12,7 +12,7 @@ $tc = new ControlClient();
 
 try {
     $tc->connect('127.0.0.1', 9051); // connect to controller at 127.0.0.1:9051
-    $tc->authenticate('password');   // authenticate using hashedcontrolpassword "password"
+    $tc->authenticate();
     $tc->signal(ControlClient::SIGNAL_NEWNYM); // send signal to change IP
 
     echo "Signal sent - IP changed successfully!\n";

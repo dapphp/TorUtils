@@ -54,6 +54,7 @@ try {
 }
 
 // send unrecognized command - check whether reply was successful
+echo "Sending unrecognized command: FAKE_COMMAND\n";
 $tc->sendData('FAKE_COMMAND data data data');
 
 // read the reply

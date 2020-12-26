@@ -119,7 +119,7 @@ try {
 
     if (sizeof($circuits) > 0) {
         foreach($circuits as $circuit) {
-            /** @var $circuit \Dapphp\TorUtils\CircuitStatus */
+            /** @var $circuit \Dapphp\TorUtils\Event\CircuitStatus */
 
             echo $circuit; // __toString
         }

@@ -10,7 +10,7 @@ $tc = new ControlClient();
 try {
     $tc->connect(); // connect to 127.0.0.1:9051
     $tc->authenticate();
-} catch (\Exception $ex) {
+} catch (Exception $ex) {
     echo "Failed to create Tor control connection: " . $ex->getMessage() . "\n";
     exit;
 }
@@ -41,7 +41,9 @@ echo "\n\n";
 
 // Read config values into array
 $config = $tc->getConf('Log CookieAuthentication');
-var_dump($config);
+echo sprintf('$config["Log"] = %s', $config['Log']), "\n";
+echo sprintf('$config["CookieAuthentication"] = %s', $config['CookieAuthentication']), "\n";
+echo "\n";
 
 //$config['Log'] = 'notice stderr';
 //$config['Log'] = 'notice file /var/log/tor/tor.log';
@@ -53,10 +55,10 @@ $tc->setConf($config);
 // SETCONF fails and nothing is set if any unknown options are present
 try {
     // add non-existent config value to array
-    $config['IDontExist'] = 'some string value';
+    $config['IDontExistTesting'] = 'some string value';
     $tc->setConf($config);
-} catch (\Exception $ex) {
-    echo $ex->getMessage() . "\n";
+} catch (Exception $ex) {
+    echo "setConf failed (expected). " . $ex->getMessage() . "\n";
 }
 
 $tc->quit();
