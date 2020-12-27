@@ -324,7 +324,7 @@ class ControlClientMock extends ControlClient
 {
     public $recvData = [];
 
-    public function _recvData()
+    public function recvData()
     {
         $v = array_shift($this->recvData);
 
@@ -335,7 +335,7 @@ class ControlClientMock extends ControlClient
         }
     }
 
-    public function sendData($data)
+    public function sendData(string $data): int
     {
         $data = $data . "\r\n";
         return strlen($data);

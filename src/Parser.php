@@ -51,7 +51,7 @@ use Dapphp\TorUtils\ProtocolReply;
  */
 class Parser
 {
-    private $_descriptorReplyLines = array(
+    private $descriptorReplyLines = array(
         'router'             => '_parseRouter',
         'platform'           => '_parsePlatform',
         'published'          => '_parsePublished',
@@ -186,10 +186,10 @@ class Parser
                 $descriptor = new RouterDescriptor();
             }
 
-            if (array_key_exists($keyword, $this->_descriptorReplyLines)) {
+            if (array_key_exists($keyword, $this->descriptorReplyLines)) {
                 $descriptor->setArray(
                     call_user_func(
-                        array($this, $this->_descriptorReplyLines[$keyword]), $value, $reply
+                        array($this, $this->descriptorReplyLines[$keyword]), $value, $reply
                     )
                 );
             } else {

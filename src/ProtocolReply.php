@@ -48,26 +48,26 @@ namespace Dapphp\TorUtils;
  */
 class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
 {
-    private $_statusCode;
-    private $_command;
-    private $_dataReply = false;
-    private $_position = 0;
-    private $_lines = array();
-    private $_dirty = true;
-    private $_keys  = array();
+    private $statusCode;
+    private $command;
+    private $dataReply = false;
+    private $position = 0;
+    private $lines = array();
+    private $dirty = true;
+    private $keys  = array();
 
     /**
      * ProtocolReply constructor.
      *
-     * @param string $command The command for which the reply will be read
+     * @param ?string $command The command for which the reply will be read
      * Certain command responses reply with the command that was sent.  Giving
      * the command is not necessary, but will remove it from the first line of
      * the reply *if* the command name was present in the reply and matched
      * what was given.
      */
-    public function __construct($command = null)
+    public function __construct(?string $command = null)
     {
-        $this->_command = $command;
+        $this->command = $command;
     }
 
     /**
@@ -80,7 +80,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      */
     public function getCommand()
     {
-        return $this->_command;
+        return $this->command;
     }
 
     /**
@@ -90,7 +90,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      */
     public function getStatusCode()
     {
-        return $this->_statusCode;
+        return $this->statusCode;
     }
 
     /**
@@ -100,7 +100,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      */
     public function __toString()
     {
-        return implode("\n", $this->_lines);
+        return implode("\n", $this->lines);
     }
 
     /**
@@ -110,7 +110,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      */
     public function getReplyLines()
     {
-        return $this->_lines;
+        return $this->lines;
     }
 
     /**
@@ -120,35 +120,35 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      *
      * @param string $line A line of data from the reply to append
      */
-    public function appendReplyLine($line)
+    public function appendReplyLine(string $line)
     {
-        $this->_dirty = true;
+        $this->dirty = true;
         $status = null;
-        $first  = sizeof($this->_lines) == 0;
+        $first  = sizeof($this->lines) == 0;
         $line   = rtrim($line, "\r\n");
 
-        if (preg_match('/^(\d{3})-' . preg_quote($this->_command, '/') . '=(.*)$/', $line, $match)) {
+        if (preg_match('/^(\d{3})-' . preg_quote($this->command, '/') . '=(.*)$/', $line, $match)) {
             // ###-COMMAND=data reply...
             $status        = $match[1];
 
             if (strlen(trim($match[2])) > 0) {
-                $this->_lines[]= $match[2];
+                $this->lines[]= $match[2];
             }
-        } elseif ($first && preg_match('/^(\d{3})\+' . preg_quote($this->_command, '/') . '=$/', $line, $match)) {
+        } elseif ($first && preg_match('/^(\d{3})\+' . preg_quote($this->command, '/') . '=$/', $line, $match)) {
             // ###+COMMAND=
             $status = $match[1];
-            $this->_dataReply = true;
+            $this->dataReply = true;
         } elseif (preg_match('/^650[+\-]/', $line)) {
             $status = 650;
-            $this->_lines[] = substr($line, 4);
+            $this->lines[] = substr($line, 4);
         } elseif (preg_match('/^(\d{3})-(.*)$/', $line, $match)) {
             // ###-DATA RESPONSE
             // or
             // ###-Key=Value response
             $status = $match[1];
-            $this->_lines[] = $match[2];
+            $this->lines[] = $match[2];
         } elseif (
-            !$this->_dataReply && (
+            !$this->dataReply && (
               preg_match('/^(25\d)\s*(.*)$/', $line, $match)
               ||
               preg_match('/^([456][015]\d)\s*(.*)$/', $line, $match)
@@ -157,18 +157,16 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
             // ### STATUS
             // https://gitweb.torproject.org/torspec.git/tree/control-spec.txt - Section 4. Replies
             // Positive completion replies begin with 25x
-            if (!$this->_statusCode) {
+            if (!$this->statusCode) {
                 $status = $match[1];
             }
-            $this->_lines[] = $match[2];
+            $this->lines[] = $match[2];
         } else {
             // other data from multi-line reply
-            $this->_lines[] = $line;
+            $this->lines[] = $line;
         }
 
-        if ($status != null && $first) {
-            $this->_statusCode = $status;
-        }
+        if ($status != null && $first) $this->statusCode = $status;
     }
 
     /**
@@ -179,8 +177,8 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      */
     public function appendReplyLines(array $lines)
     {
-        $this->_lines = array_merge($this->_lines, $lines);
-        $this->_dirty = true;
+        $this->lines = array_merge($this->lines, $lines);
+        $this->dirty = true;
     }
 
     /**
@@ -190,8 +188,8 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      */
     public function isPositiveReply()
     {
-        if (strlen($this->_statusCode) > 0) {
-            return substr($this->_statusCode, 0, 1) === '2'; // reply begins with 2xy
+        if (strlen($this->statusCode) > 0) {
+            return substr($this->statusCode, 0, 1) === '2'; // reply begins with 2xy
         } else {
             return false;
         }
@@ -203,7 +201,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      */
     public function rewind()
     {
-        $this->_position = 0;
+        $this->position = 0;
     }
 
     /**
@@ -213,7 +211,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
     public function current()
     {
         $key = $this->key();
-        return $this->_lines[$key];
+        return $this->lines[$key];
     }
 
     /**
@@ -222,12 +220,12 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      */
     public function key()
     {
-        if ($this->_dirty) {
-            $this->_keys = array_keys($this->_lines);
-            $this->_dirty = false;
+        if ($this->dirty) {
+            $this->keys = array_keys($this->lines);
+            $this->dirty = false;
         }
-        if (isset($this->_keys[$this->_position])) {
-            return $this->_keys[$this->_position];
+        if (isset($this->keys[$this->position])) {
+            return $this->keys[$this->position];
         } else {
             return null;
         }
@@ -239,7 +237,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      */
     public function next()
     {
-        ++$this->_position;
+        ++$this->position;
     }
 
     /**
@@ -253,48 +251,55 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
 
     /**
      * (non-PHPdoc)
+     * @param $offset
+     * @return bool
      * @see ArrayAccess::offsetExists()
      */
     public function offsetExists($offset)
     {
-        return isset($this->_lines[$offset]);
+        return isset($this->lines[$offset]);
     }
 
     /**
      * (non-PHPdoc)
+     * @param $offset
+     * @return mixed|null
      * @see ArrayAccess::offsetGet()
      */
     public function offsetGet($offset)
     {
-        return isset($this->_lines[$offset]) ? $this->_lines[$offset] : null;
+        return isset($this->lines[$offset]) ? $this->lines[$offset] : null;
     }
 
     /**
      * (non-PHPdoc)
+     * @param $offset
+     * @param $value
      * @see ArrayAccess::offsetSet()
      */
     public function offsetSet($offset, $value)
     {
         if (is_null($offset)) {
-            $this->_lines[] = $value;
-            $this->_dirty   = true;
+            $this->lines[] = $value;
+            $this->dirty   = true;
         } else {
-            $this->_lines[$offset] = $value;
+            $this->lines[$offset] = $value;
         }
     }
 
     /**
      * (non-PHPdoc)
+     * @param $offset
      * @see ArrayAccess::offsetUnset()
      */
     public function offsetUnset($offset)
     {
-        unset($this->_lines[$offset]);
-        $this->_dirty = true;
+        unset($this->lines[$offset]);
+        $this->dirty = true;
     }
 
     public function count()
     {
-        return count($this->_lines);
+        return count($this->lines);
     }
 }

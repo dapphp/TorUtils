@@ -96,7 +96,7 @@ class RouterDescriptor
     /** @var string base-64-encoded-key. A public key used for the ntor circuit extended handshake */
     public $ntor_onion_key;
 
-    /** @var a public key in PEM format. The OR's long-term identity key.  It MUST be 1024 bits. */
+    /** @var string a public key in PEM format. The OR's long-term identity key.  It MUST be 1024 bits. */
     public $signing_key;
 
     /** @var string The "SIGNATURE" object contains a signature of the PKCS1-padded hash of the entire server descriptor */
@@ -173,7 +173,7 @@ class RouterDescriptor
      * Set one or more descriptor values from an array
      *
      * @param array $values Array of key=>value properties to set
-     * @return \Dapphp\TorUtils\RouterDescriptor
+     * @return self
      */
     public function setArray(array $values)
     {
@@ -250,14 +250,15 @@ class RouterDescriptor
      * Return the current calculated uptime of the node based on when the
      * descriptor was published and the current time
      *
-     * @return int|NULL null if $published was not set, or # of seconds the node has been up
+     * @param bool $asArray
+     * @return int|int[]|NULL
      */
-    public function getCurrentUptime($returnArray = false)
+    public function getCurrentUptime($asArray = false)
     {
         if (isset($this->published) && isset($this->uptime)) {
             $uptime = $this->uptime + time() - strtotime($this->published . ' GMT');
 
-            if ((bool)$returnArray === false) {
+            if ((bool)$asArray === false) {
                 return $uptime;
             } else {
                 $units = array(
@@ -266,8 +267,6 @@ class RouterDescriptor
                     'minutes' => 60,
                     'seconds' => 1
                 );
-
-                $return = array();
 
                 foreach($units as $unit => $secs) {
                     $num = intval($uptime / $secs);
