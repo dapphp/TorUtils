@@ -1313,7 +1313,7 @@ class ControlClient
             throw new \Exception(
                 sprintf('Tor control cookie file "%s" does not exist or is not readble', $cookiePath)
             );
-        } else if (filesize($cookiePath) != 32) {
+        } elseif (filesize($cookiePath) != 32) {
             throw new \Exception('Authentication cookie is the wrong size');
         }
 
@@ -1400,18 +1400,29 @@ class ControlClient
      * @param int $length Length of the secure nonce to generate
      * @return string secure nonce
      */
-    private function generateSecureNonce(int $length)
+    protected function generateSecureNonce(int $length)
     {
+        $nonce = null;
+
         if (function_exists('openssl_random_pseudo_bytes')) {
             $nonce = openssl_random_pseudo_bytes($length);
         } else {
-            trigger_error('openssl extension not installed - nonce generation may be insecure', E_USER_WARNING);
+            try {
+                $nonce = random_bytes($length);
+            } catch (\Exception $ex) {
+                if (defined('PHPUNIT_TESTSUITE')) {
+                    throw $ex;
+                }
+            }
+        }
+
+        if (empty($nonce)) {
             $nonce = '';
 
             do {
                 $rand   = mt_rand(mt_getrandmax() / 2, mt_getrandmax());
-                $nonce .= sha1(uniqid(microtime(true), true), true) . sha1($rand, true);
-                usleep(mt_rand(100, 50000));
+                $nonce .= sha1(getmypid() . uniqid(microtime(true), true), true) . sha1($rand, true);
+                usleep(mt_rand(128, 32768));
             } while (strlen($nonce) < $length);
 
             $nonce = substr($nonce, 0, $length);
@@ -1552,7 +1563,7 @@ class ControlClient
      * @param string $message The debug data to write
      * @param string $prefix Prefix to print before the line (<<< indicates data sent from controller, >>> indicates data sent to the controller)
      */
-    private function debugOut(string $message, string $prefix)
+    protected function debugOut(string $message, string $prefix)
     {
         fwrite($this->debugFp, $prefix . $message);
     }

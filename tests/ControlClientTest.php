@@ -185,6 +185,28 @@ final class ControlClientTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
+    public function testSafeCookieAuthentication()
+    {
+        $clientNonce = 'b650ea41e8623fec1b12c5a77c72948d23fbb10932e987d15a75504b54092de9';
+        $cookieFile  = __DIR__ . '/data/control.authcookie-1';
+        $response = [
+            "250-PROTOCOLINFO 1\r\n",
+            "250-AUTH METHODS=COOKIE,SAFECOOKIE,HASHEDPASSWORD COOKIEFILE=\"$cookieFile\"\r\n",
+            "250-VERSION Tor=\"0.4.4.6\"\r\n",
+            "250 OK\r\n",
+            "250 AUTHCHALLENGE SERVERHASH=61B6507D7E1BF83777024E045DD4B28F90B0DA4AE025441AB7701A8F19CF22FC SERVERNONCE=F3E6660C7E1A6C8696AB9684D55FE01EFB17BFE1397B3CE8A6FB34C302F7FA02\r\n",
+            "250 OK\r\n",
+        ];
+
+        $tc = $this->getMockControlClient($response);
+        $tc->secureNonce = hex2bin($clientNonce);
+
+        $tc->authenticate();
+
+        $authCommand = $tc->sentData[sizeof($tc->sentData)-1];
+        $this->assertEquals('AUTHENTICATE d3b2f29ca583c12a8b27e5e68e6615cb513814c3528a1ddef7b82e29f01b5b6b', $authCommand);
+    }
+
     public function testFailedAuthentication()
     {
         $response = array(
@@ -323,6 +345,8 @@ final class ControlClientTest extends TestCase
 class ControlClientMock extends ControlClient
 {
     public $recvData = [];
+    public $sentData = [];
+    public $secureNonce;
 
     public function recvData()
     {
@@ -331,13 +355,18 @@ class ControlClientMock extends ControlClient
         if (is_null($v)) {
             return false;
         } else {
+            if ($this->debug) $this->debugOut($v, '<<< ');
+
             return $v;
         }
     }
 
     public function sendData(string $data): int
     {
+        $this->sentData[] = $data;
         $data = $data . "\r\n";
+        if ($this->debug) $this->debugOut($data, '>>> ');
+
         return strlen($data);
     }
 
@@ -350,5 +379,10 @@ class ControlClientMock extends ControlClient
         } elseif ($changed > 0) {
             $this->readReply(null, true); // invokes event handler
         }
+    }
+
+    protected function generateSecureNonce(int $length)
+    {
+        return $this->secureNonce;
     }
 }
