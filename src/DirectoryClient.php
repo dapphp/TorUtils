@@ -220,7 +220,7 @@ class DirectoryClient
 
     protected $connectTimeout = 5;
     protected $readTimeout = 30;
-    protected $userAgent = 'dapphp/TorUtils 1.1.13';
+    protected $userAgent = 'dapphp/TorUtils 2.0.0';
 
     protected $parser;
     protected $serverList;
