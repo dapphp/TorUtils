@@ -39,38 +39,41 @@
 namespace Dapphp\TorUtils;
 
 /**
- * Tor cURL wrapper class
+ * curl wrapper for Tor SOCKS proxy
  *
- * A class to wrap cURL requests through Tor using SOCKS5
+ * A class to wrap curl requests through Tor using SOCKS5 with hostname resolution
  *
- * @version    1.1
+ * @version    2.0
  * @author     Drew Phillips <drew@drew-phillips.com>
  *
  */
 class TorCurlWrapper
 {
-    private $_ch;
-    private $_info;
-    private $_responseHeaders;
-    private $_responseBody;
-    private $_socksHost;
-    private $_socksPort;
+    private $ch;
+    private $info;
+    private $statusLine;
+    private $responseHeaders;
+    private $responseBody;
+    private $socksHost;
+    private $socksPort;
+    private $socks5HostnameSupport = true;
+    private $allowUnsafeDnsResolution = false;
 
     /**
      * TorCurlWrapper constructor.
      *
-     * Creates a new TorCurlWrapper and initializes a cURL handle with Tor
+     * Creates a new TorCurlWrapper and initializes a curl handle with Tor
      * as the SOCKS proxy.  Defaults to 127.0.0.1:9050
      *
-     * By default, TorCurlWrapper will have cURL track cookies across requests but does not save them.
+     * By default, TorCurlWrapper will have curl track cookies across requests but does not save them.
      * Override this behavior by calling TorCurlWrapper::setopt(CURLOPT_COOKIEJAR|CURLOPT_COOKIEFILE, $value)
      *
      * Other default behavior:
      * - Enables CURLOPT_AUTOREFERER by default
      * - Enables CURLOPT_FOLLOWLOCATION by default
-     * - Tells cURL to send Accept-Encoding headers with supported encodings (e.g. gzip, deflate)
+     * - Tells curl to send Accept-Encoding headers with supported encodings (e.g. gzip, deflate)
      *
-     * Intelligently tries to get cURL to resolve DNS names through Tor, or
+     * Intelligently tries to get curl to resolve DNS names through Tor, or
      * emits a warning if DNS resolution over Tor is not supported.
      *
      * Example:
@@ -90,8 +93,12 @@ class TorCurlWrapper
      *     echo "Request failed.  Curl error " . $ex->getCode() . ": " . $ex->getMessage();
      * }
      * </code>
+     *
+     * @param string $proxy The address of Tor's SOCKS proxy
+     * @param int $port The port of Tor's SOCKS proxy
+     * @throws \Exception
      */
-    public function __construct($proxy = '127.0.0.1', $port = 9050)
+    public function __construct(string $proxy = '127.0.0.1', int $port = 9050)
     {
         if (!extension_loaded('curl')) {
             throw new \Exception('curl extension is not loaded');
@@ -104,53 +111,42 @@ class TorCurlWrapper
             $port = intval($port);
         }
 
-        $this->_socksHost = $proxy;
-        $this->_socksPort = $port;
+        $this->socksHost = $proxy;
+        $this->socksPort = $port;
+        $proxyType       = CURLPROXY_SOCKS5_HOSTNAME;
 
-        curl_setopt($ch, CURLOPT_PROXY, $proxy);
-        curl_setopt($ch, CURLOPT_PROXYPORT, $port);
-
-        if (defined('CURLPROXY_SOCKS5_HOSTNAME')) {
-            // PHP >= 5.5.23
-            curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
-        } else {
-            $curl_version = curl_version();
-            if (version_compare($curl_version['version'], '7.18.0') < 0) {
-                // curl version too low to even use socks5-hostname
-                trigger_error(
-                    'cURL SOCKS5_HOSTNAME not supported. ' .
-                    'DNS names will *NOT* be resolved using Tor!',
-                    E_USER_WARNING
-                );
-                curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
-            } else {
-                // curl supports socks5-hostname, PHP does not know about it yet
-                // tested to work on PHP 5.5.9 with libcurl >= 7.18.0
-                // php doesn't care what the proxytype is if it doesn't know about it
-                curl_setopt($ch, CURLOPT_PROXYTYPE, 7);
-            }
+        $curlVersion = curl_version();
+        if (version_compare($curlVersion['version'], '7.18.0') < 0) {
+            // curl version does not support DNS resolution over socks
+            $proxyType = CURLPROXY_SOCKS5;
+            $this->socks5HostnameSupport = false;
         }
 
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
-        curl_setopt($ch, CURLOPT_ENCODING, '');
+        $curlOptions = [
+            CURLOPT_PROXY => $proxy,
+            CURLOPT_PROXYPORT => $port,
+            CURLOPT_FOLLOWLOCATION => 1,
+            CURLOPT_AUTOREFERER => 1,
+            CURLOPT_ENCODING => '',
+            CURLOPT_COOKIEFILE => '',
+            CURLOPT_PROXYTYPE => $proxyType,
+        ];
 
-        // enable cookie handling for the duration of the handle
-        curl_setopt($ch, CURLOPT_COOKIEFILE, '');
+        curl_setopt_array($ch, $curlOptions);
 
-        $this->_ch = $ch;
+        $this->ch = $ch;
     }
 
     /**
-     * Destructor.  Closes cURL handle and frees resources.
+     * Destructor.  Closes curl handle and frees resources.
      */
     public function __destruct()
     {
-        curl_close($this->_ch);
+        curl_close($this->ch);
     }
 
     /**
-     * Wrapper to curl_setopt on the underlying cURL handle.
+     * Wrapper to curl_setopt on the underlying curl handle.
      *
      * @param int $option The CURLOPT_XXX option to set
      * @param mixed $value The value to be set on option
@@ -161,21 +157,40 @@ class TorCurlWrapper
     {
         if ($option == CURLOPT_PROXY) {
             throw new \Exception('Cannot set CURLOPT_PROXY - use constructor instead');
-        } else if ($option == CURLOPT_PROXYTYPE) {
+        } elseif ($option == CURLOPT_PROXYTYPE) {
             throw new \Exception('Cannot set CURLOPT_PROXYTYPE - SOCKS5_HOSTNAME is required');
         }
 
-        return curl_setopt($this->_ch, $option, $value);
+        return curl_setopt($this->ch, $option, $value);
     }
 
     /**
-     * Execute an HTTP GET request to $url using the underlying cURL handle
+     * Returns TRUE if all options were successfully set. If an option could not be successfully set, FALSE is
+     * immediately returned, ignoring any future options in the options array.
      *
-     * @param string $url Optional URL to fetch, can also use TorCurlWrapper::setopt(CURLOPT_URL, $url)
+     * @param array $options
+     * @return bool
+     * @throws \Exception
+     */
+    public function setoptArray(array $options)
+    {
+        foreach($options as $name => $value) {
+            if (!$this->setopt($name, $value)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Execute an HTTP GET request to $url using the underlying curl handle
+     *
+     * @param ?string $url Optional URL to fetch, can also use TorCurlWrapper::setopt(CURLOPT_URL, $url)
      * @throws \Exception Throws exception if curl_exec() fails
      * @return boolean Returns TRUE if the request was successful (does not necessarily indicate a 200 OK response from the server)
      */
-    public function httpGet($url = null)
+    public function httpGet(?string $url = null)
     {
         if (!is_null($url)) {
             $this->setopt(CURLOPT_URL, $url);
@@ -183,19 +198,19 @@ class TorCurlWrapper
 
         $this->setopt(CURLOPT_HTTPGET, 1);
 
-        return $this->_execute();
+        return $this->executeRequest();
     }
 
     /**
-     * Execute an HTTP POST request to $url using the underlying cURL handle, passing $params as the POST data
+     * Execute an HTTP POST request to $url using the underlying curl handle, passing $params as the POST data
      *
-     * @param string $url Optional URL to fetch, can also use TorCurlWrapper::setopt(CURLOPT_URL, $url)
+     * @param ?string $url Optional URL to fetch, can also use TorCurlWrapper::setopt(CURLOPT_URL, $url)
      * @param mixed $params Passed directly to curl_setopt as CURLOPT_POSTFIELDS.
      *   Be aware of the implications of passing an array vs. a string, or uploading files (CURLFile vs @).
      * @throws \Exception Throws exception if curl_exec() fails
      * @return boolean Returns TRUE if the request was successful (does not necessarily indicate a 200 OK response from the server)
      */
-    public function httpPost($url = null, $params = null)
+    public function httpPost(?string $url = null, $params = null)
     {
         if (!is_null($url)) {
             $this->setopt(CURLOPT_URL, $url);
@@ -204,20 +219,20 @@ class TorCurlWrapper
         $this->setopt(CURLOPT_POST, 1);
         $this->setopt(CURLOPT_POSTFIELDS, $params);
 
-        return $this->_execute();
+        return $this->executeRequest();
     }
 
     /**
-     * Close the underlying cURL handle and frees the resource.
+     * Close the underlying curl handle and frees the resource.
      *
-     * The TorCurlWrapper constructor is called again on the object to re-initialize it with a fresh cURL handle.
+     * The TorCurlWrapper constructor is called again on the object to re-initialize it with a fresh curl handle.
      *
-     * This causes cURL to close any connections, and reset any session cookies it may have been tracking
+     * This causes curl to close any connections, and reset any session cookies it may have been tracking
      */
     public function close()
     {
-        curl_close($this->_ch);
-        $this->__construct($this->_socksHost, $this->_socksPort);
+        curl_close($this->ch);
+        $this->__construct($this->socksHost, $this->socksPort);
     }
 
     /**
@@ -231,9 +246,9 @@ class TorCurlWrapper
         $return = null;
 
         if ($header === null) {
-            $return = $this->_responseHeaders;
+            $return = $this->responseHeaders;
         } else {
-            foreach($this->_responseHeaders as $name => $val) {
+            foreach($this->responseHeaders as $name => $val) {
                 if (strtolower($name) == strtolower($header)) {
                     return $val;
                 }
@@ -250,7 +265,7 @@ class TorCurlWrapper
      */
     public function getResponseBody()
     {
-        return $this->_responseBody;
+        return $this->responseBody;
     }
 
     /**
@@ -260,8 +275,8 @@ class TorCurlWrapper
      */
     public function getHttpStatusCode()
     {
-        if (isset($this->_info['http_code'])) {
-            return $this->_info['http_code'];
+        if (isset($this->info['http_code'])) {
+            return $this->info['http_code'];
         } else {
             return null;
         }
@@ -270,41 +285,62 @@ class TorCurlWrapper
     /**
      * Returns the data from curl_getinfo() for the last request
      *
-     * @return array The info from the last cURL request
+     * @return array The info from the last request
      */
     public function getInfo()
     {
-        return $this->_info;
+        return $this->info;
     }
 
     /**
-     * Execute a request on the cURL handle
+     * Allow system to perform DNS resolution when curl does not support DNS resolution over SOCKS.
+     *
+     * @param bool $allow
+     * @return $this
+     */
+    public function allowUnsafeDnsResolution(bool $allow = true)
+    {
+        $this->allowUnsafeDnsResolution = $allow;
+        return $this;
+    }
+
+    /**
+     * Execute a request on the curl handle
      *
      * @throws \Exception Throws exception if curl_exec() fails
      * @return boolean returns TRUE on success
      */
-    private function _execute()
+    private function executeRequest()
     {
-        $this->_responseHeaders = null;
-        $this->_responseBody    = null;
+        if (!$this->socks5HostnameSupport && !$this->allowUnsafeDnsResolution) {
+            throw new \Exception(
+                'The curl version on this system does not support DNS name resolution over SOCKS. ' .
+                'Hostnames will not be resolved over Tor and .onion addresses will not work. To allow DNS ' .
+                'resolution on the system, use the allowUnsafeDnsResolution option.'
+            );
+        }
 
-        curl_setopt($this->_ch, CURLOPT_HEADER, 1);
-        curl_setopt($this->_ch, CURLOPT_RETURNTRANSFER, 1);
+        $this->responseHeaders = null;
+        $this->responseBody    = null;
 
-        $response = curl_exec($this->_ch);
+        curl_setopt_array($this->ch, [
+            CURLOPT_HEADER => 1,
+            CURLOPT_RETURNTRANSFER => 1,
+        ]);
 
-        $this->_info = curl_getinfo($this->_ch);
+        $response   = curl_exec($this->ch);
+        $this->info = curl_getinfo($this->ch);
 
         if ($response === false) {
-            throw new \Exception(curl_error($this->_ch), curl_errno($this->_ch));
+            throw new \Exception(curl_error($this->ch), curl_errno($this->ch));
         } else {
-            for ($i = 0; $i < intval($this->_info['redirect_count']); ++$i) {
+            for ($i = 0; $i < intval($this->info['redirect_count']); ++$i) {
                 // remove any headers from previous redirected responses
                 list( , $response) = explode("\r\n\r\n", $response, 2);
             }
 
-            list($headers, $this->_responseBody) = explode("\r\n\r\n", $response, 2);
-            $this->_responseHeaders = $this->_parseHeaders($headers);
+            list($headers, $this->responseBody) = explode("\r\n\r\n", $response, 2);
+            list($this->statusLine, $this->responseHeaders) = $this->parseHeaders($headers);
 
             return true;
         }
@@ -316,7 +352,7 @@ class TorCurlWrapper
      * @param string $headers  String of HTTP response headers
      * @return array Returns headers in an array keyed by name
      */
-    private function _parseHeaders($headers)
+    private function parseHeaders(string $headers)
     {
         $parsed  = array();
         $headers = explode("\r\n", $headers);
