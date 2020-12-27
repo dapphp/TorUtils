@@ -192,7 +192,7 @@ class ControlClientMock extends ControlClient
 {
     public $recvData = [];
 
-    public function _recvData()
+    public function recvData()
     {
         $v = current($this->recvData);
         next($this->recvData);

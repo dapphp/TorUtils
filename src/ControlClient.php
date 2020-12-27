@@ -109,16 +109,16 @@ class ControlClient
     const SIGNAL_ACTIVE        = 'ACTIVE';
     const SIGNAL_DORMANT       = 'DORMANT';
 
-    /** @var addHiddenService flag to create a new private key */
+    /** @var string addHiddenService flag to create a new private key */
     const ONION_KEYTYPE_NEW     = 'NEW';
 
-    /** @var addHiddenService flag to create a new 1024 bit RSA private key */
+    /** @var string addHiddenService flag to create a new 1024 bit RSA private key */
     const ONION_KEYTYPE_RSA1024 = 'RSA1024';
 
-    /** @var addHiddenService flag to create a next gen onion key using curve25519 */
+    /** @var string addHiddenService flag to create a next gen onion key using curve25519 */
     const ONION_KEYTYPE_CURVE25519 = 'ED25519-V3';
 
-    /** @var addHiddenService flag to use the best algorithm for NEW private key generation */
+    /** @var string addHiddenService flag to use the best algorithm for NEW private key generation */
     const ONION_KEYBLOB_BEST    = 'BEST';
 
     /** @var Don't return the new private key when creating a hidden service.
@@ -126,15 +126,15 @@ class ControlClient
      * the generated keypair and the corresponding Onion Service at a later date) */
     const ONION_FLAG_DISCARDPK  = 0x01;
 
-    /** @var Keep the hidden service running after the client disconnects from controller */
+    /** @var int Keep the hidden service running after the client disconnects from controller */
     const ONION_FLAG_DETACH     = 0x02;
 
-    /** @var If client authorization is enabled using the "BasicAuth" flag, the
+    /** @var int If client authorization is enabled using the "BasicAuth" flag, the
      * service will not be accessible to clients without valid authorization
      * data (configured with the "HidServAuth" option) */
     const ONION_FLAG_BASICAUTH  = 0x04;
 
-    /** @var To guard against unexpected loss of anonymity, Tor checks that
+    /** @var int To guard against unexpected loss of anonymity, Tor checks that
      * the ADD_ONION "NonAnonymous" flag matches the current hidden service
      * anonymity mode.  The hidden service anonymity mode is configured using
      * the Tor options HiddenServiceSingleHopMode and HiddenServiceNonAnonymousMode */
@@ -143,13 +143,16 @@ class ControlClient
     const AUTH_SAFECOOKIE_SERVER_TO_CONTROLLER = 'Tor safe cookie authentication server-to-controller hash';
     const AUTH_SAFECOOKIE_CONTROLLER_TO_SERVER = 'Tor safe cookie authentication controller-to-server hash';
 
-    private $_host;
-    private $_port;
-    private $_debug;
-    private $_debugFp;
-    private $_sock;
-    private $_parser;
-    private $_eventCallback;
+    protected $host;
+    protected $port;
+    protected $timeout;
+    protected $debug;
+    protected $debugFp;
+    protected $sock;
+    protected $parser;
+    protected $protocolInfoResponse;
+    protected $eventCallback;
+    protected $knownEvents;
 
     /**
      * ControlClient constructor.
@@ -159,34 +162,35 @@ class ControlClient
      */
     public function __construct()
     {
-        $this->_host          = '127.0.0.1';
-        $this->_port          = 9051;
-        $this->_timeout       = 30;
-        $this->_debug         = false;
-        $this->_debugFp       = fopen('php://stderr', 'w');
-        $this->_parser        = new Parser();
-        $this->_eventCallback = null;
-        $this->_protocolInfoResponse = null;
+        $this->host          = '127.0.0.1';
+        $this->port          = 9051;
+        $this->timeout       = 30;
+        $this->debug         = false;
+        $this->debugFp       = fopen('php://stderr', 'w');
+        $this->parser        = new Parser();
+        $this->eventCallback  = null;
+        $this->knownEvents    = [];
+        $this->protocolInfoResponse = null;
     }
 
     /**
      * Establish a connection to the controller
      *
-     * @param string $host  The IP or hostname of the controller
-     * @param string $port  The port number (default 9051)
+     * @param ?string $host  The IP or hostname of the controller
+     * @param ?string $port  The port number (default 9051)
      * @throws \Exception   Throws \Exception if the connection fails
-     * @return \Dapphp\TorUtils\ControlClient
+     * @return self
      */
     public function connect($host = null, $port = null)
     {
-        if (is_null($host)) $host = $this->_host;
-        if (is_null($port)) $port = $this->_port;
+        if (is_null($host)) $host = $this->host;
+        if (is_null($port)) $port = $this->port;
 
-        $this->_protocolInfoResponse = null;
+        $this->protocolInfoResponse = null;
 
-        $this->_sock = fsockopen($host, $port, $errno, $errstr, $this->_timeout);
+        $this->sock = fsockopen($host, $port, $errno, $errstr, $this->timeout);
 
-        if (!$this->_sock) {
+        if (!$this->sock) {
             throw new \Exception(
                 sprintf("Failed to connect to host %s on port %d.  Error: %d - %s", $host, $port, $errno, $errstr)
             );
@@ -198,11 +202,12 @@ class ControlClient
     /**
      * Close the control connection
      *
+     * @throws \Exception If the socket is not connected or a read/write error occurs
      * @return boolean true on success, false if an error occurred
      */
     public function quit()
     {
-        if (!$this->_sock) {
+        if (!$this->sock) {
             return true;
         }
 
@@ -210,10 +215,10 @@ class ControlClient
         $reply = $this->readReply();
 
         if ($reply->isPositiveReply()) {
-            fclose($this->_sock);
+            fclose($this->sock);
             return true;
         } else {
-            fclose($this->_sock);
+            fclose($this->sock);
             return false;
         }
     }
@@ -226,18 +231,18 @@ class ControlClient
      * if a password is provided the HASHEDPASSWORD authentication method will
      * be used.
      *
-     * @param string $password Optional password used for authentication
-     * @throws \Exception Throws exception if no suitable authentication methods are available
-     * @throws \Dapphp\TorUtils\ProtocolError Throws ProtocolError if authentication failed (incorrect password or cookie file)
+     * @param ?string $password Optional password used for authentication
+     * @throws \Exception Throws exception if no suitable authentication methods are available or authentication fails
+     * @throws ProtocolError Throws ProtocolError if authentication failed (incorrect password or cookie file)
      */
     public function authenticate($password = null)
     {
-        if ($this->_protocolInfoResponse === null) {
+        if ($this->protocolInfoResponse === null) {
             // can only be called once per connection
-            $pinfo = $this->_getProtocolInfo();
-            $this->_protocolInfoResponse = $pinfo;
+            $pinfo = $this->getProtocolInfo();
+            $this->protocolInfoResponse = $pinfo;
         } else {
-            $pinfo = $this->_protocolInfoResponse;
+            $pinfo = $this->protocolInfoResponse;
         }
 
         if (in_array('NONE', $pinfo['methods'])) {
@@ -263,13 +268,13 @@ class ControlClient
         $data = $data . "\r\n";
         $size = strlen($data);
 
-        if (!is_resource($this->_sock)) {
+        if (!is_resource($this->sock)) {
             throw new \Exception('Not connected');
         }
 
-        if ($this->_debug) $this->_debugOut($data, '>>> ');
+        if ($this->debug) $this->debugOut($data, '>>> ');
 
-        $sent = fwrite($this->_sock, $data);
+        $sent = fwrite($this->sock, $data);
 
         if ($sent !== $size) {
             throw new \Exception('Failed to write data to control port');
@@ -288,8 +293,11 @@ class ControlClient
      *
      * This method blocks if there is nothing to be read from the controller.
      *
-     * @param $cmd  The name of the previous command sent to the controller
-     * @return \Dapphp\TorUtils\ProtocolReply ProtocolReply object containing the response from the controller
+     * @param null $cmd The name of the previous command sent to the controller
+     * @param bool $single If true, stop reading after reading a single async event, otherwise read and process as
+     *   many async events as are available and return the first non-event reply. This should normally be left false.
+     * @return ProtocolReply ProtocolReply object containing the response from the controller
+     * @throws ProtocolError
      */
     public function readReply($cmd = null)
     {
@@ -300,15 +308,20 @@ class ControlClient
         $handlingEvent = false;
 
         while (true) {
-            $data = $this->_recvData();
+            $data = $this->recvData();
             if ($data === false) break;
 
-            if ($this->_isEventReplyLine($data)) {
+            if ($this->isEventReplyLine($data)) {
                 $handlingEvent = true;
                 $evreply->appendReplyLine($data);
+
+                if ($this->isDataReplyLine($data)) {
+                    $dataReply = true;
+                    $first = false;
+                }
             } elseif ($dataReply && trim($data) == '.') {
-                $data = $this->_recvData();
-                if (!$this->_isEndReplyLine($data)) {
+                $data = $this->recvData();
+                if (!$this->isEndReplyLine($data)) {
                     throw new ProtocolError('Last read "." line - expected EndReplyLine but got "' . trim($data) . '"');
                 }
 
@@ -320,7 +333,7 @@ class ControlClient
                     }
                     break;
                 }
-            } elseif (!$dataReply && $this->_isEndReplyLine($data)) {
+            } elseif (!$dataReply && $this->isEndReplyLine($data)) {
                 if ($handlingEvent) {
                     $evreply->appendReplyLine($data);
                 } else {
@@ -330,7 +343,7 @@ class ControlClient
                     break;
                 }
             } else {
-                if ($first && $this->_isDataReplyLine($data)) {
+                if ($first && $this->isDataReplyLine($data)) {
                     $dataReply = true;
                 }
 
@@ -338,7 +351,7 @@ class ControlClient
                 $first = false;
             }
 
-            if ($handlingEvent && $this->_isEndReplyLine($data)) {
+            if ($handlingEvent && $this->isEndReplyLine($data)) {
                 $handlingEvent = false;
                 $this->_asyncEventHandler($evreply);
                 $first     = true;
@@ -356,9 +369,9 @@ class ControlClient
      * option to GETINFO or use a ControlClient::GETINFO_* constant.
      *
      * @param string $keyword The info keyword
-     * @param string $params  Additional parameters to send if the keyword requires it
+     * @param ?string $params  Additional parameters to send if the keyword requires it
      * @throws \Exception     If too few parameters are passed for the $keyword used
-     * @return \Dapphp\TorUtils\ProtocolReply Protocol reply from the controller
+     * @return ProtocolReply Protocol reply from the controller
      */
     public function getInfo($keyword, $params = null)
     {
@@ -375,9 +388,7 @@ class ControlClient
         }
 
         $this->sendData('GETINFO ' . $cmd);
-        $reply = $this->readReply($cmd);
-
-        return $reply;
+        return $this->readReply($cmd);
     }
 
     /**
@@ -390,19 +401,19 @@ class ControlClient
      * returning a single descriptor or array of descriptors depending on
      * the $descriptorNameOfID parameter
      *
-     * @param string $descriptorNameOrID If null, get info on ALL descriptors, otherwise gets information based on the fingerprint or nickname given
-     * @throws \Exception If $descriptorNameOrID is not a valid finterprint or nickname
+     * @param ?string $descriptorNameOrID If null, get info on ALL descriptors, otherwise gets information based on the fingerprint or nickname given
+     * @throws \Exception If $descriptorNameOrID is not a valid fingerprint or nickname
      * @throws ProtocolError If no such descriptor was found or other protocol error
-     * @return \Dapphp\TorUtils\RouterDescriptor|array Returns array if $descriptorNameOrID is null, otherwise returns a single RouterDescriptor object
+     * @return RouterDescriptor|RouterDescriptor[] Returns array if $descriptorNameOrID is null, otherwise returns a single RouterDescriptor object
      */
     public function getInfoDescriptor($descriptorNameOrID = null)
     {
         if (is_null($descriptorNameOrID)) {
             $cmd = self::GETINFO_DESCRIPTOR_ALL;
-        } else if ($this->_isFingerprint($descriptorNameOrID)) {
+        } elseif ($this->isFingerprint($descriptorNameOrID)) {
             $cmd = self::GETINFO_DESCRIPTOR_ID;
             if ($descriptorNameOrID[0] != '$') $descriptorNameOrID = '$' . $descriptorNameOrID;
-        } else if ($this->_isNickname($descriptorNameOrID)) {
+        } elseif ($this->isNickname($descriptorNameOrID)) {
             $cmd = self::GETINFO_DESCRIPTOR_NAME;
         } else {
             throw new \Exception(sprintf('"%s" is not a valid router fingerprint or nickname', $descriptorNameOrID));
@@ -414,7 +425,7 @@ class ControlClient
             throw new ProtocolError($reply[0], $reply->getStatusCode());
         }
 
-        $descriptors = $this->_parser->parseDirectoryStatus($reply);
+        $descriptors = $this->parser->parseDirectoryStatus($reply);
 
         if (!is_null($descriptorNameOrID)) {
             return array_shift($descriptors);
@@ -437,7 +448,7 @@ class ControlClient
      * controller.
      *
      * @param null|string $descriptorNameOrID The descriptor nickname or fingerprint, or null|* to fetch all descriptors
-     * @throws \Exception If $descriptorNameOrID is not a valid finterprint or nickname
+     * @throws \Exception If $descriptorNameOrID is not a valid fingerprint or nickname
      * @throws ProtocolError
      *
      * @see \Dapphp\TorUtils\DirectoryClient::getAllServerDescriptors() See also getAllServerDescriptors()
@@ -446,10 +457,10 @@ class ControlClient
      */
     public function getInfoMicroDescriptor($descriptorNameOrID = null)
     {
-        if ($this->_isFingerprint($descriptorNameOrID)) {
+        if ($this->isFingerprint($descriptorNameOrID)) {
             $cmd = self::GETINFO_UDESCRIPTOR_ID;
             if ($descriptorNameOrID[0] != '$') $descriptorNameOrID = '$' . $descriptorNameOrID;
-        } elseif ($this->_isNickname($descriptorNameOrID)) {
+        } elseif ($this->isNickname($descriptorNameOrID)) {
             $cmd = self::GETINFO_UDESCRIPTOR_NAME;
         } elseif ($descriptorNameOrID == '*' || is_null($descriptorNameOrID)) {
             $cmd = self::GETINFO_UDECRIPTOR_ALL;
@@ -463,7 +474,7 @@ class ControlClient
             throw new ProtocolError($reply[0], $reply->getStatusCode());
         }
 
-        $descriptors = $this->_parser->parseDirectoryStatus($reply);
+        $descriptors = $this->parser->parseDirectoryStatus($reply);
 
         if (!is_null($descriptorNameOrID) && $descriptorNameOrID != '*') {
             return array_shift($descriptors);
@@ -476,7 +487,7 @@ class ControlClient
      * The latest router status info which reflects the current beliefs from
      * this Tor client about the router or routers in question.
      *
-     * @param string $descriptorNameOrID Fingerprint, nickname, or null for all descriptors
+     * @param ?string $descriptorNameOrID Fingerprint, nickname, or null for all descriptors
      * @throws \Exception If $descriptorNameOrID is not a valid finterprint or nickname
      * @throws ProtocolError If no such descriptor was found or other protocol error
      * @return RouterDescriptor|array Returns array if $descriptorNameOrID is null, otherwise returns a single RouterDescriptor object
@@ -485,10 +496,10 @@ class ControlClient
     {
         if (is_null($descriptorNameOrID)) {
             $cmd = self::GETINFO_NETSTATUS_ALL;
-        } else if ($this->_isFingerprint($descriptorNameOrID)) {
+        } elseif ($this->isFingerprint($descriptorNameOrID)) {
             $cmd = self::GETINFO_NETSTATUS_ID;
             if ($descriptorNameOrID[0] != '$') $descriptorNameOrID = '$' . $descriptorNameOrID;
-        } else if ($this->_isNickname($descriptorNameOrID)) {
+        } elseif ($this->isNickname($descriptorNameOrID)) {
             $cmd = self::GETINFO_NETSTATUS_NAME;
         } else {
             throw new \Exception(sprintf('"%s" is not a valid router fingerprint or nickname', $descriptorNameOrID));
@@ -500,7 +511,7 @@ class ControlClient
             throw new ProtocolError($reply[0], $reply->getStatusCode());
         }
 
-        $descriptors = $this->_parser->parseRouterStatus($reply);
+        $descriptors = $this->parser->parseRouterStatus($reply);
 
         if (!is_null($descriptorNameOrID)) {
             return array_shift($descriptors);
@@ -534,7 +545,7 @@ class ControlClient
      * @throws ProtocolError If Tor returns an error
      * @return string The 2 letter country code for the IP address
      */
-    public function getInfoIpToCountry($ip)
+    public function getInfoIpToCountry(string $ip)
     {
         $cmd   = self::GETINFO_IP2COUNTRY;
         $reply = $this->getInfo($cmd, $ip);
@@ -564,6 +575,11 @@ class ControlClient
         }
     }
 
+    /**
+     *
+     * @return Event\CircuitStatus[] Array of CircuitStatus event objects
+     * @throws ProtocolError
+     */
     public function getInfoCircuitStatus()
     {
         $cmd = self::GETINFO_CIRCUITSTATUS;
@@ -574,7 +590,7 @@ class ControlClient
             throw new ProtocolError($reply[0], $reply->getStatusCode());
         } else {
             foreach($reply->getReplyLines() as $line) {
-                $circuits[] = $this->_parser->parseCircuitStatusLine($line);
+                $circuits[] = $this->parser->parseCircuitStatusLine($line);
             }
         }
 
@@ -587,7 +603,7 @@ class ControlClient
      * Requires Tor 0.3.5.1-alpha or later.
      *
      * @throws ProtocolError
-     * @return Uptime of the Tor daemon (in seconds)
+     * @return int Uptime of the Tor daemon (in seconds)
      */
     public function getInfoUptime()
     {
@@ -597,7 +613,7 @@ class ControlClient
         if (!$reply->isPositiveReply()) {
             throw new ProtocolError($reply[0], $reply->getStatusCode());
         } else {
-            return $reply[0];
+            return intval($reply[0]);
         }
     }
 
@@ -606,7 +622,7 @@ class ControlClient
      * Introduced in 0.3.4.1-alpha.
      *
      * @throws ProtocolError
-     * @return The current system time in UTC
+     * @return string The current system time in UTC
      */
     public function getInfoCurrentTime()
     {
@@ -625,7 +641,7 @@ class ControlClient
      * Introduced in 0.3.4.1-alpha.
      *
      * @throws ProtocolError
-     * @return The current system time in the local time zone
+     * @return string The current system time in the local time zone
      */
     public function getInfoCurrentLocalTime()
     {
@@ -660,7 +676,7 @@ class ControlClient
      * Returns the status of the current version.  One of: new, old,
      * unrecommended, recommended, new in series, obsolete, unknown.
      * @throws ProtocolError
-     * @return \Dapphp\TorUtils\ProtocolReply
+     * @return ProtocolReply
      */
     public function getInfoStatusVersionCurrent()
     {
@@ -677,7 +693,7 @@ class ControlClient
      * Returns array of currently recommended versions.
      *
      * @throws ProtocolError
-     * @return \Dapphp\TorUtils\ProtocolReply
+     * @return array List of recommended Tor versions
      */
     public function getInfoStatusVersionRecommended()
     {
@@ -726,8 +742,11 @@ class ControlClient
 
                 if ($response->isPositiveReply()) {
                     $line = $response[0];
-                    if (preg_match_all('/"([^"]+)"/', $line, $matches));
-                    $ports[$which] = $matches[1];
+                    if (preg_match('/"([^"]+)"/', $line, $matches)) {
+                        $ports[$which] = $matches[1];
+                    } else {
+                        $ports[$which] = null;
+                    }
                 } else {
                     $ports[$which] = null;
                 }
@@ -775,7 +794,7 @@ class ControlClient
     public function getInfoConfigText()
     {
         $cmd = self::GETINFO_CONFIGTEXT;
-        $reply = $this->getInfo(self::GETINFO_CONFIGTEXT);
+        $reply = $this->getInfo($cmd);
 
         if (!$reply->isPositiveReply()) {
             throw new ProtocolError($reply[0], $reply->getStatusCode());
@@ -798,7 +817,7 @@ class ControlClient
      *
      * @param string $keywords Space separated list of keywords to get config values for
      * @throws ProtocolError If one or more options was not recognized
-     * @return multitype:array Array of config values keyed by the option name
+     * @return string[] Array of config values keyed by the option name
      */
     public function getConf($keywords)
     {
@@ -837,7 +856,7 @@ class ControlClient
      *
      * @param array $config Array of torrc values keyed by the option name
      * @throws ProtocolError If one or more options was not recognized or could not be set
-     * @return \Dapphp\TorUtils\ControlClient
+     * @return self
      */
     public function setConf(array $config)
     {
@@ -869,7 +888,7 @@ class ControlClient
      *
      * @param string $signal The signal or a ControlClient::SIGNAL_* constant
      * @throws ProtocolError If the signal is not recognized
-     * @return \Dapphp\TorUtils\ControlClient
+     * @return self
      */
     public function signal($signal)
     {
@@ -905,7 +924,7 @@ class ControlClient
      *   ServiceID corresponds to the onion address (without .onion) and the
      *   PrivateKey is the RSA key for the hidden service (null if ControlClient::ONION_FLAG_DISCARDPK is set)
      */
-    public function addHiddenService($port, $options = array())
+    public function addHiddenService($port, array $options = [])
     {
         $cmd  = 'ADD_ONION';
 
@@ -1000,7 +1019,7 @@ class ControlClient
      * @param array|string $events An event or array of events to subscribe to
      * @throws \Exception If $events was not a string or array
      * @throws ProtocolError If one or more events was not recognized (no events will be set)
-     * @return \Dapphp\TorUtils\ControlClient
+     * @return self
      */
     public function setEvents($events)
     {
@@ -1029,7 +1048,7 @@ class ControlClient
      * @param array|string $address The hostname(s) to resolve
      * @throws \Exception
      * @throws ProtocolError Invalid address given
-     * @return \Dapphp\TorUtils\ControlClient
+     * @return self
      */
     public function resolve($address)
     {
@@ -1057,18 +1076,18 @@ class ControlClient
      */
     public function getHost()
     {
-        return $this->_host;
+        return $this->host;
     }
 
     /**
      * Set the hostname or IP of the controller to connect to
      *
-     * @param string $_host The hostname or IP
-     * @return \Dapphp\TorUtils\ControlClient
+     * @param string $host The hostname or IP
+     * @return self
      */
-    public function setHost($_host)
+    public function setHost($host)
     {
-        $this->_host = $_host;
+        $this->host = $host;
         return $this;
     }
 
@@ -1079,18 +1098,18 @@ class ControlClient
      */
     public function getPort()
     {
-        return $this->_port;
+        return $this->port;
     }
 
     /**
      * Set the port number of the controller to connect to
      *
-     * @param int $_port The port number to connect to
-     * @return \Dapphp\TorUtils\ControlClient
+     * @param int $port The port number to connect to
+     * @return self
      */
-    public function setPort($_port)
+    public function setPort($port)
     {
-        $this->_port = $_port;
+        $this->port = $port;
         return $this;
     }
 
@@ -1099,7 +1118,7 @@ class ControlClient
      *
      * @param int $timeout Number of seconds to wait for controller connection before timing out
      * @throws \Exception $timeout is not numeric
-     * @return \Dapphp\TorUtils\ControlClient
+     * @return self
      */
     public function setTimeout($timeout)
     {
@@ -1107,7 +1126,7 @@ class ControlClient
             throw new \Exception("Timeout must be a numeric value - '{$timeout}' given");
         }
 
-        $this->_timeout = (int)$timeout;
+        $this->timeout = (int)$timeout;
         return $this;
     }
 
@@ -1118,40 +1137,40 @@ class ControlClient
      */
     public function getTimeout()
     {
-        return $this->_timeout;
+        return $this->timeout;
     }
 
     /**
-     * Get the setting for debugging controller communcation
+     * Get the setting for debugging controller communication
      *
      * @return boolean true if debug output is enabled, false if not
      */
     public function getDebug()
     {
-        return $this->_debug;
+        return $this->debug;
     }
 
     /**
      * Set whether or not to enable debug output showing controller communication
      *
-     * @param bool $_debug true to enable debug output, false to disable
-     * @return \Dapphp\TorUtils\ControlClient
+     * @param bool $debug true to enable debug output, false to disable
+     * @return self
      */
-    public function setDebug($_debug)
+    public function setDebug($debug)
     {
-        $this->_debug = (bool)$_debug;
+        $this->debug = (bool)$debug;
         return $this;
     }
 
     /**
      * Set the file debug output will be written to (default stdout)
      * @param resource $handle A valid file handle for writing debug output
-     * @return \Dapphp\TorUtils\ControlClient
+     * @return self
      */
     public function setDebugOutputFile($handle)
     {
         if (is_resource($handle)) {
-            $this->_debugFp = $handle;
+            $this->debugFp = $handle;
         }
 
         return $this;
@@ -1164,7 +1183,7 @@ class ControlClient
      */
     public function getParser()
     {
-        return $this->_parser;
+        return $this->parser;
     }
 
     /**
@@ -1175,9 +1194,16 @@ class ControlClient
      * the name of the event (e.g. ADDRMAP, NEW_CONSENSUS) and $data is the
      * content of the event (typically ProtocolReply, array, or RouterDescriptor)
      *
-     * @param callback $callback A valid callback that will be called after event data is received
+     * @param callable $callback A valid callback that will be called after event data is received
+     * @param array    $knownEvents An array of async event names that should be
+     * parsed and returned as objects. If an event is subscribed to but not known
+     * to the async handler, a ProtocolReply will be returned for backwards
+     * compatibility instead of an AsyncEvent object. This is to protect clients
+     * from changes in future versions where new event objects are introduced, but not
+     * expected by the client application.
+     *
      * @throws \Exception If the $callback is not a callable function or method
-     * @return \Dapphp\TorUtils\ControlClient
+     * @return self
      */
     public function setAsyncEventHandler($callback)
     {
@@ -1204,14 +1230,12 @@ class ControlClient
      *
      * @return array Array of protocol info
      */
-    private function _getProtocolInfo()
+    private function getProtocolInfo()
     {
         $this->sendData('PROTOCOLINFO 1');
         $reply = $this->readReply();
 
-        $protocolInfo = $this->_parser->parseProtocolInfo($reply);
-
-        return $protocolInfo;
+        return $this->parser->parseProtocolInfo($reply);
     }
 
     /**
@@ -1228,7 +1252,7 @@ class ControlClient
         $reply = $this->readReply($cmd);
 
         if (!$reply->isPositiveReply()) {
-            fclose($this->_sock); // failed auth closes connection
+            fclose($this->sock); // failed auth closes connection
             throw new ProtocolError($reply[0], $reply->getStatusCode());
         }
 
@@ -1238,7 +1262,7 @@ class ControlClient
     /**
      * Authenticate using a password
      *
-     * @param string $password The password to send to the controller
+     * @param ?string $password The password to send to the controller
      * @throws ProtocolError Authentication failed
      * @return boolean true if authenticated successfully
      */
@@ -1251,7 +1275,7 @@ class ControlClient
         $reply = $this->readReply($cmd);
 
         if (!$reply->isPositiveReply()) {
-            @fclose($this->_sock); // failed auth closes connection
+            @fclose($this->sock); // failed auth closes connection
             throw new ProtocolError($reply[0], $reply->getStatusCode());
         }
 
@@ -1278,7 +1302,7 @@ class ControlClient
 
         $cookie = file_get_contents($cookiePath);
 
-        $clientNonce    = $this->_generateSecureNonce(32);
+        $clientNonce    = $this->generateSecureNonce(32);
         $clientNonceHex = bin2hex($clientNonce);
 
         $cmd = 'AUTHCHALLENGE';
@@ -1323,7 +1347,7 @@ class ControlClient
         $reply = $this->readReply($cmd);
 
         if (!$reply->isPositiveReply()) {
-            fclose($this->_sock);
+            fclose($this->sock);
             throw new ProtocolError($reply[0], $reply->getStatusCode());
         }
 
@@ -1336,7 +1360,7 @@ class ControlClient
      * @param string $string The string to check as a fingerprint
      * @return bool true if valid fingerprint
      */
-    private function _isFingerprint($string)
+    protected function isFingerprint($string)
     {
         return (bool)preg_match('/^\$?[A-F0-9]{40}$/i', $string);
     }
@@ -1348,7 +1372,7 @@ class ControlClient
      * @param string $string The string to check as a nickname
      * @return boolean true if valid nickname
      */
-    private function _isNickname($string)
+    protected function isNickname($string)
     {
         return (bool)preg_match('/^[A-Z0-9]{1,19}$/i', $string);
     }
@@ -1359,7 +1383,7 @@ class ControlClient
      * @param int $length Length of the secure nonce to generate
      * @return string secure nonce
      */
-    private function _generateSecureNonce($length)
+    private function generateSecureNonce($length)
     {
         if (function_exists('openssl_random_pseudo_bytes')) {
             $nonce = openssl_random_pseudo_bytes($length);
@@ -1384,11 +1408,11 @@ class ControlClient
      *
      * @return string Data received
      */
-    protected function _recvData()
+    protected function recvData()
     {
-        $recv = fgets($this->_sock);
+        $recv = fgets($this->sock);
 
-        if ($this->_debug) $this->_debugOut($recv, '<<< ');
+        if ($this->debug) $this->debugOut($recv, '<<< ');
 
         return $recv;
     }
@@ -1457,7 +1481,7 @@ class ControlClient
                 $data = array();
 
                 foreach($reply->getReplyLines() as $line) {
-                    $data[] = $this->_parser->parseCircuitStatusLine($line);
+                    $data[] = $this->parser->parseCircuitStatusLine($line);
                 }
                 break;
 
@@ -1471,30 +1495,7 @@ class ControlClient
         call_user_func($this->_eventCallback, $event, $data);
     }
 
-    /**
-     * Check if a line of data sent from the controller is a positive reply (2xy)
-     *
-     * @param string $line The reply line to check
-     * @return boolean true if the response is of the 200 class of responses
-     */
-    private function _isPositiveReply($line)
-    {
-        return substr($line, 0, 1) === '2'; // reply begins with 2xy
-    }
-
-    /**
-     * Check if a line of data sent from the controller is a "MidReplyLine". A
-     * MidReplyLine is additional data belonging to a reply
-     *
-     * @param string $line The line to check
-     * @return bool true if line is a MidReplyLine
-     */
-    private function _isMidReplyLine($line)
-    {
-        return (bool)preg_match('/^\d{3}-/', $line);
-    }
-
-    private function _isDataReplyLine($line)
+    private function isDataReplyLine($line)
     {
         return (bool)preg_match('/^\d{3}\+/', $line);
     }
@@ -1507,7 +1508,7 @@ class ControlClient
      * @param string $line The reply line to check
      * @return bool true if line is an EndReplyLine
      */
-    private function _isEndReplyLine($line)
+    private function isEndReplyLine($line)
     {
         return (bool)preg_match('/^\d{3} .*\r\n$/', $line);
     }
@@ -1519,7 +1520,7 @@ class ControlClient
      * @param string $line The line to check
      * @return boolean true if line is an event reply
      */
-    private function _isEventReplyLine($line)
+    private function isEventReplyLine($line)
     {
         return substr($line, 0, 3) === '650';
     }
@@ -1527,11 +1528,11 @@ class ControlClient
     /**
      * Write debug output message
      *
-     * @param string $string The debug data to write
-     * @param string $prefix Prefix to print before the line (<<< indicates data sent from controller, >>> indiates data sent to the controller)
+     * @param string $message The debug data to write
+     * @param string $prefix Prefix to print before the line (<<< indicates data sent from controller, >>> indicates data sent to the controller)
      */
-    private function _debugOut($string, $prefix)
+    private function debugOut($message, $prefix)
     {
-        fwrite($this->_debugFp, $prefix . $string);
+        fwrite($this->debugFp, $prefix . $message);
     }
 }

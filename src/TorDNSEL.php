@@ -85,8 +85,8 @@ class TorDNSEL
      * This check sends a DNS "A" query to the $dnsServer (or the default if none is provided) and checks the answer to
      * determine if the visitor is coming from a Tor exit or not.
      *
-     * @param $remoteAddr The remote IP address, (e.g. $_SERVER['REMOTE_ADDR']) (IPv4 or IPv6) - Note: IPv6 is not currently supported by TorDNSEL
-     * @param null $dnsServer The DNS resolver to query against (if null it will use check-01.torproject.or)
+     * @param string $remoteAddr The remote IP address, (e.g. $_SERVER['REMOTE_ADDR']) (IPv4 or IPv6) - Note: IPv6 is not currently supported by TorDNSEL
+     * @param string|null $dnsServer The DNS resolver to query against (if null it will use check-01.torproject.or)
      *  Consider using a local, caching resolver for DNSEL queries!
      * @return bool true if the visitor's IP address is a Tor exit relay, false if it is not
      * @throws \Exception
@@ -106,8 +106,8 @@ class TorDNSEL
      * Query the Tor DNS Exit List service for a list of relay fingerprints that belong to the supplied IP address.
      * If $remoteAddr is not a Tor exit relay, an empty array is returned.
      *
-     * @param $remoteAddr The Tor exit relay IP address (IPv4 or IPv6) - Note: IPv6 is not currently supported by TorDNSEL
-     * @param null $dnsServer The DNS resolver to query against (if null it will use check-01.torproject.or)
+     * @param string $remoteAddr The Tor exit relay IP address (IPv4 or IPv6) - Note: IPv6 is not currently supported by TorDNSEL
+     * @param string|null $dnsServer The DNS resolver to query against (if null it will use check-01.torproject.or)
      *  Consider using a local, caching resolver for DNSEL queries!
      * @return array An array of Tor relay fingerprints, if the IP address is a Tor exit relay
      * @throws \Exception If there is a network error or the DNS query fails
@@ -150,11 +150,14 @@ class TorDNSEL
 
     public function __construct() {}
 
+    /**
+     * Construct a hostname in the format of {remote_ip}.dnsel.torproject.org
+     *
+     * @param string $remoteIp The client IP address which may or may not be a Tor exit relay
+     * @return string
+     */
     public function getTorDNSELName($remoteIp)
     {
-        // construct a hostname in the format of {remote_ip}.dnsel.torproject.org
-        // where {remote_ip} is the remote (client) IP address which may or may not be a Tor exit relay
-
         if (strpos($remoteIp, ':') !== false) {
             $addr = $this->expandIPv6Address($remoteIp);
         } elseif (strpos($remoteIp, '.') !== false) {
@@ -175,16 +178,17 @@ class TorDNSEL
      * if the remote connection could be a Tor exit node.
      *
      * @param string $host hostname in the designated tordnsel format
+     * @param int $type The query type
      * @param string $dnsServer IP/host of the DNS server to use for querying
      * @throws \Exception DNS failures, socket failures
-     * @return boolean
+     * @return array
      */
     private function dnsLookup($host, $type, $dnsServer)
     {
         $query    = $this->generateDNSQuery($host, $type);
         $data     = $this->performDNSLookup($query, $dnsServer);
 
-        if (!$data) {
+        if (empty($data)) {
             throw new \Exception('DNS request timed out');
         }
 
@@ -199,37 +203,36 @@ class TorDNSEL
         return $response;
     }
 
-    public function assertPositiveResponse($response)
+    /**
+     *
+     * @param array $response
+     * @return bool
+     * @throws \Exception
+     */
+    public function assertPositiveResponse(array $response)
     {
         switch($response['header']['RCODE']) {
             case 0:
                 return true;
-                break;
 
             case 1:
                 throw new \Exception('The name server was unable to interpret the query.');
-                break;
 
             case 2:
                 throw new \Exception('Server failure - The name server was unable to process this query due to a problem with the name server.');
-                break;
 
             case 3:
                 // nxdomain
                 return false;
-                break;
 
             case 4:
                 throw new \Exception('Not Implemented - The name server does not support the requested kind of query.');
-                break;
 
             case 5:
                 throw new \Exception('Refused - The name server refuses to perform the specified operation for policy reasons.');
-                break;
 
             default:
                 throw new \Exception("Bad RCODE in DNS response.  RCODE = '{$response['RCODE']}'");
-                break;
         }
     }
 
@@ -276,7 +279,7 @@ class TorDNSEL
      *
      * @param string $query DNS query
      * @param string $dns_server Server to query
-     * @param number $port Port number of the DNS server
+     * @param int $port Port number of the DNS server
      * @throws \Exception Failed to send UDP packet
      * @return string DNS response or empty string if request timed out
      */
@@ -291,9 +294,11 @@ class TorDNSEL
         fwrite($fp, $query);
 
         socket_set_timeout($fp, $this->dnsRequestTimeout);
-        $resp = fread($fp, 8192);
-
-        return $resp;
+        if (($resp = fread($fp, 8192)) !== false) {
+            return $resp;
+        } else {
+            return '';
+        }
     }
 
     /**
@@ -306,8 +311,7 @@ class TorDNSEL
     private function parseDnsResponse($data)
     {
         $p      = 0;
-        $offset = array();
-        $header = array();
+        $header = [];
         $rsize  = strlen($data);
 
         if ($rsize < 12) {
@@ -381,7 +385,7 @@ class TorDNSEL
      * Read a DNS name from a response
      *
      * @param string $data The DNS response packet
-     * @param number $offset Starting offset of $data to begin reading
+     * @param int $offset Starting offset of $data to begin reading
      * @return string  The DNS name in the packet
      */
     private function readDNSName($data, &$offset)
@@ -417,12 +421,12 @@ class TorDNSEL
      * Read a DNS question section
      *
      * @param string $data The DNS response packet
-     * @param number $offset Starting offset of $data to begin reading
+     * @param int $offset Starting offset of $data to begin reading
      * @return array Array with question information
      */
     private function readDNSQuestion($data, &$offset)
     {
-        $question   = array();
+        $question   = [];
         $name       = $this->readDNSName($data, $offset);
 
         $type    = unpack('n', substr($data, $offset, 2));
@@ -441,7 +445,7 @@ class TorDNSEL
      * Read a DNS resource record
      *
      * @param string $data The DNS response packet
-     * @param number $offset Starting offset of $data to begin reading
+     * @param int $offset Starting offset of $data to begin reading
      * @return array Array with RR information
      */
     private function readDNSRR($data, &$offset)
@@ -508,6 +512,7 @@ class TorDNSEL
         }
 
         $address = strtolower((string)$address);
+        /** @noinspection RegExpRedundantEscape */
         $address = preg_replace('/^\[|\]$/', '', $address);
 
         if (
