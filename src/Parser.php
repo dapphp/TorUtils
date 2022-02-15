@@ -101,6 +101,284 @@ class Parser
      * @param ProtocolReply $reply The reply to parse
      * @return array Array of \Dapphp\TorUtils\RouterDescriptor objects
      */
+    public function parseVoteConsensusStatusDocument(ProtocolReply $reply)
+    {
+        $doc = new AuthorityStatusDocument();
+        $descriptor  = null;
+        $authority   = null;
+
+        $line = $reply->shift();
+        if (in_array($line, [ '.', '250 OK', '200 OK', '' ])) {
+            $line = $reply->shift();
+        }
+
+        if (empty($line)) {
+            throw new \Exception('Reply was empty');
+        }
+
+        $parts = array_map('trim', explode(' ', $line));
+
+        if ($parts[0] !== 'network-status-version') {
+            throw new \Exception('Reply did not begin with network-status-version, got "' . $line . '".');
+        }
+
+        $doc->statusVersion = (int)$parts[1];
+
+        foreach($reply as $line) {
+            $parts   = explode(' ', $line, 2);
+            $keyword = $parts[0];
+            $extra   = $parts[1] ?? null;
+
+            switch ($keyword) {
+                case 'vote-status':
+                    $doc->voteStatus = $extra;
+                    break;
+
+                case 'consensus-methods':
+                    $doc->consensusMethods = explode(' ', $extra);
+                    break;
+
+                case 'consensus-method':
+                    $doc->consensusMethod = (int)$extra;
+                    break;
+
+                case 'published':
+                    $doc->published = $extra;
+                    break;
+
+                case 'valid-after':
+                    $doc->validAfter = $extra;
+                    break;
+
+                case 'fresh-until':
+                    $doc->freshUntil = $extra;
+                    break;
+
+                case 'valid-until':
+                    $doc->validUntil = $extra;
+                    break;
+
+                case 'voting-delay':
+                    $extra = explode(' ', $extra);
+                    $doc->voteDelaySeconds = (int)$extra[0];
+                    $doc->distDelaySeconds = (int)$extra[1];
+                    break;
+
+                case 'client-versions':
+                    $doc->clientVersions = array_map('trim', explode(',', $extra));
+                    break;
+
+                case 'server-versions':
+                    $doc->serverVersions = array_map('trim', explode(',', $extra));
+                    break;
+
+                case 'known-flags':
+                    $doc->knownFlags = array_map('trim', explode(' ', $extra));
+                    break;
+
+                case 'flag-thresholds':
+                    $doc->flagThresholds = $this->parseDelimitedData($extra);
+                    break;
+
+                case 'recommended-client-protocols':
+                    $doc->recommendedClientProtocols = $this->parseDelimitedData($extra);
+                    break;
+
+                case 'recommended-relay-protocols':
+                    $doc->recommendedRelayProtocols = $this->parseDelimitedData($extra);
+                    break;
+
+                case 'required-client-protocols':
+                    $doc->requiredClientProtocols = $this->parseDelimitedData($extra);
+                    break;
+
+                case 'required-relay-protocols':
+                    $doc->requiredRelayProtocols = $this->parseDelimitedData($extra);
+                    break;
+
+                case 'params':
+                    $doc->params = $this->parseDelimitedData($extra);
+                    break;
+
+                case 'shared-rand-current-value':
+                    list($numReveals, $value) = explode(' ', $extra);
+                    $doc->sharedRandCurrentValue  = $value;
+                    break;
+
+                case 'shared-rand-previous-value':
+                    list($numReveals, $value) = explode(' ', $extra);
+                    $doc->sharedRandPreviousValue = $value;
+                    break;
+
+                case 'dir-source':
+                    if (!empty($authority)) {
+                        $doc->authorities[] = $authority;
+                    }
+
+                    list($nickname, $identity, $hostname, $ip, $dirPort, $orPort) = explode(' ', $extra);
+                    $authority = [
+                        'nickname' => $nickname,
+                        'fingerprint' => $identity,
+                        'hostname' => $hostname,
+                        'ip_address' => $ip,
+                        'dir_port' => $dirPort,
+                        'or_port' => $orPort,
+                    ];
+                    break;
+
+                case 'contact':
+                    $authority['contact'] = $extra;
+                    break;
+
+                case 'vote-digest':
+                    $authority['vote-digest'] = $extra;
+                    break;
+
+                case 'shared-rand-participate':
+                    $authority['shared-rand-participate'] = true;
+                    break;
+
+                case 'shared-rand-commit':
+                    if (!isset($authority['shared-rand-commit'])) {
+                        // If a vote contains multiple commits from the same authority, the receiver MUST only consider
+                        // the first commit listed.
+                        $parts = explode(' ', $extra);
+                        $authority['shared-rand-commit'] = [
+                            'version' => $parts[0],
+                            'algname' => $parts[1],
+                            'identity' => $parts[2],
+                            'commit' => $parts[3],
+                            'reveal' => isset($parts[4]) ? $parts[4] : null,
+                        ];
+                    }
+                    break;
+
+                // authority key certificates
+                case 'dir-key-certificate-version':
+                case 'fingerprint':
+                case 'dir-key-published':
+                case 'dir-key-expires':
+                    $authority[$keyword] = $extra;
+                    break;
+
+                case 'dir-identity-key':
+                case 'dir-signing-key':
+                    $authority[$keyword] = $this->_parseRsaKey($reply);
+                    break;
+
+                case 'dir-key-crosscert':
+                    // TODO: Implementations MUST verify that the signature is a correct signature of the hash of the identity key using the signing key.
+                    $authority[$keyword] = $this->_parseBlockData($reply, '-----BEGIN ID SIGNATURE-----', '-----END ID SIGNATURE-----');
+                    break;
+
+                case 'dir-key-certification':
+                    $authority[$keyword] = $this->_parseBlockData($reply, '-----BEGIN SIGNATURE-----', '-----END SIGNATURE-----');
+                    break;
+
+                case 'r':
+                    if (!empty($authority)) {
+                        $doc->authorities[] = $authority;
+                        $authority = null;
+                    }
+                    if (isset($descriptor) && $descriptor) {
+                        $doc->descriptors[] = $descriptor;
+                    }
+
+                    $descriptor = new RouterDescriptor();
+                    $descriptor->methods = [];
+                    $descriptor->setArray($this->_parseRLine($line));
+                    break;
+
+                case 'a':
+                    $descriptor->setArray($this->_parseALine($line));
+                    break;
+
+                case 's':
+                    $descriptor->setArray($this->_parseSLine($line));
+                    break;
+
+                case 'v':
+                    $descriptor->setArray($this->_parsePlatform($extra));
+                    break;
+
+                case 'pr':
+                    $descriptor->setArray($this->_parseProtoVersions($extra));
+                    break;
+
+                case 'w':
+                    $descriptor->setArray($this->_parseWLine($line));
+                    break;
+
+                case 'p':
+                    $descriptor->setArray($this->_parsePLine($line));
+                    break;
+
+                case 'm':
+                    list ($methods, $digest) = explode(' ', $extra);
+                    $methods = array_map('trim', explode(',', $methods));
+                    $digest  = $this->parseDelimitedData($digest);
+                    foreach($methods as $method) {
+                        $descriptor->methods[$method][array_keys($digest)[0]] = array_values($digest)[0];
+                    }
+                    break;
+
+                case 'id':
+                    $parts = explode(' ', $extra);
+                    $descriptor->ed25519_identity = $parts[1];
+                    break;
+
+                case 'stats':
+                    $descriptor->stats = $this->parseDelimitedData($extra);
+                    break;
+
+                case 'directory-footer':
+                    if (isset($descriptor) && $descriptor)
+                        $doc->descriptors[] = $descriptor;
+                    break;
+
+                case 'bandwidth-weights':
+                    $doc->bandwidthWeights = array_map('intval', $this->parseDelimitedData($extra));
+                    break;
+
+                case 'directory-signature':
+                    $parts = explode(' ', $extra);
+                    $alg   = 'sha1';
+                    if (count($parts) == 3) {
+                        $alg = array_shift($parts);
+                    }
+                    $identity  = $parts[0];
+                    $digest    = $parts[1];
+                    $signature = $this->_parseBlockData(
+                        $reply,
+                        '-----BEGIN SIGNATURE-----',
+                        '-----END SIGNATURE-----'
+                    );
+
+                    $doc->directorySignatures[] = [
+                        'algorithm' => $alg,
+                        'identity'  => $identity,
+                        'digest'    => $digest,
+                        'signature' => $signature,
+                    ];
+
+                    break;
+
+                default:
+                    echo "MISSED '$keyword' = '$extra'\n";
+                    break;
+
+            }
+        }
+
+        return $doc;
+    }
+
+    /**
+     * Parse directory status reply (v3 directory style)
+     *
+     * @param ProtocolReply $reply The reply to parse
+     * @return array Array of \Dapphp\TorUtils\RouterDescriptor objects
+     */
     public function parseRouterStatus(ProtocolReply $reply)
     {
         $descriptors = array();
@@ -177,7 +455,10 @@ class Parser
                 $line = substr($line, 4);
             }
 
-            $values = explode(' ', $line, 2); if (sizeof($values) < 2) $values[1] = null;
+            $values = explode(' ', $line, 2);
+            if (sizeof($values) < 2) {
+                $values[1] = null;
+            }
             list ($keyword, $value) = $values;
 
             if ($keyword == 'router' || ($keyword == 'onion-key' && $mds)) {
@@ -508,7 +789,7 @@ class Parser
 
     private function _parseHiddenServiceDir($line)
     {
-        if (trim($line) == '') {
+        if (empty($line) || ($line && trim($line) == '')) {
             $line = '2';
         }
 
@@ -781,18 +1062,21 @@ class Parser
         $line = $reply->current();
 
         if ($line != $startDelimiter) {
-            throw new ProtocolError('Expected line beginning with "' . $startDelimiter . '"');
+            throw new ProtocolError('Expected line beginning with "' . $startDelimiter . '", got ' . $line);
         }
 
-        $key = $line . "\n";
+        $data = $line;
 
         do {
             $reply->next();
-            $line = $reply->current();
-            $key .= $line . "\n";
-        } while ($line && $line != $endDelimter);
+            if (!$reply->valid()) {
+                throw new \Exception('Reached end of reply without matching end delimiter "' . $endDelimter . '"');
+            }
+            $line  = $reply->current();
+            $data .= "\n" . $line;
+        } while ($reply->valid() && $line != $endDelimter);
 
-        return $key;
+        return $data;
     }
 
     public function parseKeywordArguments($input)

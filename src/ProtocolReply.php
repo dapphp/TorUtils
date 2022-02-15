@@ -195,6 +195,12 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
         }
     }
 
+    public function shift(): mixed
+    {
+        $this->dirty = true;
+        return array_shift($this->lines);
+    }
+
     /**
      * (non-PHPdoc)
      * @see Iterator::rewind()

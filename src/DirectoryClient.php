@@ -367,6 +367,39 @@ class DirectoryClient
         }
     }
 
+    public function statusVoteCurrentAuthority($address = null)
+    {
+        $uri = '/tor/status-vote/current/authority.z';
+
+        $reply = $this->_request($uri, $address);
+
+        return $this->parser->parseVoteConsensusStatusDocument($reply);
+    }
+
+    public function statusVoteCurrentConsensus($address = null)
+    {
+        $uri = '/tor/status-vote/current/consensus.z';
+
+        $reply = $this->_request($uri, $address);
+
+        return $this->parser->parseVoteConsensusStatusDocument($reply);
+    }
+
+    /**
+     * Make an HTTP GET request to a directory server and return the response
+     *
+     * @param string $uri The URI to fetch (e.g. /tor/server/all.z)
+     * @param string|null $directoryServer The host:port or ip:port of the directory server to use, or null to use
+     * random selections from the default list
+     * @return \Dapphp\TorUtils\ProtocolReply If no error occurs, a ProtocolReply object is returned. The first line may
+     * be the HTTP status line. Implementations must tolerate the first reply line being an HTTP response code.
+     * @throws \Exception If the request to the directory failed (e.g. 404 Not Found, Connection Timed Out)
+     */
+    public function get($uri, $directoryServer = null)
+    {
+        return $this->_request($uri, $directoryServer);
+    }
+
     /**
      * Pick a random dir authority to query and perform the HTTP request for directory info
      *
@@ -381,7 +414,10 @@ class DirectoryClient
 
         do {
             // pick a server from the list, it is randomized in __construct
-            if ($this->preferredServer && !$used) {
+            if ($directoryServer && !$used) {
+                $server = $directoryServer;
+                $used   = true;
+            } elseif ($this->preferredServer && !$used) {
                 $server = $this->preferredServer;
                 $used   = true;
             } else {
