@@ -202,9 +202,9 @@ class RouterDescriptor
                         array_push($this->{$key}['reject'], $value['reject']);
                     }
                 }
-            } else if ($key === 'or_address') {
+            } elseif ($key === 'or_address') {
                 array_push($this->{$key}, $value);
-            } else if (property_exists($this, $key)) {
+            } elseif (property_exists($this, $key)) {
                 $this->$key = $value;
             }
         }
