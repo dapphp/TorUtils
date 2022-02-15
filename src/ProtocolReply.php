@@ -206,7 +206,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      * (non-PHPdoc)
      * @see Iterator::rewind()
      */
-    public function rewind(): void
+    public function rewind()
     {
         $this->position = 0;
     }
@@ -242,7 +242,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      * (non-PHPdoc)
      * @see Iterator::next()
      */
-    public function next(): void
+    public function next()
     {
         ++$this->position;
     }
@@ -251,7 +251,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      * (non-PHPdoc)
      * @see Iterator::valid()
      */
-    public function valid(): bool
+    public function valid()
     {
         return ($this->key() !== null);
     }
@@ -262,7 +262,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      * @return bool
      * @see ArrayAccess::offsetExists()
      */
-    public function offsetExists($offset): bool
+    public function offsetExists($offset)
     {
         return isset($this->lines[$offset]);
     }
@@ -284,7 +284,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      * @param $value
      * @see ArrayAccess::offsetSet()
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet($offset, $value)
     {
         if (is_null($offset)) {
             $this->lines[] = $value;
@@ -299,13 +299,13 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      * @param $offset
      * @see ArrayAccess::offsetUnset()
      */
-    public function offsetUnset($offset): void
+    public function offsetUnset($offset)
     {
         unset($this->lines[$offset]);
         $this->dirty = true;
     }
 
-    public function count(): int
+    public function count()
     {
         return count($this->lines);
     }
