@@ -623,4 +623,125 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
         return $data;
     }
+
+    public function testParseStatusVoteCurrentAuthority()
+    {
+        $data = file_get_contents(__DIR__ . '/data/status-vote.current.authority-1');
+        $reply = new ProtocolReply();
+        $reply->appendReplyLine('200 OK');
+        $reply->appendReplyLines(explode("\n", $data));
+
+        $p = new Parser();
+        $r = $p->parseVoteConsensusStatusDocument($reply);
+
+        $this->assertInstanceOf(\Dapphp\TorUtils\AuthorityStatusDocument::class, $r);
+
+        $this->assertEquals(3, $r->statusVersion);
+        $this->assertEquals('vote', $r->voteStatus);
+        $this->assertEmpty($r->consensusMethod);
+        $this->assertEquals([ 28, 29, 30, 31 ], $r->consensusMethods);
+
+        $this->assertEquals('2022-02-12 16:50:00', $r->published);
+        $this->assertEquals('2022-02-12 17:00:00', $r->validAfter);
+        $this->assertEquals('2022-02-12 18:00:00', $r->freshUntil);
+        $this->assertEquals('2022-02-12 20:00:00', $r->validUntil);
+
+        $this->assertEquals([ 'Authority', 'BadExit', 'Exit', 'Fast', 'Guard', 'HSDir', 'Running', 'Stable', 'StaleDesc', 'Sybil', 'V2Dir', 'Valid', ], $r->knownFlags);
+
+        $this->assertEquals('dannenberg', $r->authorities[0]['nickname']);
+        $this->assertTrue($r->authorities[0]['shared-rand-participate']);
+
+        $this->assertEquals('sha3-256', $r->authorities[0]['shared-rand-commit']['algname']);
+        $this->assertEquals('0232AF901C31A04EE9848595AF9BB7620D4C5B2E', $r->authorities[0]['shared-rand-commit']['identity']);
+        $this->assertEquals('AAAAAGIG+IBei+E1YxatE7F8cXGKh4NpKzGpe/n7CR7VWOGC+cZK+A==', $r->authorities[0]['shared-rand-commit']['commit']);
+        $this->assertEquals('AAAAAGIG+IDqjlIt26zA1PllxlgsY0oQ2+kS4ivTkoe3uT3FJl3a8Q==', $r->authorities[0]['shared-rand-commit']['reveal']);
+        $this->assertEquals(3, $r->authorities[0]['dir-key-certificate-version']);
+        $this->assertEquals('2021-08-01 20:00:02', $r->authorities[0]['dir-key-published']);
+        $this->assertEquals('2022-08-01 20:00:02', $r->authorities[0]['dir-key-expires']);
+
+        $this->assertEquals('BPwLY/3Y6kED2TdDnkAfQ8OT+eduCAF8FTQr0I9ynMs=', $r->sharedRandCurrentValue);
+
+        $this->assertCount(9168, $r->descriptors);
+
+        $d = $r->descriptors[4434];
+        $this->assertEquals('Deinde', $d->nickname);
+        $this->assertEquals('7BE3CB407039AA39EB88EF3B00053D3F92EC32AB', $d->fingerprint);
+        $this->assertEquals('53,80-81,443,1194,5190,5222-5223,5228,6660-6669,6679,6697,8082,8232-8233,8332-8333,11371,50002,64738', $d->exit_policy4['accept'][0]);
+        $this->assertEquals(7460, $d->bandwidth);
+
+        $this->assertEquals('0232AF901C31A04EE9848595AF9BB7620D4C5B2E', $r->directorySignatures[0]['identity']);
+        $this->assertEquals('491466AA6B52156E455D9B545242C21D16A6880A', $r->directorySignatures[0]['digest']);
+        $this->assertEquals("-----BEGIN SIGNATURE-----
+LyXM5UHvm0bQYXsYQ1pt1MYJlXkWkEa2XEZakYDCojf3qkqkrtqztzQKgstVs/Hi
+Aoaw0GiVGrJL0s4S3pV1WpuwRChl1hu3h3IBtE0snpTQn0FmWmxDhOPc2zu2dx8Q
+ngJ1WJ2AxTPa03qVXGS2RCKGM0Q/uSA2RAVAjXaDy8FJ56Cfigq3g06Msbe3KY5c
+G7GrB9j2SSMzdausamlcQMLtay+68jXwHtZP+6blFmpUPkpZuGgE7XBbjkzG8UzS
+cLPSEydkFeGWExe21vh7vrMbqlTnBMU+RakoRDAIWBkrSr9lGP5skslR5FMEAYL0
+FtXzHPuIL0ub44rVysdi1w==
+-----END SIGNATURE-----", $r->directorySignatures[0]['signature']);
+    }
+
+    public function testParseStatusVoteCurrentConsensus()
+    {
+        $data = file_get_contents(__DIR__ . '/data/status-vote.current.consensus-1');
+        $reply = new ProtocolReply();
+        $reply->appendReplyLine('200 OK');
+        $reply->appendReplyLines(explode("\n", $data));
+
+        $p = new Parser();
+        $r = $p->parseVoteConsensusStatusDocument($reply);
+
+        $this->assertInstanceOf(\Dapphp\TorUtils\AuthorityStatusDocument::class, $r);
+
+        $this->assertEquals(3, $r->statusVersion);
+        $this->assertEquals('consensus', $r->voteStatus);
+        $this->assertEmpty($r->consensusMethods);
+        $this->assertEquals(31, $r->consensusMethod);
+        $this->assertEquals('2022-02-13 03:00:00', $r->validAfter);
+        $this->assertEquals('2022-02-13 04:00:00', $r->freshUntil);
+        $this->assertEquals('2022-02-13 06:00:00', $r->validUntil);
+        $this->assertEquals(300, $r->voteDelaySeconds);
+        $this->assertEquals(300, $r->distDelaySeconds);
+        $this->assertCount(25, $r->serverVersions);
+        $this->assertContains('0.4.6.10', $r->serverVersions);
+        $this->assertCount(13, $r->knownFlags);
+        $this->assertCount(9, $r->recommendedClientProtocols);
+        $this->assertEquals(2, $r->recommendedClientProtocols['HSRend']);
+        $this->assertEquals('BPwLY/3Y6kED2TdDnkAfQ8OT+eduCAF8FTQr0I9ynMs=', $r->sharedRandPreviousValue);
+        $this->assertEquals('j8L53te0NzlnztpsdfNpe4VGCRBqQvFaF+HJcvnYLIE=', $r->sharedRandCurrentValue);
+        $this->assertCount(9, $r->authorities);
+        $this->assertEquals('dannenberg', $r->authorities[0]['nickname']);
+        $this->assertEquals('0232AF901C31A04EE9848595AF9BB7620D4C5B2E', $r->authorities[0]['fingerprint']);
+        $this->assertEquals('449A1D72ABC054CC4DB4E83F3020CE7DCED5CD2B', $r->authorities[0]['vote-digest']);
+
+        $this->assertEquals('Faravahar', $r->authorities[8]['nickname']);
+        $this->assertEquals('EFCBE720AB3A82B99F9E953CD5BF50F7EEFC7B97', $r->authorities[8]['fingerprint']);
+        $this->assertEquals('1F93F47391B86FC4EE724267B224ADC4C9273988', $r->authorities[8]['vote-digest']);
+
+        $this->assertCount(6817, $r->descriptors);
+
+        $desc = $r->descriptors[3326];
+        $this->assertEquals('Deinde', $desc->nickname);
+        $this->assertEquals('7BE3CB407039AA39EB88EF3B00053D3F92EC32AB', $desc->fingerprint);
+        $this->assertEquals(443, $desc->or_port);
+        $this->assertEquals(0, $desc->dir_port);
+        $this->assertEquals('Tor 0.4.6.9', $desc->platform);
+        $this->assertEquals([ 'Exit', 'Fast', 'Guard', 'HSDir', 'Running', 'Stable', 'V2Dir', 'Valid', ], $desc->flags);
+        $this->assertEquals(5300, $desc->bandwidth);
+        $this->assertCount(12, $desc->proto);
+
+        $this->assertCount(9, $r->directorySignatures);
+        $this->assertEquals('sha1', $r->directorySignatures[0]['algorithm']);
+        $this->assertEquals('0232AF901C31A04EE9848595AF9BB7620D4C5B2E', $r->directorySignatures[0]['identity']);
+        $this->assertEquals('491466AA6B52156E455D9B545242C21D16A6880A', $r->directorySignatures[0]['digest']);
+        $this->assertEquals("-----BEGIN SIGNATURE-----
+AuLma7WAdW3vba8rWmItzE03Ib+GVeFzyHx/oMEFzJEhS808bAnkrBQQP9isO0hW
+J9Dl4ukbj/xuusr7/DWIVkJXtVqD695S6EljomszQyHycyXAVDDcDtNTCY+OWMvI
+3YpeblbF5cr60elWUvEcxOI8ta/UETr2GR/KDfro8tACUbYVUtJm6EPyftINCw8d
+Krh/aJJmO0GgYcs+iUlG4TxyhTVc/qiMIJesXujZxEFiN45zQK2QZPXDnigE4IEI
+FECAPLAlaTm9bYJp6pWkePFdgyV09iwQ5xLDgCNTKkhhCH0nH1YhecQq+MTdDOQp
+BDtsdHc6r7Euq/lQZkmF/Q==
+-----END SIGNATURE-----", $r->directorySignatures[0]['signature']);
+
+    }
 }
