@@ -1,5 +1,5 @@
 <p align="center">
-<a href="https://travis-ci.org/dapphp/TorUtils"><img src="https://travis-ci.org/dapphp/TorUtils.svg?branch=master" alt="Build Status"></a>
+<a href="https://travis-ci.org/dapphp/TorUtils"><img src="https://api.travis-ci.com/dapphp/TorUtils.svg?branch=release-2.0" alt="Build Status"></a>
 <a href="https://packagist.org/packages/dapphp/torutils"><img src="https://poser.pugx.org/dapphp/torutils/downloads" alt="Total Downloads"></a>
 <a href="https://packagist.org/packages/dapphp/torutils"><img src="https://poser.pugx.org/dapphp/torutils/v/stable" alt="Latest Stable Version"></a>
 </p>
@@ -11,7 +11,7 @@ directory authorities and servers, and DNS exit lists.
 
 ## Version:
 
-**1.1.13**
+**2.0.0-alpha2**
 
 ## Author:
 
@@ -19,7 +19,7 @@ Drew Phillips <drew@drew-phillips.com>
 
 ## Requirements:
 
-* PHP 5.3 or greater
+* PHP 7.2+ or PHP 8.x
 
 ## Description:
 
@@ -151,7 +151,7 @@ the controller using the provided functions to issue commands:
 
 ## Copyright:
 
-    Copyright (c) 2018 Drew Phillips
+    Copyright (c) 2018-2022 Drew Phillips
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
