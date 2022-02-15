@@ -3,6 +3,11 @@ php:
   - '7.2'
   - '7.3'
   - '7.4'
+  - '8.0'
+  - '8.1.0'
+
+before_install:
+  - composer require --dev --no-update phpunit/phpunit ^8.5
 
 before_script: composer install
 
