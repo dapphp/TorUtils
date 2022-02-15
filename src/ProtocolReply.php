@@ -126,15 +126,16 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
         $status = null;
         $first  = sizeof($this->lines) == 0;
         $line   = rtrim($line, "\r\n");
+        $command = !empty($this->command) ? $this->command : '';
 
-        if (preg_match('/^(\d{3})-' . preg_quote($this->command, '/') . '=(.*)$/', $line, $match)) {
+        if (preg_match('/^(\d{3})-' . preg_quote($command, '/') . '=(.*)$/', $line, $match)) {
             // ###-COMMAND=data reply...
             $status        = $match[1];
 
             if (strlen(trim($match[2])) > 0) {
                 $this->lines[]= $match[2];
             }
-        } elseif ($first && preg_match('/^(\d{3})\+' . preg_quote($this->command, '/') . '=$/', $line, $match)) {
+        } elseif ($first && preg_match('/^(\d{3})\+' . preg_quote($command, '/') . '=$/', $line, $match)) {
             // ###+COMMAND=
             $status = $match[1];
             $this->dataReply = true;
@@ -195,7 +196,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
         }
     }
 
-    public function shift(): mixed
+    public function shift()
     {
         $this->dirty = true;
         return array_shift($this->lines);
@@ -205,7 +206,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      * (non-PHPdoc)
      * @see Iterator::rewind()
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->position = 0;
     }
@@ -241,7 +242,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      * (non-PHPdoc)
      * @see Iterator::next()
      */
-    public function next()
+    public function next(): void
     {
         ++$this->position;
     }
@@ -250,7 +251,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      * (non-PHPdoc)
      * @see Iterator::valid()
      */
-    public function valid()
+    public function valid(): bool
     {
         return ($this->key() !== null);
     }
@@ -261,7 +262,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      * @return bool
      * @see ArrayAccess::offsetExists()
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->lines[$offset]);
     }
@@ -283,7 +284,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      * @param $value
      * @see ArrayAccess::offsetSet()
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         if (is_null($offset)) {
             $this->lines[] = $value;
@@ -298,13 +299,13 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      * @param $offset
      * @see ArrayAccess::offsetUnset()
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->lines[$offset]);
         $this->dirty = true;
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->lines);
     }
