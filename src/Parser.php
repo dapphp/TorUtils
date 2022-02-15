@@ -360,7 +360,6 @@ class Parser
                     break;
 
                 default:
-                    echo "MISSED '$keyword' = '$extra'\n";
                     break;
 
             }
