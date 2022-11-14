@@ -222,7 +222,7 @@ class DirectoryClient
     {
         $uri = '/tor/status-vote/current/authority.z';
 
-        $reply = $this->_request($uri, $address);
+        $reply = $this->request($uri, $address);
 
         return $this->parser->parseVoteConsensusStatusDocument($reply);
     }
@@ -231,7 +231,7 @@ class DirectoryClient
     {
         $uri = '/tor/status-vote/current/consensus.z';
 
-        $reply = $this->_request($uri, $address);
+        $reply = $this->request($uri, $address);
 
         return $this->parser->parseVoteConsensusStatusDocument($reply);
     }
@@ -248,7 +248,7 @@ class DirectoryClient
      */
     public function get($uri, $directoryServer = null)
     {
-        return $this->_request($uri, $directoryServer);
+        return $this->request($uri, $directoryServer);
     }
 
     /**
@@ -258,7 +258,7 @@ class DirectoryClient
      * @throws \Exception No authorities responded
      * @return \Dapphp\TorUtils\ProtocolReply The reply from the directory authority
      */
-    private function request($uri)
+    private function request($uri, $directoryServer = null)
     {
         reset($this->serverList);
         $used = false;
