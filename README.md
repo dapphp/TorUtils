@@ -1,5 +1,5 @@
 <p align="center">
-<a href="https://travis-ci.org/dapphp/TorUtils"><img src="https://travis-ci.org/dapphp/TorUtils.svg?branch=master" alt="Build Status"></a>
+<a href="https://travis-ci.org/dapphp/TorUtils"><img src="https://api.travis-ci.com/dapphp/TorUtils.svg?branch=master" alt="Build Status"></a>
 <a href="https://packagist.org/packages/dapphp/torutils"><img src="https://poser.pugx.org/dapphp/torutils/downloads" alt="Total Downloads"></a>
 <a href="https://packagist.org/packages/dapphp/torutils"><img src="https://poser.pugx.org/dapphp/torutils/v/stable" alt="Latest Stable Version"></a>
 </p>
@@ -12,7 +12,7 @@ wrapper that makes it easy to use Tor's SOCKS proxy, and more.
 
 ## Version:
 
-**1.1.15**
+**1.15.1**
 
 ## Author:
 
@@ -152,7 +152,7 @@ the controller using the provided functions to issue commands:
 
 ## Copyright:
 
-    Copyright (c) 2020 Drew Phillips
+    Copyright (c) 2022 Drew Phillips
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
