@@ -128,7 +128,7 @@ class Parser
         foreach($reply as $line) {
             $parts   = explode(' ', $line, 2);
             $keyword = $parts[0];
-            $extra   = $parts[1] ?? null;
+            $extra   = isset($parts[1]) ? $parts[1] : null;
 
             switch ($keyword) {
                 case 'vote-status':
