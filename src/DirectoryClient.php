@@ -66,59 +66,9 @@ class DirectoryClient
     );
 
     /**
-     * @var array Array of directory fallbacks from https://gitweb.torproject.org/tor.git/tree/src/app/config/fallback_dirs.inc
+     * @var array (deprecated) array of directory fallbacks
      */
-    protected $directoryFallbacks = array(
-        // List updated 2022/02/13 (commit blob 87c1886e833e6c3edf024678232089ef42f414d0)
-        // version=4.0.0, timestamp=20210412000000 (Generated on: Fri, 04 Feb 2022 15:49:02 +0000)
-        // NF = Not found in Tor Metrics (metrics.torproject.org) - The fingerprint was not found in Tor Metrics on the date given
-        // TO = Timing out repeatedly on given date
-        // RF = Read failed when trying to query for directory info on the date given.
-        // Exit Relay = This is a busy exit relay so we should not bug it for directory info.
-        // Outdated = Running outdated Tor software, do not use
-        '86CDD0D92AB972538416A382D99666736CDDF141' => '88.196.80.132:80', // RyderIII
-        '3A1BC65DF03ECD50FDF7CFF9C5A4E049FCB9C1AF' => '199.249.230.179:80', // Quintex90
-        '9C5AFD49AAE4E0272BAD780C6DD71CE1A36012A6' => '82.223.14.245:80', // coffswifi4
-        '2D8A907F61CAED48170963B76BE4FB0ED33E5E88' => '80.98.81.157:9030', // nCT8d6e5bW2v
-        'CB7C0D841FE376EF43F7845FF201B0290C0A239E' => '199.249.230.78:80', // QuintexAirVPN25
-        '04A28A62F27D9C4A60F9ED0C4264E98B988C65A3' => '163.172.169.253:9030', // darknebula
-        'C473C772282D5078E5137C1DB83B62224D5B42DD' => '24.53.51.144:9032', // ClericalSummoning
-        '80654A16C954422C9A1B6DBEFBB6A32157A8BAB5' => '78.42.186.218:9030', // northwind84
-        '066FE3C4E07A18EA53B2828F753D3788D58D771D' => '102.130.113.42:9030', // Psyduck
-        'FFB605C86D606991ADED7842269FA25A03B4A4D0' => '165.227.174.150:9030', // Unnamed
-        'E09782C5F119131D5DF3C77B83E3214697AB6376' => '199.195.251.54:9030', // dappertr
-        'BBDE12C320FD1C3FFBEC15202F46D5620FC1444E' => '178.17.174.79:9030', // hanktor
-        '823AA81E277F366505545522CEDC2F529CE4DC3F' => '192.160.102.164:80', // snowfall
-        'D2169E641B2C10CACEA266D31370479200BB9AD7' => '185.22.174.119:9030', // FlashBear
-        '8765C6AFF62C266A38D8C73A76604A5B1669FAA7' => '152.70.64.30:9030', // plithismos
-        '79B207AD51842FA215D956B9307B3D01CD347368' => '37.252.187.129:9030', // 1d1dchang3th3c0nf1g
-        '90BF7147B422A1BABEFA503656EBD17987424441' => '199.249.230.158:80', // Quintex69
-        '1944F3A473CB77B12BDB4E3D15963A24DF58E4E7' => '146.185.189.197:8080', // Thrones
-        'C78AFFEEE320EA0F860961763E613FD2FAC855F5' => '199.249.230.69:80', // Quintex46
-        '1CD48F4ED0F1821FFBF1940802A13EEFD4C27502' => '176.9.40.131:80', // Piratenpartei00
-        '209B6DC8584D0DBC569DBA8DAE88B567A24C9467' => '85.7.221.196:9030', // cercatrova
-        '8454D200E13A41A93F4B6523740EBC78505D0DF0' => '5.2.70.141:9030', // Unnamed
-        '37FCDCAFAAA17742BE58A36382A768E21B65B34C' => '45.33.123.222:9030', // PictureEnchanter
-        '85D3D0C3D4699AFA897FE9DD9270BAACBBE3E3F1' => '185.112.146.188:9030', // Unnamed
-        'E8ED405E47A477D92D9EFB201FADF28FF7FBAF5D' => '31.201.16.30:8443', // Tortue
-        '5F875CFB7E2ED0D24E85A5A8B8904A3650AB1ED8' => '185.100.85.132:80', // vandergriff
-        '139C86C4C9BC94E89BAF79B15EBFDF9396DD5BB0' => '199.249.230.156:80', // Quintex67
-        'D25210CE07C49F2A4F2BC7A506EB0F5EA7F5E2C2' => '199.249.230.112:80', // QuintexPhoulRules
-        '83AEDBDB4BE3AD0ED91850BF1A521B843077759E' => '198.251.68.144:9030', // focaltohr
-        '5414065F98A160F630DAE0689973FC66D7EA62E9' => '170.239.86.145:80', // DTFNODE04
-        '13F7EAE731CA4600951986921E08ECAB9B1D2AF6' => '37.9.231.195:80', // CanopoIT
-        'B594EFDDBA2A8F12DEF827DFEE6992A6EB310B2A' => '93.115.241.194:80', // heaney
-        '42A51FFF7AB2A2F396CB924B56676F09BCB52245' => '157.90.38.9:80', // SoySauceR
-        '126E438B6921882FC17F1FC32AAC617300561938' => '212.74.233.19:9033', // Bathtub
-        '3DF28C6A21F9F063FA1640F7367BE8143816D40F' => '130.180.111.194:9030', // DerRaffke
-        '12836441FEAC9AEE13A144A64E51AB2AD98885B4' => '172.81.131.111:80', // TheEndOfTheInternet
-        'ED7FDF68D504AEED4E28C6396B3E4A4ED04406B9' => '163.44.173.37:9030', // Unnamed
-        'A636F3A27D9C10713C7A77ED00183DE8727E3D84' => '102.130.119.48:9030', // axeTorA
-        '0BADD9510440C9BF3A728F2CB630836FF98142B2' => '138.59.18.106:80', // Albis
-        '38F21DEE29E40DCDF9460A80662B7723562CA008' => '94.75.194.221:9030', // trabajando
-        '2B34099ED2BC598C4745C96C873FD73A445646BD' => '185.82.219.109:80', // RunningOnFumes4
-        '9D07DFA6472B80277798D73234348CEF02F2E7D5' => '159.89.87.126:9030', // incircuitryrelay
-    );
+    protected $directoryFallbacks = array();
 
     protected $preferredServer;
 
@@ -134,7 +84,7 @@ class DirectoryClient
      */
     public function __construct()
     {
-        $this->serverList = array_merge($this->directoryAuthorities, $this->directoryFallbacks);
+        $this->serverList = $this->directoryAuthorities;
         shuffle($this->serverList);
 
         $this->parser = new Parser();
