@@ -62,6 +62,7 @@ class Parser
         'fingerprint'        => '_parseFingerprint',
         'hibernating'        => '_parseHibernating',
         'uptime'             => '_parseUptime',
+        'overload-general'   => '_parseOverloadGeneral',
         'onion-key'          => '_parseOnionKey',
         'ntor-onion-key'     => '_parseNtorOnionKey',
         'signing-key'        => '_parseSigningKey',
@@ -682,6 +683,13 @@ class Parser
 
         return array(
             'uptime' => $line,
+        );
+    }
+
+    private function _parseOverloadGeneral($line)
+    {
+        return array(
+            'overload_general' => true,
         );
     }
 
