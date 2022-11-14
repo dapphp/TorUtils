@@ -12,7 +12,7 @@ wrapper that makes it easy to use Tor's SOCKS proxy, and more.
 
 ## Version:
 
-**1.15.1**
+**1.15.2**
 
 ## Author:
 
