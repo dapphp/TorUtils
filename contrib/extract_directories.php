@@ -1,13 +1,10 @@
 <?php
 
 /**
- * PHP script to extract the list of directory authorities and fallback
- * directories from Tor's src/app/config/auth_dirs.inc and
- * src/app/config/fallback_dirs.c and print the list as a PHP array for
- * inclusion in DirectoryClient.php
+ * PHP script to extract the list of directory authorities from Tor's src/app/config/auth_dirs.inc
+ * and print the list as a PHP array for inclusion in DirectoryClient.php
  *
- * To use, place a copy of the most recent auth_dirs.inc and fallback_dirs.inc in
- * the same directory as this file.
+ * To use, place a copy of the most recent auth_dirs.inc in the same directory as this file.
  *
  */
 
@@ -36,22 +33,5 @@ if (is_readable($file)) {
     echo "\n";
 } else {
     echo "$file does not exist or is not readable; skipping authorities.\n";
-}
-
-$file = __DIR__ . '/fallback_dirs.inc';
-
-if (is_readable($file)) {
-    $fallbacks = file_get_contents($file);
-
-    if (preg_match_all('/"(\d+\.\d+\.\d+\.\d+:\d+) orport=(\d+) id=([\w\d]+).*?nickname=([^\s]+)/is', $fallbacks, $matches)) {
-        printf("Exporting %d fallback directories\n", sizeof($matches[0]));
-        for ($i = 0; $i < sizeof($matches[0]); ++$i) {
-            printf("    '%s' => '%s', // %s\n", $matches[3][$i], $matches[1][$i], $matches[4][$i]);
-            //echo "    '" . $matches[3][$i] . "' => '" . $matches[1][$i] . "', // \n";
-        }
-    }
-    echo "\n";
-} else {
-    echo "$file does not exist or is not readable; skipping fallback directories.\n";
 }
 
