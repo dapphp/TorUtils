@@ -15,10 +15,7 @@
  * restart the hidden service at the same address later by calling ADD_ONION
  * again with the key obtained after creating the service.
  *
- * Since the hidden service version 3 protocol (224-rend-spec-ng.txt) was
- * introduced, this example tries to create a newer v3 hidden service first
- * (using an ed25519 key).  If v3 is not supported by the Tor version and/or
- * control port, it will fall back to a v2 hidden service RSA1024 key.
+ * Only v3 onion services are supported.
  */
 
 // virtual port the Tor hidden service listens on
@@ -46,16 +43,12 @@ try {
     exit(1);
 }
 
-// the types of hidden services keys we can create
+// The types of hidden services keys we can create. Only v3 hidden services are supported.
 $keyTypes = [
     ControlClient::ONION_KEYTYPE_CURVE25519 => 'Hidden Service v3 (ED25519-V3)',
-    //ControlClient::ONION_KEYTYPE_RSA1024    => 'Hidden Service v2 (RSA1024)' // Obselete
 ];
 
 foreach($keyTypes as $keyType => $keyDesc) {
-    // Try to create a newer hidden service v3 ed25519 key first, then fall back to older RSA1024 keys.
-    // Release 0.3.2.9 introduced hidden service v3 protocol, but the control port did not support
-    // adding them with ADD_ONION until a later version (0.3.3.x-stable?).  Older clients will not support this method.
 
     try {
         echo "Attempting to create hidden service using $keyDesc key type: ";
@@ -81,18 +74,16 @@ foreach($keyTypes as $keyType => $keyDesc) {
         break;
 
     } catch (ProtocolError $pe) {
+        // failed to create an ed25519-v3 key *and* an older RSA1024 key :(
         echo "Failed to create hidden service: " . $pe->getMessage() . "\n";
-        if ($keyType == ControlClient::ONION_KEYTYPE_RSA1024) {
-            // failed to create an ed25519-v3 key *and* an older RSA1024 key :(
-            exit(1);
-        }
-    } catch (Exception $ex) {
+        exit(1);
+    } catch (\Exception $ex) {
         echo "Error: " . $ex->getMessage() . "\n";
         exit(1);
     }
 }
 
-echo "Press [Enter] to delete the service and re-create it by suppling the private key...";
+echo "Press [Enter] to delete the service and re-create it by supplying the private key...";
 fread(STDIN, 1);
 echo "\n";
 
