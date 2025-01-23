@@ -215,7 +215,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      * (non-PHPdoc)
      * @see Iterator::current()
      */
-    public function current()
+    public function current(): mixed
     {
         $key = $this->key();
         return $this->lines[$key];
@@ -225,7 +225,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      * (non-PHPdoc)
      * @see Iterator::key()
      */
-    public function key()
+    public function key(): mixed
     {
         if ($this->dirty) {
             $this->keys = array_keys($this->lines);
@@ -273,7 +273,7 @@ class ProtocolReply implements \Iterator, \ArrayAccess, \Countable
      * @return mixed|null
      * @see ArrayAccess::offsetGet()
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return isset($this->lines[$offset]) ? $this->lines[$offset] : null;
     }
