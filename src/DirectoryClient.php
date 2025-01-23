@@ -50,10 +50,10 @@ class DirectoryClient
     /**
      * @var array $directoryAuthorities List of directory authorities https://gitweb.torproject.org/tor.git/tree/src/app/config/auth_dirs.inc
      */
-    protected $directoryAuthorities = array(
-        '9695DFC35FFEB861329B9F1AB04C46397020CE31' => '128.31.0.39:9131', // moria1
-        '847B1F850344D7876491A54892F904934E4EB85D' => '86.59.21.38:80', // tor26
-        '7EA6EAD6FD83083C538F44038BBFA077587DD755' => '45.66.33.45:80', // dizum
+    protected $directoryAuthorities = [
+        '1A25C6358DB91342AA51720A5038B72742732498' => '128.31.0.39:9231', // moria1
+        'FAA4BCA4A6AC0FB4CA2F8AD5A11D9E122BA894F6' => '217.196.147.77:80', // tor26
+        '7EA6EAD6FD83083C538F44038BBFA077587DD755' => '45.66.35.11:80', // dizum
         'BA44A889E64B93FAA2B114E02C2A279A8555C533' => '66.111.2.131:9030', // Serge
         'F2044413DAC2E02E3D6BCF4735A19BCA1DE97281' => '131.188.40.189:80', // gabelmoo
         '7BE683E65D48141321C5ED92F075C55364AC7123' => '193.23.244.244:80', // dannenberg
