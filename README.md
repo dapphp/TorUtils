@@ -11,7 +11,7 @@ directory authorities and servers, and DNS exit lists.
 
 ## Version:
 
-**2.0.0-alpha2**
+**2.0**
 
 ## Author:
 
@@ -19,7 +19,7 @@ Drew Phillips <drew@drew-phillips.com>
 
 ## Requirements:
 
-* PHP 7.2+ or PHP 8.x
+* PHP 7.3 or greater
 
 ## Description:
 
@@ -151,7 +151,7 @@ the controller using the provided functions to issue commands:
 
 ## Copyright:
 
-    Copyright (c) 2018-2022 Drew Phillips
+    Copyright (c) 2025 Drew Phillips
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -177,7 +177,6 @@ the controller using the provided functions to issue commands:
 
 ## Donate:
 
-BTC: 1Aw3BqXR9EPFcNn435fbFftByyCsTAcDFw  
-ETH: 0x51A1057D485da13fB9C37C8ed3C5B3BA59e950D1  
-Flattr: [OpenInternet](https://flattr.com/submit/auto?fid=4v1d1e&url=https%3A%2F%2Fopeninternet.io)  
+BTC: 1dJyNBaKBqRXVVMw5uVPyz7M3tMrh3gU2
+ETH: 0x51A1057D485da13fB9C37C8ed3C5B3BA59e950D1
 
