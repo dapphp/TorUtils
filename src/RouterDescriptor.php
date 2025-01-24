@@ -169,6 +169,12 @@ class RouterDescriptor
     /** @var string 2 letter country code of the relay IP address */
     public $country = null;
 
+    /** @var bool Indicates that a relay has reached an "overloaded state" within the last 72 hours */
+    public $overloaded = false;
+
+    /** @var string|null The timestamp when an overload metric was last detected  */
+    public $overloaded_at = null;
+
     /**
      * Set one or more descriptor values from an array
      *

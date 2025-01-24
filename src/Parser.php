@@ -89,6 +89,7 @@ class Parser
         'p'                  => '_parseAccept',
         'p6'                 => '_parseIPv6Policy',
         'id'                 => '_parseIdLine',
+        'overload-general'   => '_parseOverloadGeneral',
     );
 
     /**
@@ -811,6 +812,16 @@ class Parser
         } else { /* unknown key type - ignore */ }
 
         return $ret;
+    }
+
+    private function _parseOverloadGeneral($line)
+    {
+        list($version, $detected) = explode(' ', $line, 2);
+
+        return [
+            'overloaded' => true,
+            'overloaded_at' => $detected,
+        ];
     }
 
     private function _parseRsaKey(ProtocolReply $reply)
