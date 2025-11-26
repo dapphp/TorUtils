@@ -67,6 +67,7 @@ class Parser
         'router-signature'   => '_parseRouterSignature',
         'contact'            => '_parseContact',
         'family'             => '_parseFamily',
+        'family-cert'        => '_parseFamilyCert',
         'caches-extra-info'  => '_parseCachesExtraInfo',
         'extra-info-digest'  => '_parseExtraInfoDigest',
         'hidden-service-dir' => '_parseHiddenServiceDir',
@@ -661,6 +662,15 @@ class Parser
         return array(
             'family' => explode(' ', $line),
         );
+    }
+
+    private function _parseFamilyCert($line, ProtocolReply $reply)
+    {
+        $cert = $this->_parseBlockData($reply, '-----BEGIN FAMILY CERT-----', '-----END FAMILY CERT-----');
+
+        return [
+            'family_cert' => $cert,
+        ];
     }
 
     private function _parseCachesExtraInfo($line)

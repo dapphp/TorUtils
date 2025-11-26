@@ -639,6 +639,98 @@ final class ParserTest extends TestCase
             'reject' => array('*:*'),
         );
 
+        $desc7 = new RouterDescriptor();
+        $desc7->setArray([
+            'fingerprint' => 'FF5D538B72DAC854D4C8FE3A637C242F5B54649A',
+            'nickname' => 'ForPrivacyNET',
+            'ip_address' => '10.0.1.2',
+            'or_port' => '10038',
+            'dir_port' => '0',
+            'or_address' => '[::1]:10038',
+            'platform' => 'Tor 0.4.9.3-alpha-dev on Linux',
+            'proto' => [
+                'Conflux' => [ 1, ],
+                'Cons' => [ 1, 2, ],
+                'Desc' => [ 1, 2, 3, 4, ],
+                'DirCache' => [ 2, ],
+                'FlowCtrl' => [ 1, 2, ],
+                'HSDir' => [ 2, ],
+                'HSIntro' => [ 4, 5, ],
+                'HSRend' => [ 1, 2, ],
+                'Link' => [ 3, 4, 5, ],
+                'LinkAuth' => [ 3. ],
+                'Microdesc' => [ 1, 2, 3, ],
+                'Padding' => [ 2, ],
+                'Relay' => [ 2, 3, 4, 5, 6, ],
+            ],
+            'contact' => 'xmr:donate.for-privacy.net ciissversion:2',
+            'family' => [
+                '$0036FA36AB435FD5D0F640626636867EBFB72C68',
+                '$04749CD6A6BE1C0B14EE63DFD0F13EEB9EFEE8AB',
+                '$0E4F190C4A6F7DDF7F8C9A7842B85B4BBCF5F44B',
+                '$11A2C7E4629BC8F2AE8188CFF6421F1FBDD2A8CE',
+                '$1694A8CD4564D987C59D8A17D74F153ED967AC0C',
+                '$18671DE5092C67883BFB2450C3267B92618BEC66',
+            ],
+            'family_cert' => "-----BEGIN FAMILY CERT-----\n" .
+                "AQwAB30DAZscUVtDwMiSb1EzQR6djf3OdbXLhjDr+H/pzqlhC0v/AQAgBACHb1qQ\n" .
+                "1U8kjmsffbGE2nphL3JMBbK8qSH1jIvAMWUh5QjcOFEEFmRyVi8sU0+LfzMe4qkc\n" .
+                "Ca/ko8Am70f7ZhqHwvNB/3AslwRmAoURuFFp0NHwEr0IDVKeMRlZSzv3LQ4=\n" .
+                "-----END FAMILY CERT-----",
+            'ed25519_key' => 'mxxRW0PAyJJvUTNBHp2N/c51tcuGMOv4f+nOqWELS/8',
+            'ed25519_sig' => 'ZzKuaT+w8Bv4MvcfCYhTmjqw+ua09anG7cxI5jVJc3MyU0Egbb0keWoKEVAwrQN4UhQvcyTNVqx8J+vpeBDaBQ',
+            'ed25519_identity' => "-----BEGIN ED25519 CERT-----\n" .
+                "AQQAB3qpAQo5UYRtEJN6VRq3xpNGA2N6pGxP8dxDEVzD3mVfskqBAQAgBACbHFFb\n" .
+                "Q8DIkm9RM0EenY39znW1y4Yw6/h/6c6pYQtL/5hfojg+Vl2sBYDT2tHXPxHkgb72\n" .
+                "z8hgIQCCMI7QiUUsjR6Fh/a9P9upSXlJWyf8Yg9ujIFnTjXPaucLtXnlHw0=\n" .
+                "-----END ED25519 CERT-----",
+            'onion_key' => "-----BEGIN RSA PUBLIC KEY-----\n" .
+                "MIGJAoGBAMryHNbwS5tcz4wsXyPLdxvLYqexBInxurWjbOmmj7eSioMU/jA7Idwl\n" .
+                "RdSGJXDUNh3Dj5OlEpUJdM0wDfNI6wFrtz43RPtV6aqjFcC+g5FKUKTYRiO0z8vt\n" .
+                "oF3IYshXo3GUW5630YIu/Q2aNeBIbWwce73nFg0K9sHetdWt+MNRAgMBAAE=\n" .
+                "-----END RSA PUBLIC KEY-----",
+            'uptime' => '74146',
+            'bandwidth_average' => '104857600',
+            'bandwidth_burst' => '209715200',
+            'bandwidth_observed' => '31427584',
+            'published' => '2025-11-26 02:15:29',
+            'signing_key' => "-----BEGIN RSA PUBLIC KEY-----\n" .
+                "MIGJAoGBAJ2cMjgepFb0x1Ds47wOJm6Y0OiQkB+9kHD3IJm7CMHA1EUd0F3jlTIF\n" .
+                "86kJUt72UQLZO0vpl6AM234tLhteWjY47ocXrP2i4O5O8pD/xqfskRgrjWpwoFY/\n" .
+                "YRAYYy8JNRKCd2lwcO+cxsWIQN692UoXc6VifBtCTx0S/lj0BIedAgMBAAE=\n" .
+                "-----END RSA PUBLIC KEY-----",
+            'extra_info_digest' => '0C6013B221094AD93320535416DE875D0367E02C F5je7jVZi3Trk0agnDXOhzewrM9BA+HhaZb9lZm3DP8',
+            'ntor_onion_key' => 'Tz9RvgX9z/HQX0m0R6zh7oYVzYLeK0nsuPNuW0xNKDQ===',
+            'ntor_onion_key_crosscert_signbit' => '1',
+            'ntor_onion_key_crosscert' => "-----BEGIN ED25519 CERT-----\n" .
+                "AQoAB3zTAZscUVtDwMiSb1EzQR6djf3OdbXLhjDr+H/pzqlhC0v/ABtGhW+DFZ2f\n" .
+                "A0nwj/zu6Tq58AMnDaokkiiHolpRI8V6Z9R13BOFaDy5Qi4rQ53CTmrOMg0VguZb\n" .
+                "5Zgp3Mb3fg4=\n" .
+                "-----END ED25519 CERT-----",
+            'hidden_service_dir' => '2',
+            'onion_key_crosscert' => "-----BEGIN CROSSCERT-----\n" .
+                "cE5qLztDhRfwbyVu9LIyc9tqB86CRwJkgWjzlyq4NQ8qNMSlD4Zz8onQjC7qd17E\n" .
+                "0w9Q5+q3L2uhvHlXMP2T+EGz3b5sYKi0vXKQy4QU7RtHCGj1GLhF6A9kWIAC5R8X\n" .
+                "DJ9kH0e3T8JFIzh1/7pT04AzBGtpjNThqcOp0eLJMao=\n" .
+                "-----END CROSSCERT-----",
+            'family-cert' => 'AQwAB30DAZscUVtDwMiSb1EzQR6djf3OdbXLhjDr+H/pzqlhC0v/AQAgBACHb1qQ' .
+                            '1U8kjmsffbGE2nphL3JMBbK8qSH1jIvAMWUh5QjcOFEEFmRyVi8sU0+LfzMe4qkc' .
+                            'Ca/ko8Am70f7ZhqHwvNB/3AslwRmAoURuFFp0NHwEr0IDVKeMRlZSzv3LQ4=',
+            'router_signature' => "-----BEGIN SIGNATURE-----\n" .
+                "B4t5Y4VhQ6+UeUkLJW/jggWsxjiM5dB9CR3LR58k0XzuNqv+j8rzreLkHxG05VQK\n" .
+                "4ArW4EqaUog4PT4iwC/LJmoVwtoxkNRyiunDuPjNE1B517y+lqQojoDtbsf8FpiC\n" .
+                "pFxYKdREgiWHmTZX/Loed1HNyH53rYSqUizHJqU77LE=\n" .
+                "-----END SIGNATURE-----",
+            'exit_policy4' => [
+                'accept' => [ '*:*', ],
+                'reject' => [ '0.0.0.0/8:*', '169.254.0.0/16:*', '127.0.0.0/8:*', '192.168.0.0/16:*', '10.0.0.0/8:*', '172.16.0.0/12:*', '*:25', ],
+            ],
+            'exit_policy6' => [
+                'accept' => [ '*:*', ],
+                'reject' => [ '25', ],
+            ]
+        ]);
+
         $descriptors = array(
             '79E169B25E4C7CE99584F6ED06F379478F23E2B8' => $desc1,
             'E2EC4A6D3E002866C2A49207109F72812F9D2E62' => $desc2,
@@ -646,6 +738,7 @@ final class ParserTest extends TestCase
             '8096EA61F733C3030351401944F54F254185098C' => $desc4,
             'BC630CBBB518BE7E9F4E09712AB0269E9DC7D626' => $desc5,
             'BE953C95C98D207742A66DDC05B0A476FF2225C9' => $desc6,
+            'FF5D538B72DAC854D4C8FE3A637C242F5B54649A' => $desc7,
         );
 
         $data[] = array(

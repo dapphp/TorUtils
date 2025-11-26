@@ -81,6 +81,9 @@ class RouterDescriptor
     /** @var array Array of relay nicknames or hex digests run by an operator */
     public $family;
 
+    /** @var string The string is an ed25519 certificate proving this relay's membership in the family corresponding to the certificate's signing key. */
+    public $family_cert;
+
     /** @var int OR uptime in seconds at the time of publication */
     public $uptime;
 
